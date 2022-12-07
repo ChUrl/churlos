@@ -1,13 +1,3 @@
-Important
-======================================
-- This does not run in the latest "vanilla" C++ VM image, g++-multilib has to be installed extra
-
-Makefile
-======================================
-- Added the -std=c++17 flag to enable better constexpr support.
-- Removed optimizations as the system would crash with them.
-  The BlueScreen would show an empty callstack on crashes with -O2, so I guess the problem is the missing ebp or something like that.
-  
 Changes
 ======================================
 - Removed the Input.h/Input.cc files
