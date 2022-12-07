@@ -1,0 +1,5 @@
+/bootdisk.vmi
+/cmake-build-debug/
+/build/
+/.direnv/
+/.idea/
