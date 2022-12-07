@@ -14,6 +14,7 @@
 #ifndef CGA_include_H_
 #define CGA_include_H_
 
+#include <cstdint>
 #include "device/port/IOport.h"
 #include "lib/util/Array.h"
 #include "lib/util/Span.h"
@@ -83,16 +84,16 @@ public:
     static cga_page_t* const SCREEN_PAGE;  // No span because can't address anything in [0, 1]
 
     // Setzen des Cursors in Spalte x und Zeile y.
-    static void setpos(unsigned int x, unsigned int y);
+    static void setpos(uint8_t x, uint8_t y);
 
     // Abfragen der Cursorpostion
-    static void getpos(unsigned int& x, unsigned int& y) ;
+    static void getpos(uint8_t& x, uint8_t& y) ;
 
     // Anzeige eines Zeichens mit Attribut an einer bestimmten Stelle
-    static void show(unsigned int x, unsigned int y, char character, unsigned char attrib = STD_ATTR);
+    static void show(uint8_t x, uint8_t y, char character, uint8_t attrib = STD_ATTR);
 
     // Anzeige mehrerer Zeichen ab der aktuellen Cursorposition
-    void print(const bse::string_view substring, unsigned char attrib = STD_ATTR) const;
+    void print(const bse::string_view substring, uint8_t attrib = STD_ATTR) const;
 
     // Verschiebt den Bildschirminhalt um eine Zeile nach oben.
     // Neue Zeile am unteren Bildrand mit Leerzeichen fuellen

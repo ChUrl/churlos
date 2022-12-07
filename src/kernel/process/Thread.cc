@@ -26,11 +26,11 @@
 // extern "C" deklariert werden, da sie nicht dem Name-Mangeling von C++
 // entsprechen.
 extern "C" {
-    void Thread_start(unsigned int esp);
+    void Thread_start(uint32_t esp);
 
     // NOTE: Only when backing up the previous thread the esp gets updated,
     //       so only esp_pre is a pointer
-    void Thread_switch(unsigned int* esp_prev, unsigned int esp_next);
+    void Thread_switch(uint32_t* esp_prev, uint32_t esp_next);
 }
 
 unsigned int ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preemption with 0
@@ -41,7 +41,7 @@ unsigned int ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preempt
  * Beschreibung:    Bereitet den Kontext der Koroutine fuer den ersten       *
  *                  Aufruf vor.                                              *
  *****************************************************************************/
-void Thread_init(unsigned int* esp, unsigned int* stack, void (*kickoff)(Thread*), void* object) {
+void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void* object) {
 
     // NOTE: c++17 doesn't allow register
     // register unsigned int** sp = (unsigned int**)stack;

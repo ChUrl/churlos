@@ -19,7 +19,8 @@ void Logger::log(const bse::string_view message, CGA::color col) const {
     if (Logger::kout_enabled) {
         CGA::color old_col = kout.color_fg;
         kout << fgc(col)
-             << Logger::level_to_string(current_message_level) << "::"
+             << "["
+             << Logger::level_to_string(current_message_level) << "] "
              << message << fgc(old_col);
         kout.flush();  // Don't add newline, Logger already does that
     }
@@ -40,8 +41,9 @@ void Logger::log(const bse::string_view message, CGA::color col) const {
         default:
             SerialOut::write(ansi_default);
         }
+        SerialOut::write("[");
         SerialOut::write(Logger::level_to_string(current_message_level));
-        SerialOut::write(":: ");
+        SerialOut::write("] ");
         SerialOut::write(message);
         SerialOut::write('\r');
         // serial.write("\r\n");

@@ -11,6 +11,7 @@
 #ifndef Keyboard_include__
 #define Keyboard_include__
 
+#include <cstdint>
 #include "Key.h"
 #include "kernel/interrupt/ISR.h"
 #include "device/port/IOport.h"
@@ -85,7 +86,7 @@ public:
     static void reboot();
 
     // Einstellen der Wiederholungsrate der Tastatur.
-    void set_repeat_rate(int speed, int delay);
+    void set_repeat_rate(uint8_t speed, uint8_t delay);
 
     // Setzt oder loescht die angegebene Leuchtdiode.
     void set_led(char led, bool on);

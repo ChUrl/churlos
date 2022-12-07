@@ -11,7 +11,7 @@
 /*                                            */
 /**********************************************/
 
-constexpr const unsigned int FONTDATAMAX_PEARL_8x8 = 2048;
+constexpr const uint32_t FONTDATAMAX_PEARL_8x8 = 2048;
 
 constexpr const unsigned char fontdata_pearl_8x8[FONTDATAMAX_PEARL_8x8] = {
 

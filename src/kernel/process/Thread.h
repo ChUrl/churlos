@@ -32,8 +32,8 @@
 
 class Thread {
 private:
-    unsigned int* stack;
-    unsigned int esp;
+    uint32_t* stack;
+    uint32_t esp;
 
 protected:
     Thread(char* name);

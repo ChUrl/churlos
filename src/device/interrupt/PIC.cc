@@ -31,14 +31,14 @@ IOport const PIC::IMR2(0xa1);  // interrupt mask register von PIC 2
  * Parameter:                                                                *
  *      irq:        IRQ der erlaubt werden soll                              *
  *****************************************************************************/
-void PIC::allow(int irq) {
+void PIC::allow(uint8_t irq) {
 
     /* hier muss Code eingefuegt werden */
 
     // NOTE: allow sets the bit to 0
 
-    unsigned char IMR;
-    unsigned char mask = ~(0x1 << (irq % 8));
+    uint8_t IMR;
+    uint8_t mask = ~(0x1 << (irq % 8));
     if (irq < 8) {
         // PIC 1
         IMR = IMR1.inb();  // We don't want to change the other interrupt masks so use this as start value
@@ -58,14 +58,14 @@ void PIC::allow(int irq) {
  * Parameter:                                                                *
  *      interrupt:  IRQ der maskiert werden soll                             *
  *****************************************************************************/
-void PIC::forbid(int irq) {
+void PIC::forbid(uint8_t irq) {
 
     /* hier muss Code eingefuegt werden */
 
     // NOTE: forbid sets the bit to 1
 
-    unsigned char IMR;
-    unsigned char mask = 0x1 << (irq % 8);
+    uint8_t IMR;
+    uint8_t mask = 0x1 << (irq % 8);
     if (irq < 8) {
         // PIC 1
         IMR = IMR1.inb();  // We don't want to change the other interrupt masks so use this as start value
@@ -86,11 +86,11 @@ void PIC::forbid(int irq) {
  * Parameter:                                                                *
  *      irq:  IRQ dessen Status erfragt werden soll                          *
  *****************************************************************************/
-bool PIC::status(int irq) {
+bool PIC::status(uint8_t irq) {
 
     /* hier muss Code eingefuegt werden */
 
-    unsigned char IMR;
+    uint8_t IMR;
     if (irq < 8) {
         // PIC 1
         IMR = IMR1.inb();
@@ -100,6 +100,6 @@ bool PIC::status(int irq) {
     }
 
     // Use % 8 to account for two PICs
-    unsigned char mask = 0x1 << (irq % 8);
+    uint8_t mask = 0x1 << (irq % 8);
     return IMR & mask;
 }

@@ -56,8 +56,8 @@ void break_on_bluescreen() {
 }
 
 // Cursor-Position
-int bs_xpos = 0;
-int bs_ypos = 0;
+uint8_t bs_xpos = 0;
+uint8_t bs_ypos = 0;
 
 /*****************************************************************************
  * Funktion:        bs_clear                                                 *
@@ -65,13 +65,13 @@ int bs_ypos = 0;
  * Beschreibung:    Bildschirm loeschen.                                     *
  *****************************************************************************/
 void bs_clear() {
-    unsigned int x;
-    unsigned int y;
-    unsigned short* ptr = reinterpret_cast<unsigned short*>(0xb8000);
+    uint8_t x;
+    uint8_t y;
+    auto* ptr = reinterpret_cast<uint16_t*>(0xb8000);
 
     for (x = 0; x < 80; x++) {
         for (y = 0; y < 25; y++) {
-            *(ptr + y * 80 + x) = static_cast<short>(0x1F00);
+            *(ptr + y * 80 + x) = static_cast<uint16_t>(0x1F00);
         }
     }
 
@@ -155,11 +155,11 @@ void bs_printReg(char* str, unsigned int value) {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Hauptroutine des Bluescreens.                            *
  *****************************************************************************/
-void bs_dump(unsigned int exceptionNr) {
-    unsigned int* int_esp;
-    unsigned int* sptr;
-    unsigned int faultAdress;
-    unsigned int has_error_code = 0;
+void bs_dump(uint8_t exceptionNr) {
+    uint32_t* int_esp;
+    uint32_t* sptr;
+    uint32_t faultAdress;
+    uint8_t has_error_code = 0;
 
     bs_clear();
     bs_print_string("HHUos crashed with Exception \0");
@@ -210,7 +210,7 @@ void bs_dump(unsigned int exceptionNr) {
     get_int_esp(&int_esp);
 
     // wir müssen den Inhalt auslesen und das als Zeiger verwenden, um den Stack auszulesen
-    sptr = reinterpret_cast<unsigned int*>(*int_esp);
+    sptr = reinterpret_cast<uint32_t*>(*int_esp);
 
     bs_lf();
 
@@ -277,7 +277,7 @@ void bs_dump(unsigned int exceptionNr) {
     bs_print_string("Calling Stack:\0");
     bs_lf();
     int x = 0;
-    unsigned int* ebp = reinterpret_cast<unsigned int*>(*(sptr + 2));
+    auto* ebp = reinterpret_cast<uint32_t*>(*(sptr + 2));
     unsigned int raddr;
 
     // solange eip > 1 MB && ebp < 128 MB, max. Aufruftiefe 10
@@ -288,7 +288,7 @@ void bs_dump(unsigned int exceptionNr) {
         bs_lf();
 
         // dynamische Kette -> zum Aufrufer
-        ebp = reinterpret_cast<unsigned int*>(*ebp);
+        ebp = reinterpret_cast<uint32_t*>(*ebp);
 
         x++;
     }

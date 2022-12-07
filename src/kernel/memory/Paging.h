@@ -53,24 +53,26 @@
 #define Paging_include__
 
 // Externe Funktionen in startup.asm
+#include <cstdint>
+
 extern "C" {
-    void paging_on(unsigned int* p_pdir);          // Paging einschalten
-    void invalidate_tlb_entry(const unsigned int* ptr);  // Page in TLB invalid.
+    void paging_on(uint32_t* p_pdir);          // Paging einschalten
+    void invalidate_tlb_entry(const uint32_t* ptr);  // Page in TLB invalid.
 }
 
 // ativiert paging
 extern void pg_init();
 
 // alloziert eine 4 KB Page
-extern unsigned int* pg_alloc_page();
+extern uint32_t* pg_alloc_page();
 
 // Schreibschutz auf Seite setzen -> fuer debugging nuetzlich
-extern void pg_write_protect_page(const unsigned int* p_page);
+extern void pg_write_protect_page(const uint32_t* p_page);
 
 // Present Bit loeschen
-extern void pg_notpresent_page(const unsigned int* p_page);
+extern void pg_notpresent_page(const uint32_t* p_page);
 
 // gibt eine 4 KB Page frei
-extern void pg_free_page(unsigned int* p_page);
+extern void pg_free_page(uint32_t* p_page);
 
 #endif

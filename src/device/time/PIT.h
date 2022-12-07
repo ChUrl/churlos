@@ -14,6 +14,7 @@
 #include "kernel/interrupt/ISR.h"
 #include "device/port/IOport.h"
 #include "lib/util/Array.h"
+#include <cstdint>
 
 class PIT : public ISR {
 private:
@@ -21,11 +22,11 @@ private:
     const static IOport data0;
 
     enum { time_base = 838 }; /* ns */
-    int timer_interval;
+    uint32_t timer_interval;
 
     const bse::array<char, 4> indicator{'|', '/', '-', '\\'};
-    unsigned int indicator_pos = 0;
-    unsigned long last_indicator_refresh = 0;
+    uint8_t indicator_pos = 0;
+    uint64_t last_indicator_refresh = 0;
 
 public:
     PIT(const PIT& copy) = delete;  // Verhindere Kopieren
@@ -33,16 +34,16 @@ public:
 //    ~PIT() override = default;
 
     // Zeitgeber initialisieren.
-    explicit PIT(int us) {
+    explicit PIT(uint32_t us) {
         PIT::interval(us);
     }
 
     // Konfiguriertes Zeitintervall auslesen.
-    int interval() const { return timer_interval; }
+    uint32_t interval() const { return timer_interval; }
 
     // Zeitintervall in Mikrosekunden, nachdem periodisch ein Interrupt
     //erzeugt werden soll.
-    static void interval(int us);
+    static void interval(uint32_t us);
 
     // Aktivierung der Unterbrechungen fuer den Zeitgeber
     void plugin();

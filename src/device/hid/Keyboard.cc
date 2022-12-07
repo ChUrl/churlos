@@ -284,7 +284,7 @@ Key Keyboard::key_hit() {
  * Beschreibung:    Fuehrt einen Neustart des Rechners durch.                *
  *****************************************************************************/
 void Keyboard::reboot() {
-    int status;
+    uint8_t status;
 
     // Dem BIOS mitteilen, dass das Reset beabsichtigt war
     // und kein Speichertest durchgefuehrt werden muss.
@@ -310,7 +310,7 @@ void Keyboard::reboot() {
  *                  sollen. Erlaubt sind Werte zwischen 0 (sehr schnell)     *
  *                  und 31 (sehr langsam).                                   *
  *****************************************************************************/
-void Keyboard::set_repeat_rate(int speed, int delay) {
+void Keyboard::set_repeat_rate(uint8_t speed, uint8_t delay) {
 
     /* Hier muss Code eingefuegt werden. */
 }

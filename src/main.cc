@@ -73,14 +73,21 @@ int main() {
     scheduler.schedule();
 
     // NOTE: Pre-Post ToDo's
-    // TODO: Reorganize the project similar to hhuOS:
-    //       - TODO: Use CMake
-    //       - TODO: Copy file structure: build, cmake, src
-    //       - TODO: Translate the src/Makefile and boot/Makefile
-    // TODO: Update some parts to C++20 (I wanted to use reference optionals somewhere...)
+    // DONE: Reorganize the project similar to hhuOS:
+    //       - DONE: Use CMake
+    //       - DONE: Copy file structure: build, cmake, src
+    //       - DONE: Translate the src/Makefile and boot/Makefile
+    // TODO: Switch char/short/int/long to uint_ sized types where appropriate
     // TODO: Namespace that shit
+    // TODO: Investigate: C++20 (I wanted to use reference optionals somewhere...)
+    // TODO: Compare current (hhuOS) compiler flags with old BSEos compiler flags
+    // TODO: Change int types to cstdint
+    // TODO: Rearrange code inside classes (public structs, public functions, private structs, private functions, private variables)
+    // TODO: Write documentation comments
 
     // NOTE: Post ToDo's
+    // TODO: Singleton class wrapper
+    // TODO: Optional type for addresses
     // TODO: Generalize key event system to eventbus (where custom events can be registered)
     // TODO: Introduce kernel services and abstract time, memory, scheduler, interrupt etc. (like in hhuOS)
     // TODO: Use linear framebuffer to draw output/shell/text instead of CGA
@@ -88,9 +95,11 @@ int main() {
     // TODO: Manage exited threads in scheduler
     // TODO: Query thread state in scheduler
     // TODO: Bitfield lib class that has defined behavior regarding ordering/packing (for easy register access)?
+    // TODO: Port my APIC code from hhuOS
+    // TODO: Exceptions
 
     // NOTE: Large post ToDo's
-    // TODO: Add a RB-Tree datastructure and use it for memory management
+    // TODO: Add a RB-Tree datastructure and use it for memory management?
     // TODO: Enable full paging (check hhuOS for implementation example)
 
     // NOTE: Filesystem enable ToDo's (huge)
@@ -103,7 +112,7 @@ int main() {
 
     // NOTE: Insane ToDo's
     // TODO: Write a very simple text editor that can save files to the filesystem
-    // TODO: Small compiler to write small programs inside the system (I don't want to deal with register allocation so compile to bytecode and use a VM?)
+    // TODO: Small interpreter to run source code on the system
 
     // NOTE: Enforced ToDo's (needed)
     // DONE: Rewrite demos for threads

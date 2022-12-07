@@ -15,6 +15,7 @@
 #ifndef PCSPK_include__
 #define PCSPK_include__
 
+#include <cstdint>
 #include "device/port/IOport.h"
 
 // Note, Frequenz
@@ -65,7 +66,7 @@ private:
     static const IOport ppi;      // Status-Register des PPI
 
     // Verzoegerung um X ms (in 1ms Schritten; Min. 1ms)
-    static inline void delay(int time);
+    static inline void delay(uint32_t time);
 
 public:
     PCSPK(const PCSPK& copy) = delete;  // Verhindere Kopieren
@@ -80,7 +81,7 @@ public:
     static void aerodynamic();
 
     // Ton abspielen
-    static void play(float f, int len);
+    static void play(float f, uint32_t len);
 
     // Lautsprecher ausschalten
     static void off();

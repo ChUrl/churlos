@@ -15,7 +15,7 @@
 #include "kernel/system/Globals.h"
 #include "kernel/interrupt/Bluescreen.h"
 
-extern "C" void int_disp(unsigned int vector);
+extern "C" void int_disp(uint8_t vector);
 
 /*****************************************************************************
  * Prozedur:        int_disp                                                 *
@@ -29,7 +29,7 @@ extern "C" void int_disp(unsigned int vector);
  * Parameter:                                                                *
  *      vector:     Vektor-Nummer der Unterbrechung                          *
  *****************************************************************************/
-void int_disp(unsigned int vector) {
+void int_disp(uint8_t vector) {
 
     /* hier muss Code eingefuegt werden */
 
@@ -56,7 +56,7 @@ void int_disp(unsigned int vector) {
  *                                                                           *
  * Rueckgabewert:   0 = Erfolg, -1 = Fehler                                  *
  *****************************************************************************/
-int IntDispatcher::assign(unsigned int vector, ISR& isr) {
+int IntDispatcher::assign(uint8_t vector, ISR& isr) {
 
     /* hier muss Code eingefuegt werden */
 
@@ -81,7 +81,7 @@ int IntDispatcher::assign(unsigned int vector, ISR& isr) {
  *                                                                           *
  * Rueckgabewert:   0 = ISR wurde aufgerufen, -1 = unbekannte Vektor-Nummer  *
  *****************************************************************************/
-int IntDispatcher::report(unsigned int vector) {
+int IntDispatcher::report(uint8_t vector) {
 
     /* hier muss Code eingefuegt werden */
 

@@ -8,7 +8,7 @@ void PagingDemo::writeprotect_page() {
 
     // BlueScreen 2
     log.info() << "Allocating page" << endl;
-    unsigned int* page = pg_alloc_page();
+    uint32_t* page = pg_alloc_page();
     *page = 42;
     log.info() << "Writeprotecting page..." << endl;
     pg_write_protect_page(page);
@@ -23,7 +23,7 @@ void PagingDemo::notpresent_page() {
     kout << "Produces pagefault, if you can read this it didn't work" << endl;
 
     log.info() << "Allocating page" << endl;
-    unsigned int* page = pg_alloc_page();
+    uint32_t* page = pg_alloc_page();
     *page = 42;
 
     log.info() << "Marking page notpresent..." << endl;

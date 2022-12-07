@@ -13,6 +13,7 @@
  *****************************************************************************/
 #include "CGA.h"
 #include "lib/mem/Memory.h"
+#include <cstdint>
 
 const IOport CGA::index_port(0x3d4);
 const IOport CGA::data_port(0x3d5);
@@ -26,7 +27,7 @@ CGA::cga_page_t* const CGA::SCREEN_PAGE {reinterpret_cast<CGA::cga_page_t*>(0xb8
  *---------------------------------------------------------------------------*
  * Beschreibung:    Setzen des Cursors in Spalte x und Zeile y.              *
  *****************************************************************************/
-void CGA::setpos(unsigned int x, unsigned int y) {
+void CGA::setpos(uint8_t x, uint8_t y) {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -49,7 +50,7 @@ void CGA::setpos(unsigned int x, unsigned int y) {
  *                                                                           *
  * Rückgabewerte:   x und y                                                  *
  *****************************************************************************/
-void CGA::getpos(unsigned int& x, unsigned int& y) {
+void CGA::getpos(uint8_t& x, uint8_t& y) {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -77,7 +78,7 @@ void CGA::getpos(unsigned int& x, unsigned int& y) {
  *      character   Das auszugebende Zeichen                                 *
  *      attrib      Attributbyte fuer das Zeichen                            *
  *****************************************************************************/
-void CGA::show(unsigned int x, unsigned int y, char character, unsigned char attrib) {
+void CGA::show(uint8_t x, uint8_t y, char character, uint8_t attrib) {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -106,8 +107,8 @@ void CGA::print(const bse::string_view string, unsigned char attrib) const {
 
     /* Hier muess Code eingefuegt werden */
 
-    unsigned int cursor_x = 0;
-    unsigned int cursor_y = 0;  // Don't poll registers every stroke
+    uint8_t cursor_x = 0;
+    uint8_t cursor_y = 0;  // Don't poll registers every stroke
     getpos(cursor_x, cursor_y);
 
     for (char current : string) {

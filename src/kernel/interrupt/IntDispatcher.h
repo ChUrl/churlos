@@ -42,10 +42,10 @@ public:
     }
 
     // Registrierung einer ISR. (Rueckgabewert: 0 = Erfolg, -1 = Fehler)
-    int assign(unsigned int vector, ISR& isr);
+    int assign(uint8_t vector, ISR& isr);
 
     // ISR fuer 'vector' ausfuehren
-    int report(unsigned int vector);
+    int report(uint8_t vector);
 };
 
 #endif

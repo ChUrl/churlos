@@ -14,6 +14,6 @@
 #define Bluescreen_include__
 
 // dump blue screen (will not return)
-void bs_dump(unsigned int exceptionNr);
+void bs_dump(uint8_t exceptionNr);
 
 #endif

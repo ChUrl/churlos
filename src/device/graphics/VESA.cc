@@ -33,9 +33,9 @@ struct VbeModeInfoBlock {
     unsigned char rsv_mask, rsv_position;
     unsigned char directcolor_attributes;
 
-    unsigned int physbase;  // Adresse des Linear-Framebuffers
-    unsigned int OffScreenMemOffset;
-    unsigned short OffScreenMemSize;
+    uint32_t physbase;  // Adresse des Linear-Framebuffers
+    uint32_t OffScreenMemOffset;
+    uint32_t OffScreenMemSize;
 } __attribute__((packed));
 
 // Informationen ueber die Grafikkarte
@@ -92,8 +92,8 @@ bool VESA::initGraphicMode(unsigned short mode) {
     //    kout << "TotalVideoMemory:  " << ((ib->TotalMemory*65536) / (1024*1024)) << " MB" << endl;
 
     // Gewuenschten Grafikmodus aus Antwort suchen
-    unsigned short* modePtr = reinterpret_cast<unsigned short*>((ib->VideoModePtr[1] << 4) + ib->VideoModePtr[0]);
-    for (int i = 0; modePtr[i] != 0xFFFF; ++i) {
+    auto* modePtr = reinterpret_cast<uint16_t*>((ib->VideoModePtr[1] << 4) + ib->VideoModePtr[0]);
+    for (uint32_t i = 0; modePtr[i] != 0xFFFF; ++i) {
         // Gewuenschter Grafikmodus gefunden?
         if (modePtr[i] == mode) {
             VbeModeInfoBlock* minf = reinterpret_cast<VbeModeInfoBlock*>(RETURN_MEM);
@@ -114,7 +114,7 @@ bool VESA::initGraphicMode(unsigned short mode) {
             mode_nr = mode;
             xres = minf->Xres;
             yres = minf->Yres;
-            bpp = static_cast<int>(minf->bpp);
+            bpp = static_cast<uint8_t>(minf->bpp);
             lfb = minf->physbase;
 
             hfb = reinterpret_cast<unsigned int>(new char[xres * yres * bpp / 8]);

@@ -17,6 +17,7 @@
 #ifndef PIC_include__
 #define PIC_include__
 
+#include <cstdint>
 #include "device/port/IOport.h"
 
 class PIC {
@@ -39,13 +40,13 @@ public:
     };
 
     // Freischalten der Weiterleitung eines IRQs durch den PIC an die CPU
-    static void allow(int irq);
+    static void allow(uint8_t irq);
 
     // Unterdruecken der Weiterleitung eines IRQs durch den PIC an die CPU
-    static void forbid(int irq);
+    static void forbid(uint8_t irq);
 
     // Abfragen, ob die Weiterleitung fuer einen bestimmten IRQ unterdrueckt ist
-    static bool status(int interrupt_device);
+    static bool status(uint8_t interrupt_device);
 };
 
 #endif

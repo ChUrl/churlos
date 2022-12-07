@@ -18,7 +18,7 @@
 #include "Fonts.h"
 
 // Hilfsfunktionen um Farbwerte fuer einen Pixel zu erzeugen
-constexpr unsigned int RGB_24(unsigned int r, unsigned int g, unsigned int b) {
+constexpr uint32_t RGB_24(uint8_t r, uint8_t g, uint8_t b) {
     return ((r << 16) + (g << 8) + b);
 }
 
@@ -28,23 +28,23 @@ constexpr const bool BUFFER_VISIBLE  = true;
 class LFBgraphics {
 private:
     // Hilfsfunktion fuer drawString
-    void drawMonoBitmap(unsigned int x, unsigned int y,
-                        unsigned int width, unsigned int height,
-                        const unsigned char* bitmap, unsigned int col) const;
+    void drawMonoBitmap(uint32_t x, uint32_t y,
+                        uint32_t width, uint32_t height,
+                        const unsigned char* bitmap, uint32_t col) const;
 
 public:
     LFBgraphics(const LFBgraphics& copy) = delete;  // Verhindere Kopieren
 
     LFBgraphics() : mode(BUFFER_VISIBLE) {};
 
-    unsigned int xres, yres;  // Aufloesung in Pixel
-    unsigned int bpp;         // Farbtiefe (Bits per Pixel)
-    unsigned int lfb;         // Adresse des Linearen Framebuffers
-    unsigned int hfb;         // Adresse des versteckten Buffers (optional, fuer Animationen)
-    unsigned int mode;        // Zeichnen im sichtbaren = 1 oder unsichtbaren = 0 Puffer
+    uint32_t xres, yres;  // Aufloesung in Pixel
+    uint8_t bpp;         // Farbtiefe (Bits per Pixel)
+    uint32_t lfb;         // Adresse des Linearen Framebuffers
+    uint32_t hfb;         // Adresse des versteckten Buffers (optional, fuer Animationen)
+    uint8_t mode;        // Zeichnen im sichtbaren = 1 oder unsichtbaren = 0 Puffer
 
     void clear() const;
-    void drawPixel(unsigned int x, unsigned int y, unsigned int col) const;
+    void drawPixel(uint32_t x, uint32_t y, uint32_t col) const;
 
     void drawString(const Font& fnt, unsigned int x, unsigned int y, unsigned int col, const char* str, unsigned int len) const;
 

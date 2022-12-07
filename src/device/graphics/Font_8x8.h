@@ -6,7 +6,7 @@
 /*                                            */
 /**********************************************/
 
-constexpr const unsigned int FONTDATAMAX_8x8 = 2048;
+constexpr const uint32_t FONTDATAMAX_8x8 = 2048;
 
 constexpr const unsigned char fontdata_8x8[FONTDATAMAX_8x8] = {
 

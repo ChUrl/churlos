@@ -1,6 +1,6 @@
 // vim: set et ts=4 sw=4:
 
-constexpr const unsigned int FONTDATAMAX_SUN_12x22 = 11264;
+constexpr const uint32_t FONTDATAMAX_SUN_12x22 = 11264;
 
 constexpr const unsigned char fontdata_sun_12x22[FONTDATAMAX_SUN_12x22] = {
 

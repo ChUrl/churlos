@@ -23,13 +23,13 @@ const IOport PIT::data0(0x40);
  *      us:         Zeitintervall in Mikrosekunden, nachdem periodisch ein   * 
  *                  Interrupt erzeugt werden soll.                           *
  *****************************************************************************/
-void PIT::interval(int us) {
+void PIT::interval(uint32_t us) {
 
     /* hier muss Code eingefuegt werden */
 
     control.outb(0x36);  // Zähler 0 Mode 3
 
-    unsigned int cntStart = static_cast<unsigned int>((1193180.0 / 1000000.0) * us);  // 1.19Mhz PIT
+    uint32_t cntStart = static_cast<unsigned int>((1193180.0 / 1000000.0) * us);  // 1.19Mhz PIT
 
     data0.outb(cntStart & 0xFF);  // Zaehler-0 laden (Lobyte)
     data0.outb(cntStart >> 8);    // Zaehler-0 laden (Hibyte)

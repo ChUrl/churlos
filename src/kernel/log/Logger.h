@@ -8,6 +8,8 @@
 #include "lib/util/StringView.h"
 
 class Logger : public OutStream {
+    friend class NamedLogger;  // Allow NamedLogger to lock/unlock
+
 public:
     static Logger& instance() {
         static Logger log;
@@ -20,9 +22,7 @@ private:
     static bool kout_enabled;
     static bool serial_enabled;
 
-    void log(const bse::string_view message, CGA::color col) const;
-
-    friend class NamedLogger;  // Allow NamedLogger to lock/unlock
+    void log(bse::string_view message, CGA::color col) const;
 
     SpinLock sem;              // Semaphore would be a cyclic include
     static void lock() { Logger::instance().sem.acquire(); }
@@ -47,10 +47,10 @@ public:
 
     void flush() override;
 
-    void trace(const bse::string_view message) const;
-    void debug(const bse::string_view message) const;
-    void error(const bse::string_view message) const;
-    void info(const bse::string_view message) const;
+    void trace(bse::string_view message) const;
+    void debug(bse::string_view message) const;
+    void error(bse::string_view message) const;
+    void info(bse::string_view message) const;
 
     // TODO: Make lvl change accessible over menu
     static void set_level(LogLevel lvl) {
@@ -60,13 +60,13 @@ public:
     static bse::string_view level_to_string(LogLevel lvl) {
         switch (lvl) {
         case Logger::TRACE:
-            return "TRACE";
+            return "TRC";
         case Logger::DEBUG:
-            return "DEBUG";
+            return "DBG";
         case Logger::ERROR:
-            return "ERROR";
+            return "ERR";
         case Logger::INFO:
-            return "INFO";
+            return "INF";
         }
     }
 
@@ -99,22 +99,22 @@ public:
 
     Logger& trace() {
         Logger::lock();
-        return Logger::instance() << TRACE << name << "::";
+        return Logger::instance() << TRACE << name << " :: ";
     }
 
     Logger& debug() {
         Logger::lock();
-        return Logger::instance() << DEBUG << name << "::";
+        return Logger::instance() << DEBUG << name << " :: ";
     }
 
     Logger& error() {
         Logger::lock();
-        return Logger::instance() << ERROR << name << "::";
+        return Logger::instance() << ERROR << name << " :: ";
     }
 
     Logger& info() {
         Logger::lock();
-        return Logger::instance() << INFO << name << "::";
+        return Logger::instance() << INFO << name << " :: ";
     }
 };
 

@@ -27,10 +27,10 @@ const IOport PCSPK::ppi(0x61);
  * Rückgabewerte:   f:   Frequenz des Tons                                   *
  *                  len: Laenge des Tons in ms                               *
  *****************************************************************************/
-void PCSPK::play(float f, int len) {
-    int freq = static_cast<int>(f);
-    int cntStart = 1193180 / freq;
-    int status;
+void PCSPK::play(float f, uint32_t len) {
+    auto freq = static_cast<uint32_t>(f);
+    uint32_t cntStart = 1193180 / freq;
+    uint8_t status;
 
     // Zaehler laden
     control.outb(0xB6);          // Zaehler-2 konfigurieren
@@ -38,7 +38,7 @@ void PCSPK::play(float f, int len) {
     data2.outb(cntStart / 256);  // Zaehler-2 laden (Hibyte)
 
     // Lautsprecher einschalten
-    status = static_cast<int>(ppi.inb());  // Status-Register des PPI auslesen
+    status = static_cast<uint8_t>(ppi.inb());  // Status-Register des PPI auslesen
     ppi.outb(status | 3);     // Lautpsrecher Einschalten
 
     // Pause
@@ -54,9 +54,9 @@ void PCSPK::play(float f, int len) {
  * Beschreibung:    Lautsprecher ausschalten.                                *
  *****************************************************************************/
 void PCSPK::off() {
-    int status;
+    uint8_t status;
 
-    status = static_cast<int>(ppi.inb());       // Status-Register des PPI auslesen
+    status = static_cast<uint8_t>(ppi.inb());       // Status-Register des PPI auslesen
     ppi.outb((status >> 2) << 2);  // Lautsprecher ausschalten
 }
 
@@ -67,7 +67,7 @@ void PCSPK::off() {
  *                                                                           *
  * Parameter:       time (delay in ms)                                       *
  *****************************************************************************/
-inline void PCSPK::delay(int time) {
+inline void PCSPK::delay(uint32_t time) {
 
     /* Hier muess Code eingefuegt werden */
 
