@@ -37,7 +37,7 @@ constexpr const bool INSANE_TRACE = false;
  * Parameter:                                                                *
  *      next        Thread der die CPU::erhalten soll.                        *
  *****************************************************************************/
-void Scheduler::start(Container::vector<Memory::unique_ptr<Thread>>::iterator next) {
+void Scheduler::start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
         active = ready_queue.begin();
@@ -49,7 +49,7 @@ void Scheduler::start(Container::vector<Memory::unique_ptr<Thread>>::iterator ne
     (*active)->start();  // First dereference the Iterator, then the unique_ptr to get Thread
 }
 
-void Scheduler::switch_to(Thread *prev_raw, Container::vector<Memory::unique_ptr<Thread>>::iterator next) {
+void Scheduler::switch_to(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
         active = ready_queue.begin();
@@ -139,7 +139,7 @@ void Scheduler::kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr) {
     uint32_t prev_tid = (*active)->tid;
 
     // Block queue, can always kill
-    for (Container::vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
+    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
 
@@ -165,7 +165,7 @@ void Scheduler::kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr) {
         return;
     }
 
-    for (Container::vector<Memory::unique_ptr<Thread>>::iterator it = ready_queue.begin(); it != ready_queue.end(); ++it) {
+    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = ready_queue.begin(); it != ready_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
 
@@ -322,7 +322,7 @@ void Scheduler::deblock(uint32_t tid) {
 
     Device::CPU::disable_int();
 
-    for (Container::vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
+    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread with correct tid
 

@@ -1,6 +1,6 @@
 #include "VectorDemo.h"
 
-void print(OutStream& os, const Container::vector<int>& list) {
+void print(OutStream& os, const Container::Vector<int>& list) {
     os << "Printing List: ";
     for (const int i : list) {
         os << i << " ";
@@ -9,7 +9,7 @@ void print(OutStream& os, const Container::vector<int>& list) {
 }
 
 void VectorDemo::run() {
-    Container::vector<int> list;
+    Container::Vector<int> list;
 
     Kernel::kout.lock();
     Kernel::kout.clear();

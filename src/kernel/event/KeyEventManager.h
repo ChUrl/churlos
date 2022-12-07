@@ -14,7 +14,7 @@ class KeyEventManager {
 private:
     NamedLogger log;
 
-    Container::vector<KeyEventListener *> listeners;
+    Container::Vector<KeyEventListener *> listeners;
 
 public:
     KeyEventManager(const KeyEventManager &copy) = delete;

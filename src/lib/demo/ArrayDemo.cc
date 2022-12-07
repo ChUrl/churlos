@@ -1,8 +1,8 @@
 #include "ArrayDemo.h"
 
 void ArrayDemo::run() {
-    Container::array<int, 10> arr1 {};
-    Container::array<int, 10> arr2 {};
+    Container::Array<int, 10> arr1 {};
+    Container::Array<int, 10> arr2 {};
 
     Kernel::kout.lock();
     Kernel::kout.clear();

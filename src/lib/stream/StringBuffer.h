@@ -28,7 +28,7 @@ class StringBuffer {
     // werden und kann dann auch public werden.
 
 protected:
-    Container::array<char, 80> buffer;
+    Container::Array<char, 80> buffer;
     int pos;
 
     // StringBuffer: Im Konstruktor wird der Puffer als leer markiert.

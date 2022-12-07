@@ -23,20 +23,20 @@ class Scheduler {
 private:
     NamedLogger log;
 
-    Container::vector<Memory::unique_ptr<Thread>> ready_queue;
-    Container::vector<Memory::unique_ptr<Thread>> block_queue;
+    Container::Vector<Memory::unique_ptr<Thread>> ready_queue;
+    Container::Vector<Memory::unique_ptr<Thread>> block_queue;
 
     // NOTE: It makes sense to keep track of the active thread through this as it makes handling the
     //       unique_ptr easier and reduces the copying in the vector when cycling through the threads
-    Container::vector<Memory::unique_ptr<Thread>>::iterator active = nullptr;
+    Container::Vector<Memory::unique_ptr<Thread>>::iterator active = nullptr;
 
     // Scheduler wird evt. von einer Unterbrechung vom Zeitgeber gerufen,
     // bevor er initialisiert wurde
     uint32_t idle_tid = 0U;
 
     // Roughly the old dispatcher functionality
-    void start(Container::vector<Memory::unique_ptr<Thread>>::iterator next);                        // Start next without prev
-    void switch_to(Thread *prev_raw, Container::vector<Memory::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
+    void start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next);                        // Start next without prev
+    void switch_to(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
 
     // Kann nur vom Idle-Thread aufgerufen werden (erster Thread der vom Scheduler gestartet wird)
     void enable_preemption(uint32_t tid) { idle_tid = tid; }

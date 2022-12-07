@@ -78,15 +78,15 @@ public:
 
     struct cga_line_t {
         // Can use these arrays since they don't have memory overhead (except for the methods that are elsewhere)
-        Container::array<cga_char_t, COLUMNS> cga_line;
+        Container::Array<cga_char_t, COLUMNS> cga_line;
     };
 
     struct cga_page_t {
-        Container::array<cga_line_t, ROWS> cga_page;
+        Container::Array<cga_line_t, ROWS> cga_page;
     };
 
-    static const Container::span<cga_char_t, ROWS * COLUMNS> SCREEN;
-    static const Container::span<cga_line_t, ROWS> SCREEN_ROWS;
+    static const Container::Span<cga_char_t, ROWS * COLUMNS> SCREEN;
+    static const Container::Span<cga_line_t, ROWS> SCREEN_ROWS;
     static cga_page_t *const SCREEN_PAGE;  // No span because can't address anything in [0, 1]
 
     // Setzen des Cursors in Spalte x und Zeile y.

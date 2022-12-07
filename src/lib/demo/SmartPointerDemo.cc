@@ -84,7 +84,7 @@ void SmartPointerDemo::run() {
 
     {
         log.info() << "Stackallocating Array<bse::unique_ptr<int>, 10>..." << endl;
-        Container::array<Memory::unique_ptr<int>, 10> arr;
+        Container::Array<Memory::unique_ptr<int>, 10> arr;
         log.info() << "Populating slot 0..." << endl;
         arr[0] = Memory::make_unique<int>(1);
         log.info() << "Moving slot 0 to slot 1..." << endl;
@@ -95,7 +95,7 @@ void SmartPointerDemo::run() {
 
     {
         log.info() << "Heapallocating Array<bse::unique_ptr<int>, 10>..." << endl;
-        Container::array<Memory::unique_ptr<int>, 10>* arr = new Container::array<Memory::unique_ptr<int>, 10>;
+        Container::Array<Memory::unique_ptr<int>, 10>* arr = new Container::Array<Memory::unique_ptr<int>, 10>;
         log.info() << "Populating slot 0..." << endl;
         (*arr)[0] = Memory::make_unique<int>(1);
         log.info() << "Moving slot 0 to slot 1..." << endl;
@@ -108,7 +108,7 @@ void SmartPointerDemo::run() {
 
     {
         log.info() << "ArrayList<bse::unique_ptr<int>>..." << endl;
-        Container::vector<Memory::unique_ptr<int>> vec;
+        Container::Vector<Memory::unique_ptr<int>> vec;
         log.info() << "2x insertion" << endl;
         vec.push_back(Memory::make_unique<int>(1));
         vec.push_back(Memory::make_unique<int>(2));

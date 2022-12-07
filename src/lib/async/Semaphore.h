@@ -20,7 +20,7 @@ namespace Async {
 class Semaphore {
 private:
     // Queue fuer wartende Threads.
-    Container::vector<unsigned int> wait_queue;
+    Container::Vector<unsigned int> wait_queue;
     SpinLock lock;
 
     int counter;

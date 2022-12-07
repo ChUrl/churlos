@@ -42,7 +42,7 @@ void StringDemo::run() {
     log.info() << "Reassign str2" << endl;
     str2 = "Hello";
 
-    Container::array<char, 5> arr{};
+    Container::Array<char, 5> arr{};
     arr[0] = 'H';
     arr[1] = 'e';
     arr[2] = 'l';

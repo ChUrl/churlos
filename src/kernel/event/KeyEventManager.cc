@@ -10,7 +10,7 @@ void KeyEventManager::subscribe(KeyEventListener &sub) {
 
 void KeyEventManager::unsubscribe(KeyEventListener &unsub) {
     log.debug() << "Unsubscribe, Thread ID: " << dec << unsub.tid << endl;
-    for (Container::vector<KeyEventListener *>::iterator it = listeners.begin(); it != listeners.end(); ++it) {
+    for (Container::Vector<KeyEventListener *>::iterator it = listeners.begin(); it != listeners.end(); ++it) {
         if ((*it)->tid == unsub.tid) {
             listeners.erase(it);
             return;

@@ -26,7 +26,7 @@ private:
     enum {
         size = 256
     };
-    Container::array<ISR *, size> map;
+    Container::Array<ISR *, size> map;
 
 public:
     IntDispatcher(const IntDispatcher &copy) = delete;  // Verhindere Kopieren

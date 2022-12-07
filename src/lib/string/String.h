@@ -28,7 +28,7 @@ namespace String {
 
         // Convert char array to string
         template<std::size_t N>
-        explicit string(const Container::array<char, N>& arr) : len(N), buf(new char[len + 1]) {
+        explicit string(const Container::Array<char, N>& arr) : len(N), buf(new char[len + 1]) {
             for (std::size_t i = 0; i < N; ++i) {
                 buf[i] = arr[i];
             }

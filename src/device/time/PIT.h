@@ -28,7 +28,7 @@ private:
     }; /* ns */
     uint32_t timer_interval;
 
-    const Container::array<char, 4> indicator{'|', '/', '-', '\\'};
+    const Container::Array<char, 4> indicator{'|', '/', '-', '\\'};
     uint8_t indicator_pos = 0;
     uint64_t last_indicator_refresh = 0;
 
