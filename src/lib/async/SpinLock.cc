@@ -23,8 +23,8 @@
  *                          *ptr := _new                                     *
  *                      return prev                                          *
  *****************************************************************************/
-static inline unsigned long CAS(const unsigned long* ptr) {
-    unsigned long prev;
+static inline uint32_t CAS(const uint32_t* ptr) {
+    uint32_t prev;
 
     /*
         AT&T/UNIX assembly syntax

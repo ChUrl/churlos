@@ -131,10 +131,10 @@ void Scheduler::exit() {
  * Parameter:                                                                *
  *      that        Zu terminierender Thread                                 *
  *****************************************************************************/
-void Scheduler::kill(unsigned int tid, bse::unique_ptr<Thread>* ptr) {
+void Scheduler::kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
     CPU::disable_int();
 
-    unsigned int prev_tid = (*active)->tid;
+    uint32_t prev_tid = (*active)->tid;
 
     // Block queue, can always kill
     for (bse::vector<bse::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
@@ -143,7 +143,7 @@ void Scheduler::kill(unsigned int tid, bse::unique_ptr<Thread>* ptr) {
 
             if (ptr != nullptr) {
                 // Move old thread out of queue to return it
-                unsigned int pos = bse::distance(block_queue.begin(), it);
+                uint32_t pos = bse::distance(block_queue.begin(), it);
                 *ptr = std::move(block_queue[pos]);  // Return the killed thread
             }
 
@@ -169,7 +169,7 @@ void Scheduler::kill(unsigned int tid, bse::unique_ptr<Thread>* ptr) {
 
             if (ptr != nullptr) {
                 // Move old thread out of queue to return it
-                unsigned int pos = bse::distance(ready_queue.begin(), it);
+                uint32_t pos = bse::distance(ready_queue.begin(), it);
                 *ptr = std::move(ready_queue[pos]);  // Return the killed thread
             }
 
@@ -197,7 +197,7 @@ void Scheduler::kill(unsigned int tid, bse::unique_ptr<Thread>* ptr) {
 
 // TODO: Can't retrive the thread right now because it's not clear when it's finished,
 //       maybe introduce a exited_queue and get it from there
-void Scheduler::nice_kill(unsigned int tid, bse::unique_ptr<Thread>* ptr) {
+void Scheduler::nice_kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
     CPU::disable_int();
 
     for (bse::unique_ptr<Thread>& thread : block_queue) {
@@ -314,7 +314,7 @@ void Scheduler::block() {
  *                                                                           *
  * Parameter:       that:  Thread der deblockiert werden soll.               *
  *****************************************************************************/
-void Scheduler::deblock(unsigned int tid) {
+void Scheduler::deblock(uint32_t tid) {
 
     /* hier muss Code eingefuegt werden */
 

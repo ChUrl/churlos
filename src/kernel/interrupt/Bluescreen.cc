@@ -14,7 +14,7 @@
 // in startup.asm
 extern "C" {
     // CR2 auslesen
-    unsigned int get_page_fault_address();
+    uint32_t get_page_fault_address();
 
     // 1st level interrupt handler in startup.asm sichert Zeiger auf Stackframe
     // unmittelbar nach dem Interrupt und nachdem alle Register mit PUSHAD
@@ -45,7 +45,7 @@ extern "C" {
     // |     EDI     |
     // |-------------| <-- int_esp
 
-    void get_int_esp(unsigned int** esp);
+    void get_int_esp(uint32_t** esp);
 }
 
 void break_on_bluescreen() {
@@ -95,7 +95,7 @@ void bs_lf() {
  * Beschreibung:    Ein Zeichen ausgeben.                                    *
  *****************************************************************************/
 void bs_print_char(char c) {
-    unsigned char* ptr = reinterpret_cast<unsigned char*>(0xb8000);
+    auto* ptr = reinterpret_cast<uint8_t*>(0xb8000);
 
     *(ptr + bs_ypos * 80 * 2 + bs_xpos * 2) = c;
     bs_xpos++;
@@ -121,9 +121,9 @@ void bs_print_string(char* str) {
  *****************************************************************************/
 void bs_printHexDigit(int c) {
     if (c < 10) {
-        bs_print_char('0' + static_cast<unsigned char>(c));
+        bs_print_char('0' + static_cast<uint8_t>(c));
     } else {
-        bs_print_char('A' + static_cast<unsigned char>(c - 10));
+        bs_print_char('A' + static_cast<uint8_t>(c - 10));
     }
 }
 
@@ -132,7 +132,7 @@ void bs_printHexDigit(int c) {
  *---------------------------------------------------------------------------*
  * Beschreibung:   Integer ausgeben.                                         *
  *****************************************************************************/
-void bs_print_uintHex(unsigned int c) {
+void bs_print_uintHex(uint32_t c) {
     for (int i = 28; i >= 0; i = i - 4) {
         bs_printHexDigit((c >> i) & 0xF);
     }
@@ -144,7 +144,7 @@ void bs_print_uintHex(unsigned int c) {
  * Beschreibung:    String mit Integer ausgeben. Wird verwendet um ein       *
  *                  Register auszugeben.                                     *
  *****************************************************************************/
-void bs_printReg(char* str, unsigned int value) {
+void bs_printReg(char* str, uint32_t value) {
     bs_print_string(str);
     bs_print_uintHex(value);
     bs_print_string("   \0");
@@ -251,7 +251,7 @@ void bs_dump(uint8_t exceptionNr) {
 
     // Exception mit Error-Code?
     if (has_error_code == 1) {
-        unsigned int error_nr = *(sptr + 8);
+        uint32_t error_nr = *(sptr + 8);
 
         if (exceptionNr == 14) {
             if (error_nr == 3) {
@@ -278,7 +278,7 @@ void bs_dump(uint8_t exceptionNr) {
     bs_lf();
     int x = 0;
     auto* ebp = reinterpret_cast<uint32_t*>(*(sptr + 2));
-    unsigned int raddr;
+    uint32_t raddr;
 
     // solange eip > 1 MB && ebp < 128 MB, max. Aufruftiefe 10
     while (*ebp > 0x100000 && *ebp < 0x8000000 && x < 10) {

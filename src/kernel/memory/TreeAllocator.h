@@ -39,8 +39,8 @@ private:
     NamedLogger log;
 
     // Returns the size of the usable memory of a block
-    unsigned int get_size(list_block_t* block) const;
-    unsigned int get_size(tree_block_t* block) const { return get_size(reinterpret_cast<list_block_t*>(block)); }
+    uint32_t get_size(list_block_t* block) const;
+    uint32_t get_size(tree_block_t* block) const { return get_size(reinterpret_cast<list_block_t*>(block)); }
 
     void dump_free_memory(tree_block_t* node);
 
@@ -56,8 +56,8 @@ private:
     void rbt_remove(tree_block_t* z);
     void rbt_fix_remove(tree_block_t* x);
 
-    tree_block_t* rbt_search_bestfit(tree_block_t* node, unsigned int req_size);
-    tree_block_t* rbt_search_bestfit(unsigned int req_size) { return rbt_search_bestfit(free_start, req_size); }
+    tree_block_t* rbt_search_bestfit(tree_block_t* node, uint32_t req_size);
+    tree_block_t* rbt_search_bestfit(uint32_t req_size) { return rbt_search_bestfit(free_start, req_size); }
 
     void dll_insert(list_block_t* previous, list_block_t* node);
     void dll_insert(tree_block_t* previous, tree_block_t* node) {
@@ -74,7 +74,7 @@ public:
 
     void init() override;
     void dump_free_memory() override;
-    void* alloc(unsigned int req_size) override;
+    void* alloc(uint32_t req_size) override;
     void free(void* ptr) override;
 };
 

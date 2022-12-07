@@ -2,7 +2,7 @@
 
 constexpr const uint32_t FONTDATAMAX_SUN_12x22 = 11264;
 
-constexpr const unsigned char fontdata_sun_12x22[FONTDATAMAX_SUN_12x22] = {
+constexpr const uint8_t fontdata_sun_12x22[FONTDATAMAX_SUN_12x22] = {
 
     /* 0 0x00 '^@' */
     0x00, 0x00, /* 000000000000 */

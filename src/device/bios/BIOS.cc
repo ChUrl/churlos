@@ -33,7 +33,7 @@ BIOScall_params* BC_params = reinterpret_cast<BIOScall_params*>(BIOS16_PARAM_BAS
  *                  im 4. GDT-Eintrag (siehe startup.asm).                   *
  *****************************************************************************/
 BIOS::BIOS() {
-    unsigned char* codeAddr = reinterpret_cast<unsigned char*>(BIOS16_CODE_MEMORY_START);
+    auto* codeAddr = reinterpret_cast<uint8_t*>(BIOS16_CODE_MEMORY_START);
 
     // mov eax, 25000 (Adresse wohin aktuelles esp gesichert wird)
     *codeAddr = 0x66;
@@ -312,11 +312,11 @@ BIOS::BIOS() {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Fuehrt einen BIOS-Aufruf per Software-Interrupt durch.   *
  *****************************************************************************/
-void BIOS::Int(int inter) {
-    unsigned char* ptr = reinterpret_cast<unsigned char*>(BIOS16_CODE_MEMORY_START);
+void BIOS::Int(uint8_t inter) {
+    auto* ptr = reinterpret_cast<uint8_t*>(BIOS16_CODE_MEMORY_START);
 
     // Interrupt-Nummer in 16-Bit Code-Segment schreiben (unschoen, aber ...)
-    *(ptr + 48) = static_cast<unsigned char>(inter);
+    *(ptr + 48) = static_cast<uint8_t>(inter);
 
     CPU::disable_int();  // Interrupts abschalten
     bios_call();

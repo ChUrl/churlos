@@ -10,23 +10,25 @@
 #ifndef BIOS_include__
 #define BIOS_include__
 
+#include <cstdint>
+
 // Speicherseite fuer Rueckgabewerte von BIOS-Aufrufen
 constexpr const unsigned int RETURN_MEM = 0x9F000;
 
 // Struktur fuer Parameteruebergabe fuer einen BIOS-Aufruf
 struct BIOScall_params {
-    unsigned short DS;
-    unsigned short ES;
-    unsigned short FS;
-    unsigned short Flags;
-    unsigned int DI;
-    unsigned int SI;
-    unsigned int BP;
-    unsigned int SP;
-    unsigned int BX;
-    unsigned int DX;
-    unsigned int CX;
-    unsigned int AX;
+    uint16_t DS;
+    uint16_t ES;
+    uint16_t FS;
+    uint16_t Flags;
+    uint32_t DI;
+    uint32_t SI;
+    uint32_t BP;
+    uint32_t SP;
+    uint32_t BX;
+    uint32_t DX;
+    uint32_t CX;
+    uint32_t AX;
 } __attribute__((packed));
 // kein Auffuellen von bytes auf Wortgrenzen
 
@@ -47,7 +49,7 @@ public:
     }
 
     // BIOS-Aufruf, per Software-Interrupt
-    static void Int(int inter);
+    static void Int(uint8_t inter);
 };
 
 #endif

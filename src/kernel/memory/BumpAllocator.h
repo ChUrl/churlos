@@ -17,8 +17,8 @@
 
 class BumpAllocator : Allocator {
 private:
-    unsigned char* next;
-    unsigned int allocations;
+    uint8_t* next;
+    uint32_t allocations;
 
     NamedLogger log;
 
@@ -31,7 +31,7 @@ public:
 
     void init() override;
     void dump_free_memory() override;
-    void* alloc(unsigned int req_size) override;
+    void* alloc(uint32_t req_size) override;
     void free(void* ptr) override;
 };
 

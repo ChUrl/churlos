@@ -32,9 +32,9 @@ void CGA::setpos(uint8_t x, uint8_t y) {
     /* Hier muess Code eingefuegt werden */
 
     // NOTE: The cursor addresses positions on screen, not bytes
-    unsigned short pos = x + y * COLUMNS;
-    unsigned char cursor_low = pos & 0xFF;
-    unsigned char cursor_high = (pos >> 8) & 0xFF;
+    uint16_t pos = x + y * COLUMNS;
+    uint8_t cursor_low = pos & 0xFF;
+    uint8_t cursor_high = (pos >> 8) & 0xFF;
 
     index_port.outb(0xF);  // Cursor(low)
     data_port.outb(cursor_low);
@@ -55,13 +55,12 @@ void CGA::getpos(uint8_t& x, uint8_t& y) {
     /* Hier muess Code eingefuegt werden */
 
     index_port.outb(0xF);  // Cursor(low)
-    unsigned char cursor_low = data_port.inb();
+    uint8_t cursor_low = data_port.inb();
 
     index_port.outb(0xE);  // Cursor(high)
-    unsigned char cursor_high = data_port.inb();
+    uint8_t cursor_high = data_port.inb();
 
-    unsigned short cursor =
-      (cursor_low & 0xFF) | ((cursor_high << 8) & 0xFF00);
+    uint16_t cursor = (cursor_low & 0xFF) | ((cursor_high << 8) & 0xFF00);
 
     x = cursor % COLUMNS;
     y = (cursor / COLUMNS);
@@ -103,7 +102,7 @@ void CGA::show(uint8_t x, uint8_t y, char character, uint8_t attrib) {
  *      n           Laenger der Zeichenkette                                 *
  *      attrib      Attributbyte fuer alle Zeichen der Zeichenkette          *
  *****************************************************************************/
-void CGA::print(const bse::string_view string, unsigned char attrib) const {
+void CGA::print(const bse::string_view string, uint8_t attrib) const {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -192,7 +191,7 @@ void CGA::clear() {
  *      fg          Foreground color                                         *
  *      blink       ywa/no                                                   *
  *****************************************************************************/
-unsigned char CGA::attribute(CGA::color bg, CGA::color fg, bool blink) {
+uint8_t CGA::attribute(CGA::color bg, CGA::color fg, bool blink) {
 
     /* Hier muess Code eingefuegt werden */
 

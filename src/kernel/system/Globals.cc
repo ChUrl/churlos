@@ -30,4 +30,4 @@ KeyEventManager kevman;
 SerialOut serial;
 
 unsigned int total_mem;  // RAM total
-unsigned long systime = 0;
+uint64_t systime = 0;

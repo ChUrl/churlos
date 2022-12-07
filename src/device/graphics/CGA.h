@@ -67,7 +67,7 @@ public:
     // Easier access to memory (also easier copying of lines/pages etc)
     struct cga_char_t {
         char cga_char;
-        unsigned char cga_attribute;
+        uint8_t cga_attribute;
     };
 
     struct cga_line_t {
@@ -103,7 +103,7 @@ public:
     virtual void clear();
 
     // Hilfsfunktion zur Erzeugung eines Attribut-Bytes
-    static unsigned char attribute(CGA::color bg, CGA::color fg, bool blink);
+    static uint8_t attribute(CGA::color bg, CGA::color fg, bool blink);
 };
 
 #endif

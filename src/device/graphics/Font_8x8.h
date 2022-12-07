@@ -8,7 +8,7 @@
 
 constexpr const uint32_t FONTDATAMAX_8x8 = 2048;
 
-constexpr const unsigned char fontdata_8x8[FONTDATAMAX_8x8] = {
+constexpr const uint8_t fontdata_8x8[FONTDATAMAX_8x8] = {
 
     /* 0 0x00 '^@' */
     0x00, /* 00000000 */

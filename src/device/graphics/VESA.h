@@ -35,7 +35,7 @@ public:
     // Can't make singleton because atexit
 
     // Bestimmten Grafikmodus einschalten
-    bool initGraphicMode(unsigned short mode);
+    bool initGraphicMode(uint16_t mode);
     static void initTextMode();
 };
 

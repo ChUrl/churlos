@@ -39,7 +39,7 @@ inline void LFBgraphics::drawMonoBitmap(uint32_t x, uint32_t y,
                                         uint32_t width, uint32_t height,
                                         const uint8_t* bitmap, uint32_t color) const {
     // Breite in Bytes
-    unsigned short width_byte = width / 8 + ((width % 8 != 0) ? 1 : 0);
+    uint16_t width_byte = width / 8 + ((width % 8 != 0) ? 1 : 0);
 
     for (uint32_t yoff = 0; yoff < height; ++yoff) {
         uint32_t xpos = x;
@@ -70,7 +70,7 @@ inline void LFBgraphics::drawMonoBitmap(uint32_t x, uint32_t y,
  *****************************************************************************/
 void LFBgraphics::drawString(const Font& fnt, uint32_t x, uint32_t y,
                              uint32_t col, const char* str, uint32_t len) const {
-    for (unsigned int i = 0; i < len; ++i) {
+    for (uint32_t i = 0; i < len; ++i) {
         drawMonoBitmap(x, y, fnt.get_char_width(), fnt.get_char_height(), fnt.getChar(*(str + i)), col);
         x += fnt.get_char_width();
     }
@@ -84,15 +84,15 @@ void LFBgraphics::drawString(const Font& fnt, uint32_t x, uint32_t y,
  *                                                                           *
  * Beschreibung:    Zeichnen eines Pixels.                                   *
  *****************************************************************************/
-void LFBgraphics::drawPixel(unsigned int x, unsigned int y, unsigned int col) const {
-    unsigned char* ptr = reinterpret_cast<unsigned char*>(lfb);
+void LFBgraphics::drawPixel(uint32_t x, uint32_t y, uint32_t col) const {
+    auto* ptr = reinterpret_cast<uint8_t*>(lfb);
 
     if (hfb == 0 || lfb == 0) {
         return;
     }
 
     if (mode == BUFFER_INVISIBLE) {
-        ptr = reinterpret_cast<unsigned char*>(hfb);
+        ptr = reinterpret_cast<uint8_t*>(hfb);
     }
 
     // Pixel ausserhalb des sichtbaren Bereichs?
@@ -132,7 +132,7 @@ void LFBgraphics::drawPixel(unsigned int x, unsigned int y, unsigned int col) co
     }
 }
 
-void LFBgraphics::drawStraightLine(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, unsigned int col) const {
+void LFBgraphics::drawStraightLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2, unsigned int col) const {
     // Don't set mode inside the drawing function to use them in animations
 
     if (x1 == x2 && y2 > y1) {
@@ -164,8 +164,8 @@ void LFBgraphics::drawCircle(unsigned int x, unsigned int y, unsigned int rad, u
     // TODO
 }
 
-void LFBgraphics::drawSprite(unsigned int width, unsigned int height, unsigned int bytes_pp, const unsigned char* pixel_data) const {
-    const unsigned char* ptr;
+void LFBgraphics::drawSprite(unsigned int width, unsigned int height, unsigned int bytes_pp, const uint8_t* pixel_data) const {
+    const uint8_t* ptr;
     for (unsigned int x = 0; x < width; ++x) {
         for (unsigned int y = 0; y < height; ++y) {
             ptr = pixel_data + (x + y * width) * bytes_pp;

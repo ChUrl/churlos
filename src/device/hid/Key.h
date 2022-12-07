@@ -13,9 +13,9 @@
 class Key {
     // Kopieren erlaubt!
 
-    unsigned char asc;   // ASCII code
-    unsigned char scan;  // scan code
-    unsigned char modi;  // modifier
+    uint8_t asc;   // ASCII code
+    uint8_t scan;  // scan code
+    uint8_t modi;  // modifier
 
     // Bit-Masken fuer die Modifier-Tasten
     struct mbit {
@@ -44,10 +44,10 @@ public:
     void invalidate() { scan = 0; }
 
     // ASCII, SCANCODE: Setzen und Abfragen von Ascii und Scancode
-    void ascii(unsigned char a) { asc = a; }
-    void scancode(unsigned char s) { scan = s; }
-    unsigned char ascii() const { return asc; }
-    unsigned char scancode() const { return scan; }
+    void ascii(uint8_t a) { asc = a; }
+    void scancode(uint8_t s) { scan = s; }
+    uint8_t ascii() const { return asc; }
+    uint8_t scancode() const { return scan; }
 
     //
     // Funktionen zum Setzen und Loeschen von SHIFT, ALT, CTRL usw.

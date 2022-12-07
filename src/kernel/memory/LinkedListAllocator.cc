@@ -53,11 +53,11 @@ void LinkedListAllocator::dump_free_memory() {
     if (free_start == nullptr) {
         kout << " - No free Blocks" << endl;
     } else {
-        kout << " - Freelist start: " << hex << reinterpret_cast<unsigned int>(free_start) << endl;
+        kout << " - Freelist start: " << hex << reinterpret_cast<uint32_t>(free_start) << endl;
 
         free_block_t* current = free_start;
         do {
-            kout << " - Free Block (Start: " << hex << reinterpret_cast<unsigned int>(current)
+            kout << " - Free Block (Start: " << hex << reinterpret_cast<uint32_t>(current)
                  << " Size: " << hex << current->size << ")" << endl;
             current = current->next;
         } while (current != free_start);
@@ -69,7 +69,7 @@ void LinkedListAllocator::dump_free_memory() {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Einen neuen Speicherblock allozieren.                    * 
  *****************************************************************************/
-void* LinkedListAllocator::alloc(unsigned int req_size) {
+void* LinkedListAllocator::alloc(uint32_t req_size) {
     lock.acquire();
 
     /* Hier muess Code eingefuegt werden */
@@ -84,8 +84,8 @@ void* LinkedListAllocator::alloc(unsigned int req_size) {
     }
 
     // Round to word borders
-    unsigned int req_size_diff = (BASIC_ALIGN - req_size % BASIC_ALIGN) % BASIC_ALIGN;
-    unsigned int rreq_size = req_size + req_size_diff;
+    uint32_t req_size_diff = (BASIC_ALIGN - req_size % BASIC_ALIGN) % BASIC_ALIGN;
+    uint32_t rreq_size = req_size + req_size_diff;
     if (req_size_diff > 0) {
         log.trace() << " - Rounded to word border (+" << dec << req_size_diff << " bytes)" << endl;
     }
@@ -105,7 +105,7 @@ void* LinkedListAllocator::alloc(unsigned int req_size) {
                 // In case of only one freeblock:
                 // [current | new_next]
                 free_block_t* new_next =
-                  reinterpret_cast<free_block_t*>(reinterpret_cast<unsigned int>(current) + sizeof(free_block_t) + rreq_size);
+                  reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(current) + sizeof(free_block_t) + rreq_size);
 
                 // If only one block exists, current->next is current
                 // This shouldn't be a problem since the block gets removed from the list later
@@ -149,14 +149,14 @@ void* LinkedListAllocator::alloc(unsigned int req_size) {
             // free_block_t* c = current;
             // log.debug() << "Checking list Integrity" << endl;
             // while (c->allocated) {
-            //     log.debug() << hex << (unsigned int)c << endl;
+            //     log.debug() << hex << (uint32_t)c << endl;
             //     c = c->next;
             // }
             // log.debug() << "Finished check" << endl;
 
-            log.debug() << "returning memory address " << hex << reinterpret_cast<unsigned int>(current) + sizeof(free_block_t) << endl;
+            log.debug() << "returning memory address " << hex << reinterpret_cast<uint32_t>(current) + sizeof(free_block_t) << endl;
             lock.release();
-            return reinterpret_cast<void*>(reinterpret_cast<unsigned int>(current) + sizeof(free_block_t));  // Speicheranfang, nicht header
+            return reinterpret_cast<void*>(reinterpret_cast<uint32_t>(current) + sizeof(free_block_t));  // Speicheranfang, nicht header
         }
 
         current = current->next;
@@ -178,9 +178,9 @@ void LinkedListAllocator::free(void* ptr) {
     /* Hier muess Code eingefuegt werden */
 
     // Account for header
-    free_block_t* block_start = reinterpret_cast<free_block_t*>(reinterpret_cast<unsigned int>(ptr) - sizeof(free_block_t));
+    free_block_t* block_start = reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(ptr) - sizeof(free_block_t));
 
-    log.debug() << "Freeing " << hex << reinterpret_cast<unsigned int>(ptr) << ", Size: " << block_start->size << endl;
+    log.debug() << "Freeing " << hex << reinterpret_cast<uint32_t>(ptr) << ", Size: " << block_start->size << endl;
 
     if (!block_start->allocated) {
         log.error() << "Block already free" << endl;
@@ -201,7 +201,7 @@ void LinkedListAllocator::free(void* ptr) {
     }
 
     free_block_t* next_block =
-      reinterpret_cast<free_block_t*>(reinterpret_cast<unsigned int>(block_start) + sizeof(free_block_t) + block_start->size);
+      reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(block_start) + sizeof(free_block_t) + block_start->size);
 
     // Find the next free block, multiple next blocks can be allocated so walk through them
     free_block_t* next_free = block_start->next;
@@ -211,7 +211,7 @@ void LinkedListAllocator::free(void* ptr) {
 
     free_block_t* previous_free = LinkedListAllocator::find_previous_block(next_free);
     free_block_t* previous_free_next =
-      reinterpret_cast<free_block_t*>(reinterpret_cast<unsigned int>(previous_free) + sizeof(free_block_t) + previous_free->size);
+      reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(previous_free) + sizeof(free_block_t) + previous_free->size);
 
     // We have: [previous_free | previous_free_next | <> | block_start | next_block | <> | next_free]
     // The <> spaces don't have to exist and next_block could be the same as next_free
@@ -225,7 +225,7 @@ void LinkedListAllocator::free(void* ptr) {
     //    Should result in: [block_start]
 
     // log.trace() << "Before doing any merging:" << endl;
-    // log.trace() << "previous_free:" << hex << (unsigned int)previous_free << "Size:" << previous_free->size << "Next:" << (unsigned int)previous_free->next << endl;
+    // log.trace() << "previous_free:" << hex << (uint32_t)previous_free << "Size:" << previous_free->size << "Next:" << (unsigned int)previous_free->next << endl;
     // log.trace() << "previous_free_next:" << hex << (unsigned int)previous_free_next << "Size:" << previous_free_next->size << "Next:" << (unsigned int)previous_free_next->next << endl;
     // log.trace() << "block_start:" << hex << (unsigned int)block_start << "Size:" << block_start->size << "Next:" << (unsigned int)block_start->next << endl;
     // log.trace() << "next_block:" << hex << (unsigned int)next_block << "Size:" << next_block->size << "Next:" << (unsigned int)next_block->next << endl;

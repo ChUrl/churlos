@@ -17,7 +17,7 @@ const IOport Keyboard::data_port(0x60);
 
 /* Tabellen fuer ASCII-Codes (Klassenvariablen) intiialisieren */
 
-constexpr const unsigned char Keyboard::normal_tab[] = {
+constexpr const uint8_t Keyboard::normal_tab[] = {
   0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 225, 39, '\b',
   0, 'q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 129, '+', '\n',
   0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 148, 132, '^', 0, '#',
@@ -25,7 +25,7 @@ constexpr const unsigned char Keyboard::normal_tab[] = {
   '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-',
   0, 0, 0, '+', 0, 0, 0, 0, 0, 0, 0, '<', 0, 0};
 
-constexpr const unsigned char Keyboard::shift_tab[] = {
+constexpr const uint8_t Keyboard::shift_tab[] = {
   0, 0, '!', '"', 21, '$', '%', '&', '/', '(', ')', '=', '?', 96, 0,
   0, 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 154, '*', 0,
   0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 153, 142, 248, 0, 39,
@@ -33,7 +33,7 @@ constexpr const unsigned char Keyboard::shift_tab[] = {
   0, 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '>', 0, 0};
 
-constexpr const unsigned char Keyboard::alt_tab[] = {
+constexpr const uint8_t Keyboard::alt_tab[] = {
   0, 0, 0, 253, 0, 0, 0, 0, '{', '[', ']', '}', '\\', 0, 0,
   0, '@', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '~', 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -41,10 +41,10 @@ constexpr const unsigned char Keyboard::alt_tab[] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '|', 0, 0};
 
-constexpr const unsigned char Keyboard::asc_num_tab[] = {
+constexpr const uint8_t Keyboard::asc_num_tab[] = {
   '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ','};
 
-constexpr const unsigned char Keyboard::scan_num_tab[] = {
+constexpr const uint8_t Keyboard::scan_num_tab[] = {
   8, 9, 10, 53, 5, 6, 7, 27, 2, 3, 4, 11, 51};
 
 /*****************************************************************************
@@ -288,7 +288,7 @@ void Keyboard::reboot() {
 
     // Dem BIOS mitteilen, dass das Reset beabsichtigt war
     // und kein Speichertest durchgefuehrt werden muss.
-    *reinterpret_cast<unsigned short*>(0x472) = 0x1234;
+    *reinterpret_cast<uint16_t*>(0x472) = 0x1234;
 
     // Der Tastaturcontroller soll das Reset ausloesen.
     do {

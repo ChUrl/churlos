@@ -56,7 +56,7 @@ void VBEdemo::drawBitmap() {
     unsigned int sprite_width = hhu.width;
     unsigned int sprite_height = hhu.height;
     unsigned int sprite_bpp = hhu.bytes_per_pixel;
-    const unsigned char* sprite_pixel = reinterpret_cast<const unsigned char*>(hhu.pixel_data);
+    const uint8_t* sprite_pixel = reinterpret_cast<const uint8_t*>(hhu.pixel_data);
 
     /* Hier muss Code eingefuegt werden */
 

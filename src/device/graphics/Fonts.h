@@ -18,7 +18,7 @@ class Font {
 public:
     virtual ~Font() = default;
 
-    virtual const unsigned char* getChar(uint32_t c) const = 0;
+    virtual const uint8_t* getChar(uint32_t c) const = 0;
     virtual uint32_t get_char_width() const = 0;
     virtual uint32_t get_char_height() const = 0;
 };
@@ -44,12 +44,12 @@ public:
     }
 };
 
-extern const unsigned char fontdata_8x16[];
-extern const unsigned char fontdata_8x8[];
-extern const unsigned char acorndata_8x8[];
-extern const unsigned char fontdata_pearl_8x8[];
-extern const unsigned char fontdata_sun_12x22[];
-extern const unsigned char fontdata_sun_8x16[];
+extern const uint8_t fontdata_8x16[];
+extern const uint8_t fontdata_8x8[];
+extern const uint8_t acorndata_8x8[];
+extern const uint8_t fontdata_pearl_8x8[];
+extern const uint8_t fontdata_sun_12x22[];
+extern const uint8_t fontdata_sun_8x16[];
 
 using Font_8x16 = FontInstance<8, 16, fontdata_8x16>;
 using Font_8x8 = FontInstance<8, 8, fontdata_8x8>;

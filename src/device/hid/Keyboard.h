@@ -18,8 +18,8 @@
 
 class Keyboard : public ISR {
 private:
-    unsigned char code;    // Byte von Tastatur
-    unsigned char prefix;  // Prefix von Tastatur
+    uint8_t code;    // Byte von Tastatur
+    uint8_t prefix;  // Prefix von Tastatur
     Key gather;            // letzter dekodierter Key
     char leds;             // Zustand LEDs
 
@@ -57,11 +57,11 @@ private:
            prefix2 = 0xe1 };
 
     // Klassenvariablen
-    static const unsigned char normal_tab[];
-    static const unsigned char shift_tab[];
-    static const unsigned char alt_tab[];
-    static const unsigned char asc_num_tab[];
-    static const unsigned char scan_num_tab[];
+    static const uint8_t normal_tab[];
+    static const uint8_t shift_tab[];
+    static const uint8_t alt_tab[];
+    static const uint8_t asc_num_tab[];
+    static const uint8_t scan_num_tab[];
 
     // Interpretiert die Make und Break-Codes der Tastatur.
     bool key_decoded();
@@ -80,7 +80,7 @@ public:
 
 //    ~Keyboard() override = default;
 
-    // unsigned int lastkey;  // speichert den ASCII-Code der zuletzt gedrückten Taste
+    // uint32_t lastkey;  // speichert den ASCII-Code der zuletzt gedrückten Taste
 
     // Fuehrt einen Neustart des Rechners durch.
     static void reboot();

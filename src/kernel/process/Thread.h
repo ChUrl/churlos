@@ -42,7 +42,7 @@ protected:
 
     bool running = true;     // For soft exit, if thread uses infinite loop inside run(), use this as condition
     char* name;              // For logging
-    unsigned int tid;        // Thread-ID (wird im Konstruktor vergeben)
+    uint32_t tid;        // Thread-ID (wird im Konstruktor vergeben)
     friend class Scheduler;  // Scheduler can access tid
 
 public:

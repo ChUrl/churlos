@@ -1,10 +1,12 @@
+#include <cstdint>
+
 /* GIMP RGB C-Source image dump (hhulogo.c) */
 
 static constexpr struct {
-    unsigned int width;
-    unsigned int height;
-    unsigned int bytes_per_pixel; /* 2:RGB16, 3:RGB, 4:RGBA */
-    unsigned char pixel_data[200 * 52 * 3 + 1];
+    uint32_t width;
+    uint32_t height;
+    uint8_t bytes_per_pixel; /* 2:RGB16, 3:RGB, 4:RGBA */
+    uint8_t pixel_data[200 * 52 * 3 + 1];
 } hhu = {
   200,
   52,

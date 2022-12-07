@@ -262,7 +262,7 @@ void TreeAllocator::rbt_fix_remove(tree_block_t* x) {
 // END copy from algorithmtutorprograms
 
 // This is recursive and depends on luck
-tree_block_t* TreeAllocator::rbt_search_bestfit(tree_block_t* node, unsigned int req_size) {
+tree_block_t* TreeAllocator::rbt_search_bestfit(tree_block_t* node, uint32_t req_size) {
     if (node == nullptr) {
         return nullptr;
     }

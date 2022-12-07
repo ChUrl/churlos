@@ -71,7 +71,7 @@ inline void PCSPK::delay(uint32_t time) {
 
     /* Hier muess Code eingefuegt werden */
 
-    unsigned long start_time = systime;
+    uint64_t start_time = systime;
 
     // systime is incremented in 10ms steps
     while ((systime - start_time) * 10 < time) {}

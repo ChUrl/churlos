@@ -25,7 +25,7 @@ typedef struct free_block {
                      //       We only need a way to determine when the free block is reached.
                      //       This also means that the whole list has to be traversed
                      //       to merge blocks. Would be faster with doubly linked list.
-    unsigned int size;
+    uint32_t size;
     struct free_block* next;
 } free_block_t;
 
@@ -51,7 +51,7 @@ public:
 
     void init() override;
     void dump_free_memory() override;
-    void* alloc(unsigned int req_size) override;
+    void* alloc(uint32_t req_size) override;
     void free(void* ptr) override;
 };
 

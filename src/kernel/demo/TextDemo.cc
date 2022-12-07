@@ -29,7 +29,7 @@ void TextDemo::run() {
          << "|  dec  |  hex  |  bin  |" << endl
          << "+-------+-------+-------+" << endl;
 
-    for (unsigned short num = 0; num < 17; ++num) {
+    for (uint16_t num = 0; num < 17; ++num) {
         kout << fillw(0) << "| " << fillw(6) << dec << num
              << fillw(0) << "| " << fillw(6) << hex << num
              << fillw(0) << "| " << fillw(6) << bin << num

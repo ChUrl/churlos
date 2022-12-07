@@ -33,7 +33,7 @@ extern "C" {
     void Thread_switch(uint32_t* esp_prev, uint32_t esp_next);
 }
 
-unsigned int ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preemption with 0
+uint32_t ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preemption with 0
 
 /*****************************************************************************
  * Prozedur:        Coroutine_init                                           *
@@ -44,8 +44,8 @@ unsigned int ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preempt
 void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void* object) {
 
     // NOTE: c++17 doesn't allow register
-    // register unsigned int** sp = (unsigned int**)stack;
-    // unsigned int** sp = (unsigned int**)stack;
+    // register uint32_t** sp = (uint32_t**)stack;
+    // uint32_t** sp = (uint32_t**)stack;
 
     // Stack initialisieren. Es soll so aussehen, als waere soeben die
     // eine Funktion aufgerufen worden, die als Parameter den Zeiger
@@ -56,20 +56,20 @@ void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void*
     // wird, sie darf also nicht terminieren, sonst kracht's.
 
     // I thought this syntax was a bit clearer than decrementing a pointer
-    stack[-1] = reinterpret_cast<unsigned int>(object);
+    stack[-1] = reinterpret_cast<uint32_t>(object);
     stack[-2] = 0x131155U;
-    stack[-3] = reinterpret_cast<unsigned int>(kickoff);
+    stack[-3] = reinterpret_cast<uint32_t>(kickoff);
     stack[-4] = 0;                         // EAX
     stack[-5] = 0;                         // ECX
     stack[-6] = 0;                         // EDX
     stack[-7] = 0;                         // EBX
-    stack[-8] = reinterpret_cast<unsigned int>(&stack[-3]);  // ESP
+    stack[-8] = reinterpret_cast<uint32_t>(&stack[-3]);  // ESP
     stack[-9] = 0;                         // EBP
     stack[-10] = 0;                        // ESI
     stack[-11] = 0;                        // EDI
     stack[-12] = 0x200U;
 
-    *esp = reinterpret_cast<unsigned int>(&stack[-12]);
+    *esp = reinterpret_cast<uint32_t>(&stack[-12]);
 }
 
 /*****************************************************************************
@@ -97,7 +97,7 @@ void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void*
  * Parameter:                                                                *
  *      stack       Stack für die neue Koroutine                             *
  *****************************************************************************/
-Thread::Thread(char* name) : stack(new unsigned int[1024]), esp(0), log(name), name(name), tid(ThreadCnt++) {
+Thread::Thread(char* name) : stack(new uint32_t[1024]), esp(0), log(name), name(name), tid(ThreadCnt++) {
     if (stack == nullptr) {
         log.error() << "Couldn't initialize Thread (couldn't alloc stack)" << endl;
         return;

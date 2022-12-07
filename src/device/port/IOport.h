@@ -16,46 +16,48 @@
 #ifndef IOport_include__
 #define IOport_include__
 
+#include <cstdint>
+
 class IOport {
 private:
     // 16-Bit Adresse im I/O-Adressraum
-    const unsigned short address;
+    const uint16_t address;
 
 public:
     // Konstruktor, speichert Port-Adresse
-    explicit IOport(unsigned short a) : address(a) {};
+    explicit IOport(uint16_t a) : address(a) {};
 
     // Byteweise Ausgabe eines Wertes ueber einen I/O-Port.
-    void outb(unsigned char val) const {
+    void outb(uint8_t val) const {
         asm volatile("outb %0, %1"
                      :
                      : "a"(val), "Nd"(address));
     }
 
     // NOTE: I added this for easier init of COM1 port
-    void outb(unsigned char offset, unsigned char val) const {
+    void outb(uint8_t offset, uint8_t val) const {
         asm volatile("outb %0, %1"
                      :
-                     : "a"(val), "Nd"(static_cast<unsigned short>(address + offset)));
+                     : "a"(val), "Nd"(static_cast<uint16_t>(address + offset)));
     }
 
     // Wortweise Ausgabe eines Wertes ueber einen I/O-Port.
-    void outw(unsigned short val) const {
+    void outw(uint16_t val) const {
         asm volatile("outw %0, %1"
                      :
                      : "a"(val), "Nd"(address));
     }
 
     // 32-Bit Ausgabe eines Wertes ueber einen I/O-Port.
-    void outdw(unsigned int val) const {
+    void outdw(uint32_t val) const {
         asm volatile("outl %0, %1"
                      :
                      : "a"(val), "Nd"(address));
     }
 
     // Byteweises Einlesen eines Wertes ueber einen I/O-Port.
-    unsigned char inb() const {
-        unsigned char ret;
+    uint8_t inb() const {
+        uint8_t ret;
 
         asm volatile("inb %1, %0"
                      : "=a"(ret)
@@ -64,18 +66,18 @@ public:
     }
 
     // NOTE: I added this for COM1 port
-    unsigned char inb(unsigned char offset) const {
-        unsigned char ret;
+    uint8_t inb(uint8_t offset) const {
+        uint8_t ret;
 
         asm volatile("inb %1, %0"
                      : "=a"(ret)
-                     : "Nd"(static_cast<unsigned short>(address + offset)));
+                     : "Nd"(static_cast<uint16_t>(address + offset)));
         return ret;
     }
 
     // Wortweises Einlesen eines Wertes ueber einen I/O-Port.
-    unsigned short inw() const {
-        unsigned short ret;
+    uint16_t inw() const {
+        uint16_t ret;
 
         asm volatile("inw %1, %0"
                      : "=a"(ret)

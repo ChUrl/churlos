@@ -19,26 +19,26 @@ void TreeAllocator::dump_free_memory() {
     list_block_t* current = reinterpret_cast<list_block_t*>(heap_start);
     do {
         if (!current->allocated) {
-            kout << " - Free Block at " << reinterpret_cast<unsigned int>(current) << ", Size: "
-                 << reinterpret_cast<unsigned int>(current->next) - reinterpret_cast<unsigned int>(current)
+            kout << " - Free Block at " << reinterpret_cast<uint32_t>(current) << ", Size: "
+                 << reinterpret_cast<uint32_t>(current->next) - reinterpret_cast<uint32_t>(current)
                  << endl;
         }
         current = current->next;
-    } while (reinterpret_cast<unsigned int>(current) != heap_start);
+    } while (reinterpret_cast<uint32_t>(current) != heap_start);
 }
 
-void* TreeAllocator::alloc(unsigned int req_size) {
+void* TreeAllocator::alloc(uint32_t req_size) {
     log.debug() << "Requested " << dec << req_size << " Bytes" << endl;
 
     // Round to word borders + tree_block size
-    unsigned int rreq_size = req_size;
+    uint32_t rreq_size = req_size;
     if (rreq_size < sizeof(tree_block_t) - sizeof(list_block_t)) {
         // the list_block_t is part of every block, but when freeing
         // memory we need enough space to store the rbt metadata
         rreq_size = sizeof(tree_block_t) - sizeof(list_block_t);
         log.trace() << " - Increased block size for rbt metadata" << endl;
     }
-    unsigned int req_size_diff = (BASIC_ALIGN - rreq_size % BASIC_ALIGN) % BASIC_ALIGN;
+    uint32_t req_size_diff = (BASIC_ALIGN - rreq_size % BASIC_ALIGN) % BASIC_ALIGN;
     rreq_size = rreq_size + req_size_diff;
     if (req_size_diff > 0) {
         log.trace() << " - Rounded to word border (+" << dec << req_size_diff << " bytes)" << endl;
@@ -56,8 +56,8 @@ void* TreeAllocator::alloc(unsigned int req_size) {
         return nullptr;
     }
     best_fit->allocated = true;
-    unsigned int size = get_size(best_fit);
-    log.trace() << " - Found best-fit: " << hex << reinterpret_cast<unsigned int>(best_fit) << endl;
+    uint32_t size = get_size(best_fit);
+    log.trace() << " - Found best-fit: " << hex << reinterpret_cast<uint32_t>(best_fit) << endl;
 
     // HACK: I didn't want to handle situations with only one block (where the tree root would
     //       get removed), so I make sure there are always at least 2 blocks by inserting a dummy
@@ -90,13 +90,13 @@ void* TreeAllocator::alloc(unsigned int req_size) {
     rbt_remove(&dummy);
 
     log.trace() << " - Returned address " << hex
-                << reinterpret_cast<unsigned int>(reinterpret_cast<char*>(best_fit) + sizeof(list_block_t))
+                << reinterpret_cast<uint32_t>(reinterpret_cast<char*>(best_fit) + sizeof(list_block_t))
                 << endl;
     return reinterpret_cast<void*>(reinterpret_cast<char*>(best_fit) + sizeof(list_block_t));
 }
 
 void TreeAllocator::free(void* ptr) {
-    log.info() << "Freeing " << hex << reinterpret_cast<unsigned int>(ptr) << endl;
+    log.info() << "Freeing " << hex << reinterpret_cast<uint32_t>(ptr) << endl;
 
     list_block_t* block = reinterpret_cast<list_block_t*>(reinterpret_cast<char*>(ptr) - sizeof(list_block_t));
     if (!block->allocated) {
@@ -147,13 +147,13 @@ void TreeAllocator::free(void* ptr) {
     rbt_remove(&dummy);
 }
 
-unsigned int TreeAllocator::get_size(list_block_t* block) const {
+uint32_t TreeAllocator::get_size(list_block_t* block) const {
     if (block->next == block) {
         // Only one block exists
-        return heap_end - (reinterpret_cast<unsigned int>(block) + sizeof(list_block_t));
+        return heap_end - (reinterpret_cast<uint32_t>(block) + sizeof(list_block_t));
     }
 
-    if (reinterpret_cast<unsigned int>(block->next) > reinterpret_cast<unsigned int>(block)) {
+    if (reinterpret_cast<uint32_t>(block->next) > reinterpret_cast<unsigned int>(block)) {
         // Next block is placed later in memory
         return reinterpret_cast<unsigned int>(block->next) - (reinterpret_cast<unsigned int>(block) + sizeof(list_block_t));
     }
