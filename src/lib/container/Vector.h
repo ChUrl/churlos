@@ -12,7 +12,7 @@
 namespace Container {
 
     template<typename T>
-    class vector {
+    class Vector {
     public:
         using iterator = ContinuousIterator<T>;
 
@@ -25,7 +25,7 @@ namespace Container {
         std::size_t buf_pos = 0;
         std::size_t buf_cap = 0;
 
-        void init(std::size_t cap = vector::default_cap) {
+        void init(std::size_t cap = Vector::default_cap) {
             if (buf != nullptr) {
                 return;
             }
@@ -33,7 +33,7 @@ namespace Container {
             buf_cap = cap;
         }
 
-        std::size_t get_rem_cap() const {
+        [[nodiscard]] std::size_t get_rem_cap() const {
             return buf_cap - size();
         }
 
@@ -100,7 +100,7 @@ namespace Container {
         }
 
     public:
-        explicit vector(bool lazy = false) {
+        explicit Vector(bool lazy = false) {
             if (!lazy) {  // I added this as a work around, the scheduler can't initialize the queues right
                           // away because when the scheduler is started the allocator is not ready.
                 init();
@@ -108,7 +108,7 @@ namespace Container {
         };
 
         // Initialize like this: bse::vector<int> vec {1, 2, 3, 4, 5};
-        vector(std::initializer_list<T> list) : buf_cap(list.size()), buf(new T[buf_cap]) {
+        Vector(std::initializer_list<T> list) : buf_cap(list.size()), buf(new T[buf_cap]) {
             typename std::initializer_list<T>::iterator it = list.begin();
             for (unsigned int i = 0; i < buf_pos; ++i) {
                 buf[i] = *it;
@@ -117,15 +117,15 @@ namespace Container {
         }
 
 
-        vector(const vector& copy) : buf_pos(copy.buf_pos), buf_cap(copy.buf_cap), buf(new T[buf_cap]) {
+        Vector(const Vector& copy) : buf_pos(copy.buf_pos), buf_cap(copy.buf_cap), buf(new T[buf_cap]) {
             for (unsigned int i = 0; i < buf_pos; ++i) {
                 buf[i] = copy[i];  // Does a copy since copy is marked const reference
             }
         }
 
-        vector& operator=(const vector& copy) {
+        Vector& operator=(const Vector& copy) {
             if (this != &copy) {
-                ~vector();
+                ~Vector();
 
                 buf_cap = copy.buf_cap;
                 buf_pos = copy.buf_pos;
@@ -137,13 +137,13 @@ namespace Container {
             return *this;
         }
 
-        vector(vector&& move) noexcept : buf(move.buf), buf_pos(move.buf_pos), buf_cap(move.buf_cap) {
+        Vector(Vector&& move) noexcept : buf(move.buf), buf_pos(move.buf_pos), buf_cap(move.buf_cap) {
             move.buf_cap = 0;
             move.buf_pos = 0;
             move.buf = nullptr;
         }
 
-        vector& operator=(vector&& move) noexcept {
+        Vector& operator=(Vector&& move) noexcept {
             if (this != &move) {
                 buf_cap = move.buf_cap;
                 buf_pos = move.buf_pos;
@@ -156,7 +156,7 @@ namespace Container {
             return *this;
         }
 
-        ~vector() {
+        ~Vector() {
             if (buf == nullptr) {
                 return;
             }
@@ -244,11 +244,11 @@ namespace Container {
         }
 
         // Misc
-        bool empty() const {
+        [[nodiscard]] bool empty() const {
             return !size();
         }
 
-        std::size_t size() const {
+        [[nodiscard]] std::size_t size() const {
             return buf_pos;
         }
 
@@ -259,7 +259,7 @@ namespace Container {
             }
         }
 
-        void reserve(std::size_t cap = vector::default_cap) {
+        void reserve(std::size_t cap = Vector::default_cap) {
             // The first reserve could allocate double if cap != default_cap
             if (buf == nullptr) {
                 // Directly init with correct size
@@ -275,7 +275,7 @@ namespace Container {
             switch_buf(cap);
         }
 
-        bool initialized() const {
+        [[nodiscard]] bool initialized() const {
             return buf != nullptr;
         }
     };
@@ -284,9 +284,9 @@ namespace Container {
     // NOTE: pred is no real predicate as one would need closures for this, but we don't have <functional> available
     //       This means the result has to be passed separately and the function differs from the c++20 std::erase_if
     template<typename T, typename arg>
-    std::size_t erase_if(vector<T>& vec, arg (*pred)(const T&), arg result) {
+    std::size_t erase_if(Vector<T>& vec, arg (*pred)(const T&), arg result) {
         std::size_t erased_els = 0;
-        for (typename vector<T>::Iterator it = vec.begin(); it != vec.end(); /*Do nothing*/) {
+        for (typename Vector<T>::Iterator it = vec.begin(); it != vec.end(); /*Do nothing*/) {
             if (pred(*it) == result) {
                 it = vec.erase(it);  // erase returns the iterator to the next element
                 ++erased_els;

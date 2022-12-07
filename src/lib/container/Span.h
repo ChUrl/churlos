@@ -8,7 +8,7 @@ namespace Container {
 
     // 0 is unchecked
     template<typename T, std::size_t N = 0>
-    class span {
+    class Span {
     public:
         using iterator = ContinuousIterator<T>;
 
@@ -17,11 +17,11 @@ namespace Container {
         const std::size_t sz = N;
 
     public:
-        span() = default;
+        Span() = default;
 
-        span(T* first) : ptr(first) {}
+        Span(T* first) : ptr(first) {}
 
-        span(T* first, T* last) : ptr(first), sz(last - first) {}
+        Span(T* first, T* last) : ptr(first), sz(last - first) {}
 
         iterator begin() { return iterator(ptr); }
         iterator begin() const { return iterator(ptr); }
@@ -51,8 +51,8 @@ namespace Container {
         }
 
         // First is inclusive, last exclusive [first, last)
-        span& subspan(std::size_t first, std::size_t last = N) {
-            return span(ptr + first, ptr + last - 1);
+        Span& subspan(std::size_t first, std::size_t last = N) {
+            return Span(ptr + first, ptr + last - 1);
         }
 
         std::size_t size() const {
