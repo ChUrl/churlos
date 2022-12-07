@@ -25,6 +25,8 @@
 #include "IdleThread.h"
 #include <utility>
 
+namespace Kernel {
+
 constexpr const bool INSANE_TRACE = false;
 
 /*****************************************************************************
@@ -35,7 +37,7 @@ constexpr const bool INSANE_TRACE = false;
  * Parameter:                                                                *
  *      next        Thread der die CPU::erhalten soll.                        *
  *****************************************************************************/
-void Scheduler::start(bse::vector<bse::unique_ptr<Thread>>::iterator next) {
+void Scheduler::start(Container::vector<Memory::unique_ptr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
         active = ready_queue.begin();
@@ -47,7 +49,7 @@ void Scheduler::start(bse::vector<bse::unique_ptr<Thread>>::iterator next) {
     (*active)->start();  // First dereference the Iterator, then the unique_ptr to get Thread
 }
 
-void Scheduler::switch_to(Thread* prev_raw, bse::vector<bse::unique_ptr<Thread>>::iterator next) {
+void Scheduler::switch_to(Thread *prev_raw, Container::vector<Memory::unique_ptr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
         active = ready_queue.begin();
@@ -73,7 +75,7 @@ void Scheduler::schedule() {
     // Otherwise preemption will be blocked and nothing will happen if the first threads
     // run() function is blocking
 
-    ready_queue.push_back(bse::make_unique<IdleThread>());
+    ready_queue.push_back(Memory::make_unique<IdleThread>());
     log.info() << "Starting scheduling: starting thread with id: " << dec << (*(ready_queue.end() - 1))->tid << endl;
     start(ready_queue.end() - 1);
 }
@@ -83,11 +85,11 @@ void Scheduler::schedule() {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Thread in readyQueue eintragen.                          *
  *****************************************************************************/
-void Scheduler::ready(bse::unique_ptr<Thread>&& thread) {
-    CPU::disable_int();
+void Scheduler::ready(Memory::unique_ptr<Thread> &&thread) {
+    Device::CPU::disable_int();
     log.debug() << "Adding to ready_queue, ID: " << dec << thread->tid << endl;
     ready_queue.push_back(std::move(thread));
-    CPU::enable_int();
+    Device::CPU::enable_int();
 }
 
 /*****************************************************************************
@@ -103,18 +105,18 @@ void Scheduler::exit() {
     /* hier muss Code eingefuegt werden */
 
     // Thread-Wechsel durch PIT verhindern
-    CPU::disable_int();
+    Device::CPU::disable_int();
 
     if (ready_queue.size() == 1) {
         log.error() << "Can't exit last thread, active ID: " << dec << (*active)->tid << endl;
-        CPU::enable_int();
+        Device::CPU::enable_int();
         return;
     }
 
     log.debug() << "Exiting thread, ID: " << dec << (*active)->tid << endl;
     start(ready_queue.erase(active));  // erase returns the next iterator after the erased element
-                                       // cannot use switch_to here as the previous thread no longer
-                                       // exists (was deleted by erase)
+    // cannot use switch_to here as the previous thread no longer
+    // exists (was deleted by erase)
 
     // Interrupts werden in Thread_switch in Thread.asm wieder zugelassen
     // dispatch kehr nicht zurueck
@@ -131,19 +133,19 @@ void Scheduler::exit() {
  * Parameter:                                                                *
  *      that        Zu terminierender Thread                                 *
  *****************************************************************************/
-void Scheduler::kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
-    CPU::disable_int();
+void Scheduler::kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr) {
+    Device::CPU::disable_int();
 
     uint32_t prev_tid = (*active)->tid;
 
     // Block queue, can always kill
-    for (bse::vector<bse::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
+    for (Container::vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
 
             if (ptr != nullptr) {
                 // Move old thread out of queue to return it
-                uint32_t pos = bse::distance(block_queue.begin(), it);
+                uint32_t pos = distance(block_queue.begin(), it);
                 *ptr = std::move(block_queue[pos]);  // Return the killed thread
             }
 
@@ -151,7 +153,7 @@ void Scheduler::kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
             block_queue.erase(it);
             log.info() << "Killed thread from block_queue with id: " << tid << endl;
 
-            CPU::enable_int();
+            Device::CPU::enable_int();
             return;
         }
     }
@@ -159,17 +161,17 @@ void Scheduler::kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
     // Ready queue, can't kill last one
     if (ready_queue.size() == 1) {
         log.error() << "Kill: Can't kill last thread in ready_queue with id: " << tid << endl;
-        CPU::enable_int();
+        Device::CPU::enable_int();
         return;
     }
 
-    for (bse::vector<bse::unique_ptr<Thread>>::iterator it = ready_queue.begin(); it != ready_queue.end(); ++it) {
+    for (Container::vector<Memory::unique_ptr<Thread>>::iterator it = ready_queue.begin(); it != ready_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
 
             if (ptr != nullptr) {
                 // Move old thread out of queue to return it
-                uint32_t pos = bse::distance(ready_queue.begin(), it);
+                uint32_t pos = distance(ready_queue.begin(), it);
                 *ptr = std::move(ready_queue[pos]);  // Return the killed thread
             }
 
@@ -185,43 +187,43 @@ void Scheduler::kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
             ready_queue.erase(it);
             log.info() << "Killed thread from ready_queue with id: " << tid << endl;
 
-            CPU::enable_int();
+            Device::CPU::enable_int();
             return;
         }
     }
 
     log.error() << "Kill: Couldn't find thread with id: " << tid << " in ready- or block-queue" << endl;
     log.error() << "Mabe it already exited itself?" << endl;
-    CPU::enable_int();
+    Device::CPU::enable_int();
 }
 
 // TODO: Can't retrive the thread right now because it's not clear when it's finished,
 //       maybe introduce a exited_queue and get it from there
-void Scheduler::nice_kill(uint32_t tid, bse::unique_ptr<Thread>* ptr) {
-    CPU::disable_int();
+void Scheduler::nice_kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr) {
+    Device::CPU::disable_int();
 
-    for (bse::unique_ptr<Thread>& thread : block_queue) {
+    for (Memory::unique_ptr<Thread> &thread: block_queue) {
         if (thread->tid == tid) {
             thread->suicide();
             log.info() << "Nice killed thread in block_queue with id: " << tid << endl;
             deblock(tid);
-            CPU::enable_int();
+            Device::CPU::enable_int();
             return;
         }
     }
 
-    for (bse::unique_ptr<Thread>& thread : ready_queue) {
+    for (Memory::unique_ptr<Thread> &thread: ready_queue) {
         if (thread->tid == tid) {
             thread->suicide();
             log.info() << "Nice killed thread in ready_queue with id: " << tid << endl;
-            CPU::enable_int();
+            Device::CPU::enable_int();
             return;
         }
     }
 
     log.error() << "Can't nice kill thread (not found) with id: " << tid << endl;
     log.error() << "Mabe it already exited itself?" << endl;
-    CPU::enable_int();
+    Device::CPU::enable_int();
 }
 
 /*****************************************************************************
@@ -240,13 +242,13 @@ void Scheduler::yield() {
     /* hier muss Code eingefuegt werden */
 
     // Thread-Wechsel durch PIT verhindern
-    CPU::disable_int();
+    Device::CPU::disable_int();
 
     if (ready_queue.size() == 1) {
         if constexpr (INSANE_TRACE) {
             log.trace() << "Skipping yield as no thread is waiting, active ID: " << dec << (*active)->tid << endl;
         }
-        CPU::enable_int();
+        Device::CPU::enable_int();
         return;
     }
     if constexpr (INSANE_TRACE) {
@@ -266,7 +268,7 @@ void Scheduler::preempt() {
 
     /* Hier muss Code eingefuegt werden */
 
-    CPU::disable_int();
+    Device::CPU::disable_int();
     yield();
 }
 
@@ -284,16 +286,16 @@ void Scheduler::block() {
 
     /* hier muss Code eingefuegt werden */
 
-    CPU::disable_int();
+    Device::CPU::disable_int();
 
     if (ready_queue.size() == 1) {
         log.error() << "Can't block last thread, active ID: " << dec << (*active)->tid << endl;
-        CPU::enable_int();
+        Device::CPU::enable_int();
         return;
     }
 
-    Thread* prev_raw = (*active).get();
-    std::size_t pos = bse::distance(ready_queue.begin(), active);
+    Thread *prev_raw = (*active).get();
+    std::size_t pos = distance(ready_queue.begin(), active);
     block_queue.push_back(std::move(ready_queue[pos]));
 
     if constexpr (INSANE_TRACE) {
@@ -318,24 +320,26 @@ void Scheduler::deblock(uint32_t tid) {
 
     /* hier muss Code eingefuegt werden */
 
-    CPU::disable_int();
+    Device::CPU::disable_int();
 
-    for (bse::vector<bse::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
+    for (Container::vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread with correct tid
 
-            std::size_t pos = bse::distance(block_queue.begin(), it);
+            std::size_t pos = distance(block_queue.begin(), it);
             ready_queue.insert(active + 1, std::move(block_queue[pos]));  // We insert the thread after the active
-                                                                          // thread to prefer deblocked threads
+            // thread to prefer deblocked threads
             block_queue.erase(it);
             if constexpr (INSANE_TRACE) {
                 log.trace() << "Deblocked thread with id: " << tid << endl;
             }
-            CPU::enable_int();
+            Device::CPU::enable_int();
             return;
         }
     }
 
     log.error() << "Couldn't deblock thread with id: " << tid << endl;
-    CPU::enable_int();
+    Device::CPU::enable_int();
+}
+
 }

@@ -11,6 +11,8 @@
 #include "VESA.h"
 #include "device/bios/BIOS.h"
 
+namespace Device {
+
 // Informationen ueber einen VESA-Grafikmodus
 // (siehe http://wiki.osdev.org/VESA_Video_Modes)
 struct VbeModeInfoBlock {
@@ -76,7 +78,7 @@ bool VESA::initGraphicMode(uint16_t mode) {
     BC_params->DI = RETURN_MEM & 0xF;
     BIOS::Int(0x10);
 
-    VbeInfoBlock* ib = reinterpret_cast<VbeInfoBlock*>(RETURN_MEM);
+    auto *ib = reinterpret_cast<VbeInfoBlock *>(RETURN_MEM);
 
     // Signaturen pruefen
     if (BC_params->AX != 0x004F) {
@@ -89,14 +91,14 @@ bool VESA::initGraphicMode(uint16_t mode) {
         return false;
     }
 
-    //    kout << "TotalVideoMemory:  " << ((ib->TotalMemory*65536) / (1024*1024)) << " MB" << endl;
+    //    Kernel::kout << "TotalVideoMemory:  " << ((ib->TotalMemory*65536) / (1024*1024)) << " MB" << endl;
 
     // Gewuenschten Grafikmodus aus Antwort suchen
-    auto* modePtr = reinterpret_cast<uint16_t*>((ib->VideoModePtr[1] << 4) + ib->VideoModePtr[0]);
+    auto *modePtr = reinterpret_cast<uint16_t *>((ib->VideoModePtr[1] << 4) + ib->VideoModePtr[0]);
     for (uint32_t i = 0; modePtr[i] != 0xFFFF; ++i) {
         // Gewuenschter Grafikmodus gefunden?
         if (modePtr[i] == mode) {
-            VbeModeInfoBlock* minf = reinterpret_cast<VbeModeInfoBlock*>(RETURN_MEM);
+            auto *minf = reinterpret_cast<VbeModeInfoBlock *>(RETURN_MEM);
 
             // Weitere Infos ueber diesen Grafikmodus abfragen
             BC_params->AX = 0x4F01;
@@ -128,4 +130,6 @@ bool VESA::initGraphicMode(uint16_t mode) {
     }
     log.error() << "Grafikmodus nicht gefunden." << endl;
     return false;
+}
+
 }

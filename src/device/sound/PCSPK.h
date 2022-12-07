@@ -18,6 +18,8 @@
 #include <cstdint>
 #include "device/port/IOport.h"
 
+namespace Device {
+
 // Note, Frequenz
 constexpr const float C0 = 130.81;
 constexpr const float C0X = 138.59;
@@ -69,7 +71,7 @@ private:
     static inline void delay(uint32_t time);
 
 public:
-    PCSPK(const PCSPK& copy) = delete;  // Verhindere Kopieren
+    PCSPK(const PCSPK &copy) = delete;  // Verhindere Kopieren
 
     // Konstruktor. Initialisieren der Ports.
     PCSPK() = default;
@@ -78,6 +80,7 @@ public:
 
     // Demo Sounds
     static void tetris();
+
     static void aerodynamic();
 
     // Ton abspielen
@@ -86,5 +89,7 @@ public:
     // Lautsprecher ausschalten
     static void off();
 };
+
+}
 
 #endif

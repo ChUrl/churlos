@@ -15,12 +15,14 @@
 #include "lib/mem/Memory.h"
 #include <cstdint>
 
+namespace Device {
+
 const IOport CGA::index_port(0x3d4);
 const IOport CGA::data_port(0x3d5);
 
-const bse::span<CGA::cga_char_t, CGA::ROWS * CGA::COLUMNS> CGA::SCREEN{reinterpret_cast<CGA::cga_char_t*>(0xb8000U)};
-const bse::span<CGA::cga_line_t, CGA::ROWS> CGA::SCREEN_ROWS{reinterpret_cast<CGA::cga_line_t*>(0xb8000U)};
-CGA::cga_page_t* const CGA::SCREEN_PAGE {reinterpret_cast<CGA::cga_page_t*>(0xb8000U)};
+const Container::span<CGA::cga_char_t, CGA::ROWS * CGA::COLUMNS> CGA::SCREEN{reinterpret_cast<CGA::cga_char_t *>(0xb8000U)};
+const Container::span<CGA::cga_line_t, CGA::ROWS> CGA::SCREEN_ROWS{reinterpret_cast<CGA::cga_line_t *>(0xb8000U)};
+CGA::cga_page_t *const CGA::SCREEN_PAGE{reinterpret_cast<CGA::cga_page_t *>(0xb8000U)};
 
 /*****************************************************************************
  * Methode:         CGA::setpos                                              *
@@ -50,7 +52,7 @@ void CGA::setpos(uint8_t x, uint8_t y) {
  *                                                                           *
  * Rückgabewerte:   x und y                                                  *
  *****************************************************************************/
-void CGA::getpos(uint8_t& x, uint8_t& y) {
+void CGA::getpos(uint8_t &x, uint8_t &y) {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -86,7 +88,7 @@ void CGA::show(uint8_t x, uint8_t y, char character, uint8_t attrib) {
         return;
     }
 
-    cga_char_t* pos = SCREEN[x + y * COLUMNS];
+    cga_char_t *pos = SCREEN[x + y * COLUMNS];
     pos->cga_char = character;
     pos->cga_attribute = attrib;
 }
@@ -102,7 +104,7 @@ void CGA::show(uint8_t x, uint8_t y, char character, uint8_t attrib) {
  *      n           Laenger der Zeichenkette                                 *
  *      attrib      Attributbyte fuer alle Zeichen der Zeichenkette          *
  *****************************************************************************/
-void CGA::print(const bse::string_view string, uint8_t attrib) const {
+void CGA::print(const String::string_view string, uint8_t attrib) const {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -110,7 +112,7 @@ void CGA::print(const bse::string_view string, uint8_t attrib) const {
     uint8_t cursor_y = 0;  // Don't poll registers every stroke
     getpos(cursor_x, cursor_y);
 
-    for (char current : string) {
+    for (char current: string) {
         if (current == '\n') {
             cursor_x = 0;
             cursor_y = cursor_y + 1;
@@ -160,10 +162,10 @@ void CGA::scrollup() const {
     /* Hier muss Code eingefuegt werden */
 
     // Move up
-    bse::memcpy<cga_line_t>(SCREEN_ROWS[0], SCREEN_ROWS[1], ROWS - 1);
+    Memory::memcpy<cga_line_t>(SCREEN_ROWS[0], SCREEN_ROWS[1], ROWS - 1);
 
     // Clear last line
-    bse::zero<cga_line_t>(SCREEN_ROWS[ROWS - 1]);
+    Memory::zero<cga_line_t>(SCREEN_ROWS[ROWS - 1]);
 }
 
 /*****************************************************************************
@@ -175,7 +177,7 @@ void CGA::clear() {
 
     /* Hier muess Code eingefuegt werden */
 
-    bse::zero<cga_page_t>(SCREEN_PAGE);
+    Memory::zero<cga_page_t>(SCREEN_PAGE);
     setpos(0, 0);
 }
 
@@ -196,6 +198,8 @@ uint8_t CGA::attribute(CGA::color bg, CGA::color fg, bool blink) {
     /* Hier muess Code eingefuegt werden */
 
     return static_cast<int>(blink) << 7  // B0000000
-         | (bg & 0x7) << 4  // 0HHH0000 (Hintergrund)
-         | (fg & 0xF);      // 0000VVVV (Vordergrund)
+           | (bg & 0x7) << 4  // 0HHH0000 (Hintergrund)
+           | (fg & 0xF);      // 0000VVVV (Vordergrund)
+}
+
 }

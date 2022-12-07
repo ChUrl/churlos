@@ -13,18 +13,20 @@
 
 #include "kernel/process/Thread.h"
 #include "SpinLock.h"
-#include "lib/util/Vector.h"
+#include "lib/container//Vector.h"
+
+namespace Async {
 
 class Semaphore {
 private:
     // Queue fuer wartende Threads.
-    bse::vector<unsigned int> wait_queue;
+    Container::vector<unsigned int> wait_queue;
     SpinLock lock;
 
     int counter;
 
 public:
-    Semaphore(const Semaphore& copy) = delete;  // Verhindere Kopieren
+    Semaphore(const Semaphore &copy) = delete;  // Verhindere Kopieren
 
     // Konstruktor: Initialisieren des Semaphorzaehlers
     Semaphore(int c) : wait_queue(true), counter(c) {}
@@ -35,5 +37,7 @@ public:
     // 'Vreigeben': Freigeben des kritischen Abschnitts.
     void v();
 };
+
+}
 
 #endif

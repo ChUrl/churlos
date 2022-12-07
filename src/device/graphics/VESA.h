@@ -12,7 +12,9 @@
 #define VESA_include__
 
 #include "LFBgraphics.h"
-#include "kernel/log/Logger.h"
+#include "lib/stream/Logger.h"
+
+namespace Device {
 
 // Ausgewaehlte Grafikmodi mit Mode-Nummer
 constexpr const uint16_t MODE_640_480_16BITS = 0x111;
@@ -28,7 +30,7 @@ private:
     NamedLogger log;
 
 public:
-    VESA(const VESA& copy) = delete;  // Verhindere Kopieren
+    VESA(const VESA &copy) = delete;  // Verhindere Kopieren
 
     VESA() : log("VESA") {}
 
@@ -36,7 +38,10 @@ public:
 
     // Bestimmten Grafikmodus einschalten
     bool initGraphicMode(uint16_t mode);
+
     static void initTextMode();
 };
+
+}
 
 #endif

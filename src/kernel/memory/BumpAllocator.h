@@ -13,26 +13,33 @@
 #define BumpAllocator_include__
 
 #include "Allocator.h"
-#include "kernel/log/Logger.h"
+#include "lib/stream/Logger.h"
+
+namespace Kernel {
 
 class BumpAllocator : Allocator {
 private:
-    uint8_t* next;
+    uint8_t *next;
     uint32_t allocations;
 
     NamedLogger log;
 
 public:
-    BumpAllocator(Allocator& copy) = delete;  // Verhindere Kopieren
+    BumpAllocator(Allocator &copy) = delete;  // Verhindere Kopieren
 
     BumpAllocator() : log("BMP-Alloc") {};  // Allocator() called implicitely in C++
 
 //    ~BumpAllocator() override = default;
 
     void init() override;
+
     void dump_free_memory() override;
-    void* alloc(uint32_t req_size) override;
-    void free(void* ptr) override;
+
+    void *alloc(uint32_t req_size) override;
+
+    void free(void *ptr) override;
 };
+
+}
 
 #endif

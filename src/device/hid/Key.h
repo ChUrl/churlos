@@ -10,6 +10,8 @@
 #ifndef Key_include__
 #define Key_include__
 
+namespace Device {
+
 class Key {
     // Kopieren erlaubt!
 
@@ -45,8 +47,11 @@ public:
 
     // ASCII, SCANCODE: Setzen und Abfragen von Ascii und Scancode
     void ascii(uint8_t a) { asc = a; }
+
     void scancode(uint8_t s) { scan = s; }
+
     uint8_t ascii() const { return asc; }
+
     uint8_t scancode() const { return scan; }
 
     //
@@ -88,14 +93,23 @@ public:
     // Funktionen zum Abfragen von SHIFT, ALT, CTRL usw.
     //
     bool shift() const { return (modi & mbit::shift) != 0; }
+
     bool alt_left() const { return (modi & mbit::alt_left) != 0; }
+
     bool alt_right() const { return (modi & mbit::alt_right) != 0; }
+
     bool ctrl_left() const { return (modi & mbit::ctrl_left) != 0; }
+
     bool ctrl_right() const { return (modi & mbit::ctrl_right) != 0; }
+
     bool caps_lock() const { return (modi & mbit::caps_lock) != 0; }
+
     bool num_lock() const { return (modi & mbit::num_lock) != 0; }
+
     bool scroll_lock() const { return (modi & mbit::scroll_lock) != 0; }
+
     bool alt() const { return alt_left() || alt_right(); }
+
     bool ctrl() const { return ctrl_left() || ctrl_right(); }
 
     operator char() const { return static_cast<char>(asc); }
@@ -113,5 +127,7 @@ public:
         };
     };
 };
+
+}
 
 #endif

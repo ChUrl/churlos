@@ -12,6 +12,8 @@
 #include "BumpAllocator.h"
 #include "kernel/system/Globals.h"
 
+namespace Kernel {
+
 /*****************************************************************************
  * Methode:         BumpAllocator::init                                      *
  *---------------------------------------------------------------------------*
@@ -22,7 +24,7 @@ void BumpAllocator::init() {
     /* Hier muess Code eingefuegt werden */
 
     allocations = 0;
-    next = reinterpret_cast<uint8_t*>(heap_start);
+    next = reinterpret_cast<uint8_t *>(heap_start);
 
     log.info() << "Initialized Bump Allocator" << endl;
 }
@@ -36,7 +38,7 @@ void BumpAllocator::dump_free_memory() {
 
     /* Hier muess Code eingefuegt werden */
 
-    kout << "Freier Speicher:" << endl
+    Kernel::kout << "Freier Speicher:" << endl
          << " - Next: " << hex << reinterpret_cast<uint32_t>(next)
          << ", Allocations: " << dec << allocations << endl;
 }
@@ -46,7 +48,7 @@ void BumpAllocator::dump_free_memory() {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Einen neuen Speicherblock allozieren.                    * 
  *****************************************************************************/
-void* BumpAllocator::alloc(uint32_t req_size) {
+void *BumpAllocator::alloc(uint32_t req_size) {
 
     /* Hier muess Code eingefuegt werden */
 
@@ -57,8 +59,8 @@ void* BumpAllocator::alloc(uint32_t req_size) {
         return nullptr;
     }
 
-    void* allocated = next;
-    next = reinterpret_cast<uint8_t*>(reinterpret_cast<uint32_t>(next) + req_size);
+    void *allocated = next;
+    next = reinterpret_cast<uint8_t *>(reinterpret_cast<uint32_t>(next) + req_size);
     allocations = allocations + 1;
 
     log.trace() << " - Allocated " << hex << req_size << " Bytes." << endl;
@@ -71,6 +73,8 @@ void* BumpAllocator::alloc(uint32_t req_size) {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Nicht implementiert.                                     *
  *****************************************************************************/
-void BumpAllocator::free(void* ptr) {
+void BumpAllocator::free(void *ptr) {
     log.error() << "   mm_free: ptr= " << hex << reinterpret_cast<uint32_t>(ptr) << ", not supported" << endl;
+}
+
 }

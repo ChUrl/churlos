@@ -13,8 +13,10 @@
 
 // 16-Bit Code aufrufen, siehe Konstruktor und Aufruf in startup.asm
 extern "C" {
-    void bios_call();
+void bios_call();
 }
+
+namespace Device {
 
 // in startup.asm im GDT-Eintrag so festgeschrieben!
 constexpr const unsigned int BIOS16_CODE_MEMORY_START = 0x24000;
@@ -23,7 +25,7 @@ constexpr const unsigned int BIOS16_CODE_MEMORY_START = 0x24000;
 constexpr const unsigned int BIOS16_PARAM_BASE = 0x26000;
 
 // Zeiger auf Speichbereich fuer Parameter fuer BIOS-Aufruf (siehe BIOS.h)
-BIOScall_params* BC_params = reinterpret_cast<BIOScall_params*>(BIOS16_PARAM_BASE);
+BIOScall_params *BC_params = reinterpret_cast<BIOScall_params *>(BIOS16_PARAM_BASE);
 
 /*****************************************************************************
  * Methode:         BIOS::BIOS                                               *
@@ -33,7 +35,7 @@ BIOScall_params* BC_params = reinterpret_cast<BIOScall_params*>(BIOS16_PARAM_BAS
  *                  im 4. GDT-Eintrag (siehe startup.asm).                   *
  *****************************************************************************/
 BIOS::BIOS() {
-    auto* codeAddr = reinterpret_cast<uint8_t*>(BIOS16_CODE_MEMORY_START);
+    auto *codeAddr = reinterpret_cast<uint8_t *>(BIOS16_CODE_MEMORY_START);
 
     // mov eax, 25000 (Adresse wohin aktuelles esp gesichert wird)
     *codeAddr = 0x66;
@@ -313,7 +315,7 @@ BIOS::BIOS() {
  * Beschreibung:    Fuehrt einen BIOS-Aufruf per Software-Interrupt durch.   *
  *****************************************************************************/
 void BIOS::Int(uint8_t inter) {
-    auto* ptr = reinterpret_cast<uint8_t*>(BIOS16_CODE_MEMORY_START);
+    auto *ptr = reinterpret_cast<uint8_t *>(BIOS16_CODE_MEMORY_START);
 
     // Interrupt-Nummer in 16-Bit Code-Segment schreiben (unschoen, aber ...)
     *(ptr + 48) = static_cast<uint8_t>(inter);
@@ -321,4 +323,6 @@ void BIOS::Int(uint8_t inter) {
     CPU::disable_int();  // Interrupts abschalten
     bios_call();
     CPU::enable_int();
+}
+
 }

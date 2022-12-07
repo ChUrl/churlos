@@ -18,6 +18,8 @@
 
 #include <cstdint>
 
+namespace Device {
+
 class IOport {
 private:
     // 16-Bit Adresse im I/O-Adressraum
@@ -30,29 +32,29 @@ public:
     // Byteweise Ausgabe eines Wertes ueber einen I/O-Port.
     void outb(uint8_t val) const {
         asm volatile("outb %0, %1"
-                     :
-                     : "a"(val), "Nd"(address));
+                :
+                : "a"(val), "Nd"(address));
     }
 
     // NOTE: I added this for easier init of COM1 port
     void outb(uint8_t offset, uint8_t val) const {
         asm volatile("outb %0, %1"
-                     :
-                     : "a"(val), "Nd"(static_cast<uint16_t>(address + offset)));
+                :
+                : "a"(val), "Nd"(static_cast<uint16_t>(address + offset)));
     }
 
     // Wortweise Ausgabe eines Wertes ueber einen I/O-Port.
     void outw(uint16_t val) const {
         asm volatile("outw %0, %1"
-                     :
-                     : "a"(val), "Nd"(address));
+                :
+                : "a"(val), "Nd"(address));
     }
 
     // 32-Bit Ausgabe eines Wertes ueber einen I/O-Port.
     void outdw(uint32_t val) const {
         asm volatile("outl %0, %1"
-                     :
-                     : "a"(val), "Nd"(address));
+                :
+                : "a"(val), "Nd"(address));
     }
 
     // Byteweises Einlesen eines Wertes ueber einen I/O-Port.
@@ -60,8 +62,8 @@ public:
         uint8_t ret;
 
         asm volatile("inb %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(address));
+                : "=a"(ret)
+                : "Nd"(address));
         return ret;
     }
 
@@ -70,8 +72,8 @@ public:
         uint8_t ret;
 
         asm volatile("inb %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(static_cast<uint16_t>(address + offset)));
+                : "=a"(ret)
+                : "Nd"(static_cast<uint16_t>(address + offset)));
         return ret;
     }
 
@@ -80,8 +82,8 @@ public:
         uint16_t ret;
 
         asm volatile("inw %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(address));
+                : "=a"(ret)
+                : "Nd"(address));
         return ret;
     }
 
@@ -90,10 +92,12 @@ public:
         unsigned int ret;
 
         asm volatile("inl %1, %0"
-                     : "=a"(ret)
-                     : "Nd"(address));
+                : "=a"(ret)
+                : "Nd"(address));
         return ret;
     }
 };
+
+}
 
 #endif

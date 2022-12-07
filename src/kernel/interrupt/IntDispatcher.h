@@ -14,18 +14,22 @@
 #define IntDispatcher_include__
 
 #include "ISR.h"
-#include "lib/util/Array.h"
-#include "kernel/log/Logger.h"
+#include "lib/container//Array.h"
+#include "lib/stream/Logger.h"
+
+namespace Kernel {
 
 class IntDispatcher {
 private:
     NamedLogger log;
 
-    enum { size = 256 };
-    bse::array<ISR*, size> map;
+    enum {
+        size = 256
+    };
+    Container::array<ISR *, size> map;
 
 public:
-    IntDispatcher(const IntDispatcher& copy) = delete;  // Verhindere Kopieren
+    IntDispatcher(const IntDispatcher &copy) = delete;  // Verhindere Kopieren
 
     // Vektor-Nummern
     enum {
@@ -36,16 +40,18 @@ public:
 
     // Initialisierung der ISR map mit einer Default-ISR.
     IntDispatcher() : log("IntDis") {
-        for (ISR*& slot : map) {
+        for (ISR *&slot: map) {
             slot = nullptr;
         }
     }
 
     // Registrierung einer ISR. (Rueckgabewert: 0 = Erfolg, -1 = Fehler)
-    int assign(uint8_t vector, ISR& isr);
+    int assign(uint8_t vector, ISR &isr);
 
     // ISR fuer 'vector' ausfuehren
     int report(uint8_t vector);
 };
+
+}
 
 #endif

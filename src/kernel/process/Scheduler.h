@@ -14,36 +14,39 @@
 
 #include "Thread.h"
 #include "lib/mem/UniquePointer.h"
-#include "kernel/log/Logger.h"
-#include "lib/util/Vector.h"
+#include "lib/stream/Logger.h"
+#include "lib/container/Vector.h"
+
+namespace Kernel {
 
 class Scheduler {
 private:
     NamedLogger log;
 
-    bse::vector<bse::unique_ptr<Thread>> ready_queue;
-    bse::vector<bse::unique_ptr<Thread>> block_queue;
+    Container::vector<Memory::unique_ptr<Thread>> ready_queue;
+    Container::vector<Memory::unique_ptr<Thread>> block_queue;
 
     // NOTE: It makes sense to keep track of the active thread through this as it makes handling the
     //       unique_ptr easier and reduces the copying in the vector when cycling through the threads
-    bse::vector<bse::unique_ptr<Thread>>::iterator active = nullptr;
+    Container::vector<Memory::unique_ptr<Thread>>::iterator active = nullptr;
 
     // Scheduler wird evt. von einer Unterbrechung vom Zeitgeber gerufen,
     // bevor er initialisiert wurde
     uint32_t idle_tid = 0U;
 
     // Roughly the old dispatcher functionality
-    void start(bse::vector<bse::unique_ptr<Thread>>::iterator next);                        // Start next without prev
-    void switch_to(Thread* prev_raw, bse::vector<bse::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
+    void start(Container::vector<Memory::unique_ptr<Thread>>::iterator next);                        // Start next without prev
+    void switch_to(Thread *prev_raw, Container::vector<Memory::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
 
     // Kann nur vom Idle-Thread aufgerufen werden (erster Thread der vom Scheduler gestartet wird)
     void enable_preemption(uint32_t tid) { idle_tid = tid; }
+
     friend class IdleThread;
 
-    void ready(bse::unique_ptr<Thread>&& thread);
+    void ready(Memory::unique_ptr<Thread> &&thread);
 
 public:
-    Scheduler(const Scheduler& copy) = delete;  // Verhindere Kopieren
+    Scheduler(const Scheduler &copy) = delete;  // Verhindere Kopieren
 
     Scheduler() : log("SCHED"), ready_queue(true), block_queue(true) {}  // lazy queues, wait for allocator
 
@@ -68,7 +71,7 @@ public:
     // Helper that directly constructs the thread, then readys it
     template<typename T, typename... Args>
     uint32_t ready(Args... args) {
-        bse::unique_ptr<Thread> thread = bse::make_unique<T>(std::forward<Args>(args)...);
+        Memory::unique_ptr<Thread> thread = Memory::make_unique<T>(std::forward<Args>(args)...);
         uint32_t tid = thread->tid;
 
         ready(std::move(thread));
@@ -83,14 +86,16 @@ public:
     void exit();  // Returns on error because we don't have exceptions
 
     // Thread mit 'Gewalt' terminieren
-    void kill(uint32_t tid, bse::unique_ptr<Thread>* ptr);
+    void kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr);
+
     void kill(uint32_t tid) { kill(tid, nullptr); }
 
     // Asks thread to exit
     // NOTE: I had many problems with killing threads that were stuck in some semaphore
     //       or were involved in any locking mechanisms, so with this a thread can make sure
     //       to "set things right" before exiting itself (but could also be ignored)
-    void nice_kill(uint32_t tid, bse::unique_ptr<Thread>* ptr);
+    void nice_kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr);
+
     void nice_kill(uint32_t tid) { nice_kill(tid, nullptr); }
 
     // CPU freiwillig abgeben und Auswahl des naechsten Threads
@@ -105,5 +110,7 @@ public:
     // Deblock by tid (move to ready_queue)
     void deblock(uint32_t tid);
 };
+
+}
 
 #endif

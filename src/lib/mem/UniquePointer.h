@@ -9,7 +9,7 @@
 //       This means that object destructors are not called if the objects live in a scope
 //       that is left because of thread switching (e.g. a threads run function)...
 
-namespace bse {
+namespace Memory {
 
     // T is the type make_unique is called with, meaning int or int[] for example
     // T_ is the bare type without extents (int in both cases), so we have a

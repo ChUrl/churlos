@@ -16,7 +16,9 @@
 #include "kernel/interrupt/ISR.h"
 #include "device/port/IOport.h"
 
-class Keyboard : public ISR {
+namespace Device {
+
+class Keyboard : public Kernel::ISR {
 private:
     uint8_t code;    // Byte von Tastatur
     uint8_t prefix;  // Prefix von Tastatur
@@ -28,33 +30,45 @@ private:
     static const IOport data_port;  // Ausgabe- (R) u. Eingabepuffer (W)
 
     // Bits im Statusregister
-    enum { outb = 0x01,
-           inpb = 0x02,
-           auxb = 0x20 };
+    enum {
+        outb = 0x01,
+        inpb = 0x02,
+        auxb = 0x20
+    };
 
     // Kommandos an die Tastatur
     struct kbd_cmd {
-        enum { set_led = 0xed,
-               set_speed = 0xf3 };
+        enum {
+            set_led = 0xed,
+            set_speed = 0xf3
+        };
     };
-    enum { cpu_reset = 0xfe };
+    enum {
+        cpu_reset = 0xfe
+    };
 
     // Namen der LEDs
     struct led {
-        enum { caps_lock = 4,
-               num_lock = 2,
-               scroll_lock = 1 };
+        enum {
+            caps_lock = 4,
+            num_lock = 2,
+            scroll_lock = 1
+        };
     };
 
     // Antworten der Tastatur
     struct kbd_reply {
-        enum { ack = 0xfa };
+        enum {
+            ack = 0xfa
+        };
     };
 
     // Konstanten fuer die Tastaturdekodierung
-    enum { break_bit = 0x80,
-           prefix1 = 0xe0,
-           prefix2 = 0xe1 };
+    enum {
+        break_bit = 0x80,
+        prefix1 = 0xe0,
+        prefix2 = 0xe1
+    };
 
     // Klassenvariablen
     static const uint8_t normal_tab[];
@@ -73,7 +87,7 @@ private:
     Key key_hit();
 
 public:
-    Keyboard(const Keyboard& copy) = delete;  // Verhindere Kopieren
+    Keyboard(const Keyboard &copy) = delete;  // Verhindere Kopieren
 
     // Initialisierung der Tastatur.
     Keyboard();
@@ -97,5 +111,7 @@ public:
     // Unterbrechnungsroutine der Tastatur.
     void trigger() override;
 };
+
+}
 
 #endif

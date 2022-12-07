@@ -28,25 +28,27 @@
 #ifndef Thread_include__
 #define Thread_include__
 
-#include "kernel/log/Logger.h"
+#include "lib/stream/Logger.h"
+
+namespace Kernel {
 
 class Thread {
 private:
-    uint32_t* stack;
+    uint32_t *stack;
     uint32_t esp;
 
 protected:
-    Thread(char* name);
+    Thread(char *name);
 
     NamedLogger log;
 
     bool running = true;     // For soft exit, if thread uses infinite loop inside run(), use this as condition
-    char* name;              // For logging
+    char *name;              // For logging
     uint32_t tid;        // Thread-ID (wird im Konstruktor vergeben)
     friend class Scheduler;  // Scheduler can access tid
 
 public:
-    Thread(const Thread& copy) = delete;  // Verhindere Kopieren
+    Thread(const Thread &copy) = delete;  // Verhindere Kopieren
 
     virtual ~Thread() {
         log.info() << "Uninitialized thread, ID: " << dec << tid << " (" << name << ")" << endl;
@@ -57,7 +59,7 @@ public:
     void start() const;
 
     // Umschalten auf Thread 'next'
-    void switchTo(Thread& next);
+    void switchTo(Thread &next);
 
     // Ask thread to terminate itself
     void suicide() { running = false; }
@@ -65,5 +67,7 @@ public:
     // Methode des Threads, muss in Sub-Klasse implementiert werden
     virtual void run() = 0;
 };
+
+}
 
 #endif

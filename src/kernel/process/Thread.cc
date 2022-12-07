@@ -26,12 +26,14 @@
 // extern "C" deklariert werden, da sie nicht dem Name-Mangeling von C++
 // entsprechen.
 extern "C" {
-    void Thread_start(uint32_t esp);
+void Thread_start(uint32_t esp);
 
-    // NOTE: Only when backing up the previous thread the esp gets updated,
-    //       so only esp_pre is a pointer
-    void Thread_switch(uint32_t* esp_prev, uint32_t esp_next);
+// NOTE: Only when backing up the previous thread the esp gets updated,
+//       so only esp_pre is a pointer
+void Thread_switch(uint32_t *esp_prev, uint32_t esp_next);
 }
+
+namespace Kernel {
 
 uint32_t ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preemption with 0
 
@@ -41,7 +43,7 @@ uint32_t ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preemption 
  * Beschreibung:    Bereitet den Kontext der Koroutine fuer den ersten       *
  *                  Aufruf vor.                                              *
  *****************************************************************************/
-void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void* object) {
+void Thread_init(uint32_t *esp, uint32_t *stack, void (*kickoff)(Thread *), void *object) {
 
     // NOTE: c++17 doesn't allow register
     // register uint32_t** sp = (uint32_t**)stack;
@@ -82,7 +84,7 @@ void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void*
  *                  wuerde ein sinnloser Wert als Ruecksprungadresse         * 
  *                  interpretiert werden und der Rechner abstuerzen.         *
  *****************************************************************************/
-[[noreturn]] void kickoff(Thread* object) {
+[[noreturn]] void kickoff(Thread *object) {
     object->run();
 
     // object->run() kehrt (hoffentlich) nie hierher zurueck
@@ -97,7 +99,7 @@ void Thread_init(uint32_t* esp, uint32_t* stack, void (*kickoff)(Thread*), void*
  * Parameter:                                                                *
  *      stack       Stack für die neue Koroutine                             *
  *****************************************************************************/
-Thread::Thread(char* name) : stack(new uint32_t[1024]), esp(0), log(name), name(name), tid(ThreadCnt++) {
+Thread::Thread(char *name) : stack(new uint32_t[1024]), esp(0), log(name), name(name), tid(ThreadCnt++) {
     if (stack == nullptr) {
         log.error() << "Couldn't initialize Thread (couldn't alloc stack)" << endl;
         return;
@@ -112,7 +114,7 @@ Thread::Thread(char* name) : stack(new uint32_t[1024]), esp(0), log(name), name(
  *---------------------------------------------------------------------------*
  * Beschreibung:    Auf die nächste Koroutine umschalten.                    *
  *****************************************************************************/
-void Thread::switchTo(Thread& next) {
+void Thread::switchTo(Thread &next) {
 
     /* hier muss Code eingefügt werden */
 
@@ -130,4 +132,6 @@ void Thread::start() const {
     /* hier muss Code eingefügt werden */
 
     Thread_start(esp);
+}
+
 }

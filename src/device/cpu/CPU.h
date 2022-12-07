@@ -12,9 +12,11 @@
 #ifndef CPU_include__
 #define CPU_include__
 
+namespace Device {
+
 class CPU {
 public:
-    CPU(const CPU& copy) = delete;  // Verhindere Kopieren
+    CPU(const CPU &copy) = delete;  // Verhindere Kopieren
 
     CPU() = default;
 
@@ -44,9 +46,11 @@ public:
     static inline unsigned long long int rdtsc() {
         unsigned long long int ret;
         asm volatile("rdtsc"
-                     : "=A"(ret));
+                : "=A"(ret));
         return ret;
     }
 };
+
+}
 
 #endif

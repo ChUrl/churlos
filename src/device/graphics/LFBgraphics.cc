@@ -14,8 +14,11 @@
 
 #include "LFBgraphics.h"
 
+namespace Device {
+
 /* Hilfsfunktionen */
-void swap(uint32_t* a, uint32_t* b);
+void swap(uint32_t *a, uint32_t *b);
+
 uint16_t abs(int32_t a);
 
 /*****************************************************************************
@@ -37,7 +40,7 @@ uint16_t abs(int32_t a);
  *****************************************************************************/
 inline void LFBgraphics::drawMonoBitmap(uint32_t x, uint32_t y,
                                         uint32_t width, uint32_t height,
-                                        const uint8_t* bitmap, uint32_t color) const {
+                                        const uint8_t *bitmap, uint32_t color) const {
     // Breite in Bytes
     uint16_t width_byte = width / 8 + ((width % 8 != 0) ? 1 : 0);
 
@@ -68,8 +71,8 @@ inline void LFBgraphics::drawMonoBitmap(uint32_t x, uint32_t y,
  * Beschreibung:    Gibt eine Zeichenkette mit gewaehlter Schrift an der     *
  *                  Position x,y aus.                                        *
  *****************************************************************************/
-void LFBgraphics::drawString(const Font& fnt, uint32_t x, uint32_t y,
-                             uint32_t col, const char* str, uint32_t len) const {
+void LFBgraphics::drawString(const Graphics::Font &fnt, uint32_t x, uint32_t y,
+                             uint32_t col, const char *str, uint32_t len) const {
     for (uint32_t i = 0; i < len; ++i) {
         drawMonoBitmap(x, y, fnt.get_char_width(), fnt.get_char_height(), fnt.getChar(*(str + i)), col);
         x += fnt.get_char_width();
@@ -85,14 +88,14 @@ void LFBgraphics::drawString(const Font& fnt, uint32_t x, uint32_t y,
  * Beschreibung:    Zeichnen eines Pixels.                                   *
  *****************************************************************************/
 void LFBgraphics::drawPixel(uint32_t x, uint32_t y, uint32_t col) const {
-    auto* ptr = reinterpret_cast<uint8_t*>(lfb);
+    auto *ptr = reinterpret_cast<uint8_t *>(lfb);
 
     if (hfb == 0 || lfb == 0) {
         return;
     }
 
     if (mode == BUFFER_INVISIBLE) {
-        ptr = reinterpret_cast<uint8_t*>(hfb);
+        ptr = reinterpret_cast<uint8_t *>(hfb);
     }
 
     // Pixel ausserhalb des sichtbaren Bereichs?
@@ -102,33 +105,33 @@ void LFBgraphics::drawPixel(uint32_t x, uint32_t y, uint32_t col) const {
 
     // Adresse des Pixels berechnen und Inhalt schreiben
     switch (bpp) {
-    case 8:
-        ptr += (x + y * xres);
-        *ptr = col;
-        return;
-    case 15:
-    case 16:
-        ptr += (2 * x + 2 * y * xres);
-        *ptr = col;
-        return;
-    case 24:
-        ptr += (3 * x + 3 * y * xres);
-        *ptr = (col & 0xFF);
-        ptr++;
-        *ptr = ((col >> 8) & 0xFF);
-        ptr++;
-        *ptr = ((col >> 16) & 0xFF);
-        ptr;
-        return;
-    case 32:
-        ptr += (4 * x + 4 * y * xres);
-        *ptr = (col & 0xFF);
-        ptr++;
-        *ptr = ((col >> 8) & 0xFF);
-        ptr++;
-        *ptr = ((col >> 16) & 0xFF);
-        ptr;
-        return;
+        case 8:
+            ptr += (x + y * xres);
+            *ptr = col;
+            return;
+        case 15:
+        case 16:
+            ptr += (2 * x + 2 * y * xres);
+            *ptr = col;
+            return;
+        case 24:
+            ptr += (3 * x + 3 * y * xres);
+            *ptr = (col & 0xFF);
+            ptr++;
+            *ptr = ((col >> 8) & 0xFF);
+            ptr++;
+            *ptr = ((col >> 16) & 0xFF);
+            ptr;
+            return;
+        case 32:
+            ptr += (4 * x + 4 * y * xres);
+            *ptr = (col & 0xFF);
+            ptr++;
+            *ptr = ((col >> 8) & 0xFF);
+            ptr++;
+            *ptr = ((col >> 16) & 0xFF);
+            ptr;
+            return;
     }
 }
 
@@ -153,7 +156,8 @@ void LFBgraphics::drawStraightLine(uint32_t x1, uint32_t y1, uint32_t x2, uint32
 // (x1, y1)---(x2, y1)
 //    |          |
 // (x1, y2)---(x2, y2)
-void LFBgraphics::drawRectangle(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, unsigned int col) const {
+void
+LFBgraphics::drawRectangle(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2, unsigned int col) const {
     drawStraightLine(x1, y1, x2, y1, col);
     drawStraightLine(x2, y1, x2, y2, col);
     drawStraightLine(x1, y2, x2, y2, col);
@@ -164,23 +168,24 @@ void LFBgraphics::drawCircle(unsigned int x, unsigned int y, unsigned int rad, u
     // TODO
 }
 
-void LFBgraphics::drawSprite(unsigned int width, unsigned int height, unsigned int bytes_pp, const uint8_t* pixel_data) const {
-    const uint8_t* ptr;
+void LFBgraphics::drawSprite(unsigned int width, unsigned int height, unsigned int bytes_pp,
+                             const uint8_t *pixel_data) const {
+    const uint8_t *ptr;
     for (unsigned int x = 0; x < width; ++x) {
         for (unsigned int y = 0; y < height; ++y) {
             ptr = pixel_data + (x + y * width) * bytes_pp;
 
             switch (bytes_pp) {
-            case 2:
-                // TODO: Never tested, probably doesn't work
-                drawPixel(x, y, RGB_24(*ptr & 0b11111000, ((*ptr & 0b111) << 3) | (*(ptr + 1) >> 5),
-                                             *(ptr + 1) & 0b11111));  // RGB 565
-                break;
-            case 3:
-            case 4:
-                // Alpha gets ignored anyway
-                drawPixel(x, y, RGB_24(*ptr, *(ptr + 1), *(ptr + 2)));
-                break;
+                case 2:
+                    // TODO: Never tested, probably doesn't work
+                    drawPixel(x, y, RGB_24(*ptr & 0b11111000, ((*ptr & 0b111) << 3) | (*(ptr + 1) >> 5),
+                                           *(ptr + 1) & 0b11111));  // RGB 565
+                    break;
+                case 3:
+                case 4:
+                    // Alpha gets ignored anyway
+                    drawPixel(x, y, RGB_24(*ptr, *(ptr + 1), *(ptr + 2)));
+                    break;
             }
         }
     }
@@ -192,7 +197,7 @@ void LFBgraphics::drawSprite(unsigned int width, unsigned int height, unsigned i
  * Beschreibung:    Bildschirm loeschen.                                     *
  *****************************************************************************/
 void LFBgraphics::clear() const {
-    auto* ptr = reinterpret_cast<uint32_t*>(lfb);
+    auto *ptr = reinterpret_cast<uint32_t *>(lfb);
     unsigned int i;
 
     if (hfb == 0 || lfb == 0) {
@@ -200,31 +205,31 @@ void LFBgraphics::clear() const {
     }
 
     if (mode == 0) {
-        ptr = reinterpret_cast<uint32_t*>(hfb);
+        ptr = reinterpret_cast<uint32_t *>(hfb);
     }
 
     switch (bpp) {
-    case 8:
-        for (i = 0; i < ((xres / 4) * yres); i++) {
-            *(ptr++) = 0;
-        }
-        return;
-    case 15:
-    case 16:
-        for (i = 0; i < (2 * (xres / 4) * yres); i++) {
-            *(ptr++) = 0;
-        }
-        return;
-    case 24:
-        for (i = 0; i < (3 * (xres / 4) * yres); i++) {
-            *(ptr++) = 0;
-        }
-        return;
-    case 32:
-        for (i = 0; i < (4 * (xres / 4) * yres); i++) {
-            *(ptr++) = 0;
-        }
-        return;
+        case 8:
+            for (i = 0; i < ((xres / 4) * yres); i++) {
+                *(ptr++) = 0;
+            }
+            return;
+        case 15:
+        case 16:
+            for (i = 0; i < (2 * (xres / 4) * yres); i++) {
+                *(ptr++) = 0;
+            }
+            return;
+        case 24:
+            for (i = 0; i < (3 * (xres / 4) * yres); i++) {
+                *(ptr++) = 0;
+            }
+            return;
+        case 32:
+            for (i = 0; i < (4 * (xres / 4) * yres); i++) {
+                *(ptr++) = 0;
+            }
+            return;
     }
 }
 
@@ -243,8 +248,8 @@ void LFBgraphics::setDrawingBuff(int v) {
  * Beschreibung:    Kopiert den versteckten Puffer in den sichtbaren LFB.    *
  *****************************************************************************/
 void LFBgraphics::copyHiddenToVisible() const {
-    auto* sptr = reinterpret_cast<uint32_t*>(hfb);
-    auto* dptr = reinterpret_cast<uint32_t*>(lfb);
+    auto *sptr = reinterpret_cast<uint32_t *>(hfb);
+    auto *dptr = reinterpret_cast<uint32_t *>(lfb);
     uint32_t i;
 
     if (hfb == 0 || lfb == 0) {
@@ -252,31 +257,31 @@ void LFBgraphics::copyHiddenToVisible() const {
     }
 
     switch (bpp) {
-    case 8:
-        for (i = 0; i < ((xres / 4) * yres); i++) {
-            *(dptr++) = *(sptr++);
-        }
-        return;
-    case 15:
-    case 16:
-        for (i = 0; i < (2 * (xres / 4) * yres); i++) {
-            *(dptr++) = *(sptr++);
-        }
-        return;
-    case 24:
-        for (i = 0; i < (3 * (xres / 4) * yres); i++) {
-            *(dptr++) = *(sptr++);
-        }
-        return;
-    case 32:
-        for (i = 0; i < (4 * (xres / 4) * yres); i++) {
-            *(dptr++) = *(sptr++);
-        }
-        return;
+        case 8:
+            for (i = 0; i < ((xres / 4) * yres); i++) {
+                *(dptr++) = *(sptr++);
+            }
+            return;
+        case 15:
+        case 16:
+            for (i = 0; i < (2 * (xres / 4) * yres); i++) {
+                *(dptr++) = *(sptr++);
+            }
+            return;
+        case 24:
+            for (i = 0; i < (3 * (xres / 4) * yres); i++) {
+                *(dptr++) = *(sptr++);
+            }
+            return;
+        case 32:
+            for (i = 0; i < (4 * (xres / 4) * yres); i++) {
+                *(dptr++) = *(sptr++);
+            }
+            return;
     }
 }
 
-void swap(uint32_t* a, uint32_t* b) {
+void swap(uint32_t *a, uint32_t *b) {
     uint32_t h = *a;
 
     *a = *b;
@@ -288,4 +293,6 @@ uint16_t abs(int32_t a) {
         return -a;
     }
     return a;
+}
+
 }

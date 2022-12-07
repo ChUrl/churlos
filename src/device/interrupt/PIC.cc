@@ -17,6 +17,8 @@
 
 #include "PIC.h"
 
+namespace Device {
+
 IOport const PIC::IMR1(0x21);  // interrupt mask register von PIC 1
 IOport const PIC::IMR2(0xa1);  // interrupt mask register von PIC 2
 
@@ -102,4 +104,6 @@ bool PIC::status(uint8_t irq) {
     // Use % 8 to account for two PICs
     uint8_t mask = 0x1 << (irq % 8);
     return IMR & mask;
+}
+
 }

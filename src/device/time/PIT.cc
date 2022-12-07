@@ -11,6 +11,8 @@
 #include "PIT.h"
 #include "kernel/system/Globals.h"
 
+namespace Device {
+
 const IOport PIT::control(0x43);
 const IOport PIT::data0(0x40);
 
@@ -42,11 +44,12 @@ void PIT::interval(uint32_t us) {
  *                  wird bei Ablauf des definierten Zeitintervalls die       *
  *                  Methode 'trigger' aufgerufen.                            *
  *****************************************************************************/
+ // TODO: Use interruptservice
 void PIT::plugin() {
 
     /* hier muss Code eingefuegt werden */
 
-    intdis.assign(IntDispatcher::timer, *this);
+    Kernel::intdis.assign(Kernel::IntDispatcher::timer, *this);
     PIC::allow(PIC::timer);
 }
 
@@ -58,6 +61,7 @@ void PIT::plugin() {
  *                  aktualisieren und Thread wechseln durch Setzen der       *
  *                  Variable 'forceSwitch', wird in 'int_disp' behandelt.    *
  *****************************************************************************/
+ // TODO: Use timeservice + timeprovider
 void PIT::trigger() {
 
     /* hier muss Code eingefuegt werden */
@@ -65,7 +69,7 @@ void PIT::trigger() {
     // log << TRACE << "Incrementing systime" << endl;
 
     // alle 10ms, Systemzeit weitersetzen
-    systime++;
+    Kernel::systime++;
 
     // Bei jedem Tick einen Threadwechsel ausloesen.
     // Aber nur wenn der Scheduler bereits fertig intialisiert wurde
@@ -74,15 +78,19 @@ void PIT::trigger() {
     /* hier muss Code eingefuegt werden */
 
     // Indicator
-    if (systime - last_indicator_refresh >= 10) {
+    // TODO: Use timeservice
+    if (Kernel::systime - last_indicator_refresh >= 10) {
         indicator_pos = (indicator_pos + 1) % 4;
         CGA::show(79, 0, indicator[indicator_pos]);
-        last_indicator_refresh = systime;
+        last_indicator_refresh = Kernel::systime;
     }
 
+    // TODO: Use schedulerservice
     // Preemption
-    if (scheduler.preemption_enabled()) {
+    if (Kernel::scheduler.preemption_enabled()) {
         // log << TRACE << "Preemption" << endl;
-        scheduler.preempt();
+        Kernel::scheduler.preempt();
     }
+}
+
 }

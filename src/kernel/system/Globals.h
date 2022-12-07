@@ -10,7 +10,7 @@
 #ifndef Globals_include__
 #define Globals_include__
 
-#include "device/graphics/CGA_Stream.h"
+#include "lib/stream/CGA_Stream.h"
 #include "device/hid/Keyboard.h"
 #include "device/sound/PCSPK.h"
 #include "device/time/PIT.h"
@@ -27,17 +27,19 @@
 #include "device/port/SerialOut.h"
 #include "kernel/event/KeyEventManager.h"
 
+namespace Kernel {
+
 // I wanted to make more of these singletons but there were problems with atexit missing because of nostdlib I guess
 
 extern CGA_Stream kout;  // Ausgabe-Strom fuer Kernel
-extern const BIOS& bios;        // Schnittstelle zum 16-Bit BIOS
-extern VESA vesa;        // VESA-Treiber
+extern const Device::BIOS &bios;        // Schnittstelle zum 16-Bit BIOS
+extern Device::VESA vesa;        // VESA-Treiber
 
-extern PIC pic;               // Interrupt-Controller
+extern Device::PIC pic;               // Interrupt-Controller
 extern IntDispatcher intdis;  // Unterbrechungsverteilung
-extern PIT pit;               // Zeitgeber
-extern PCSPK pcspk;           // PC-Lautsprecher
-extern Keyboard kb;           // Tastatur
+extern Device::PIT pit;               // Zeitgeber
+extern Device::PCSPK pcspk;           // PC-Lautsprecher
+extern Device::Keyboard kb;           // Tastatur
 
 // extern BumpAllocator allocator;
 extern LinkedListAllocator allocator;
@@ -46,9 +48,11 @@ extern LinkedListAllocator allocator;
 extern Scheduler scheduler;
 
 extern KeyEventManager kevman;
-extern SerialOut serial;
+extern Device::SerialOut serial;
 
 extern uint32_t total_mem;  // RAM total
 extern uint64_t systime;   // wird all 10ms hochgezaehlt
+
+}
 
 #endif

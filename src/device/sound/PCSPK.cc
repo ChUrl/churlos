@@ -15,6 +15,8 @@
 #include "PCSPK.h"
 #include "kernel/system/Globals.h"
 
+namespace Device {
+
 const IOport PCSPK::control(0x43);
 const IOport PCSPK::data2(0x42);
 const IOport PCSPK::ppi(0x61);
@@ -67,14 +69,15 @@ void PCSPK::off() {
  *                                                                           *
  * Parameter:       time (delay in ms)                                       *
  *****************************************************************************/
+ // TODO: Use timeservice
 inline void PCSPK::delay(uint32_t time) {
 
     /* Hier muess Code eingefuegt werden */
 
-    uint64_t start_time = systime;
+    uint64_t start_time = Kernel::systime;
 
     // systime is incremented in 10ms steps
-    while ((systime - start_time) * 10 < time) {}
+    while ((Kernel::systime - start_time) * 10 < time) {}
 }
 
 /*****************************************************************************
@@ -842,4 +845,6 @@ void PCSPK::aerodynamic() {
     play(1108.7, 122);
     play(880.0, 122);
     off();
+}
+
 }

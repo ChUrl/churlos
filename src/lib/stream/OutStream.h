@@ -22,20 +22,22 @@
 #ifndef OutStream_include__
 #define OutStream_include__
 
-#include "lib/util/StringBuffer.h"
-#include "lib/util/String.h"
-#include "lib/util/StringView.h"
+#include "StringBuffer.h"
+#include "lib/string/String.h"
+#include "lib/string/StringView.h"
 
 // Some basic width formatting
 class fillw {
 public:
-    constexpr fillw(const unsigned int w) : w(w) {}
+    constexpr explicit fillw(const unsigned int w) : w(w) {}
+
     const unsigned int w;
 };
 
 class fillc {
 public:
-    constexpr fillc(const char c) : c(c) {}
+    constexpr explicit fillc(const char c) : c(c) {}
+
     const char c;
 };
 
@@ -51,7 +53,7 @@ private:
     void fill_finalize();  // does the filling after text has been written to buffer
 
 public:
-    OutStream(const OutStream& copy) = delete;  // Verhindere Kopieren
+    OutStream(const OutStream &copy) = delete;  // Verhindere Kopieren
 
     OutStream() : fill_used(0), fill_width(0), fill_char(' '), base(10) {}
 
@@ -72,7 +74,7 @@ public:
 
     // Darstellung eines Zeichens (trivial)
     template<typename T>
-    friend T& operator<<(T& os, char c) {
+    friend T &operator<<(T &os, char c) {
         os.put(c);
         if (c != '\n') {
             // endl() doesn't has access to StringBuffer::put(), so ignore \n here
@@ -82,12 +84,12 @@ public:
     }
 
     template<typename T>
-    friend T& operator<<(T& os, unsigned char c) { return os << static_cast<char>(c); }
+    friend T &operator<<(T &os, unsigned char c) { return os << static_cast<char>(c); }
 
     // Darstellung einer nullterminierten Zeichenkette
     template<typename T>
-    friend T& operator<<(T& os, const bse::string_view string) {
-        for (char current : string) {
+    friend T &operator<<(T &os, const String::string_view string) {
+        for (char current: string) {
             os.put(current);
         }
         os.fill_finalize();
@@ -96,19 +98,19 @@ public:
 
     // Darstellung ganzer Zahlen im Zahlensystem zur Basis base
     template<typename T>
-    friend T& operator<<(T& os, short ival) { return os << static_cast<long>(ival); }
+    friend T &operator<<(T &os, short ival) { return os << static_cast<long>(ival); }
 
     template<typename T>
-    friend T& operator<<(T& os, unsigned short ival) { return os << static_cast<unsigned long>(ival); }
+    friend T &operator<<(T &os, unsigned short ival) { return os << static_cast<unsigned long>(ival); }
 
     template<typename T>
-    friend T& operator<<(T& os, int ival) { return os << static_cast<long>(ival); }
+    friend T &operator<<(T &os, int ival) { return os << static_cast<long>(ival); }
 
     template<typename T>
-    friend T& operator<<(T& os, unsigned int ival) { return os << static_cast<unsigned long>(ival); }
+    friend T &operator<<(T &os, unsigned int ival) { return os << static_cast<unsigned long>(ival); }
 
     template<typename T>
-    friend T& operator<<(T& os, long ival) {
+    friend T &operator<<(T &os, long ival) {
         // Bei negativen Werten wird ein Minuszeichen ausgegeben.
         if (ival < 0) {
             os.put('-');
@@ -119,7 +121,7 @@ public:
     }
 
     template<typename T>
-    friend T& operator<<(T& os, unsigned long ival) {
+    friend T &operator<<(T &os, unsigned long ival) {
         unsigned long div;
         char digit;
 
@@ -150,7 +152,7 @@ public:
 
     // Darstellung eines Zeigers als hexadezimale ganze Zahl
     template<typename T>
-    friend T& operator<<(T& os, void* ptr) {
+    friend T &operator<<(T &os, void *ptr) {
         int oldbase = os.base;
         os.base = 16;
         os << reinterpret_cast<unsigned long>(ptr);
@@ -160,29 +162,38 @@ public:
 
     // Aufruf einer Manipulatorfunktion
     template<typename T>
-    friend T& operator<<(T& os, T& (*f)(T&)) { return f(os); }
+    friend T &operator<<(T &os, T &(*f)(T &)) { return f(os); }
 
     // For stream formatting
     template<typename T>
-    friend T& operator<<(T& os, const fillw& w) {
+    friend T &operator<<(T &os, const fillw &w) {
         os.flush();  // Flush the buffer to not modify previous output
         os.fill_width = w.w;
         return os;
     }
 
     template<typename T>
-    friend T& operator<<(T& os, const fillc& c) {
+    friend T &operator<<(T &os, const fillc &c) {
         os.flush();
         os.fill_char = c.c;
         return os;
     }
 
     // Allow access to base member
-    template<typename T> friend T& endl(T& os);
-    template<typename T> friend T& bin(T& os);
-    template<typename T> friend T& oct(T& os);
-    template<typename T> friend T& dec(T& os);
-    template<typename T> friend T& hex(T& os);
+    template<typename T>
+    friend T &endl(T &os);
+
+    template<typename T>
+    friend T &bin(T &os);
+
+    template<typename T>
+    friend T &oct(T &os);
+
+    template<typename T>
+    friend T &dec(T &os);
+
+    template<typename T>
+    friend T &hex(T &os);
 };
 
 //
@@ -197,7 +208,7 @@ public:
 
 // Zeilenumbruch in Ausgabe einfuegen.
 template<typename T>
-T& endl(T& os) {
+T &endl(T &os) {
     // os << '\r';
     os << '\n';
     os.flush();
@@ -206,28 +217,28 @@ T& endl(T& os) {
 
 // Waehle binaeres Zahlensystem aus.
 template<typename T>
-T& bin(T& os) {
+T &bin(T &os) {
     os.base = 2;
     return os;
 }
 
 // Waehle oktales Zahlensystem aus.
 template<typename T>
-T& oct(T& os) {
+T &oct(T &os) {
     os.base = 8;
     return os;
 }
 
 // Waehle dezimales Zahlensystem aus.
 template<typename T>
-T& dec(T& os) {
+T &dec(T &os) {
     os.base = 10;
     return os;
 }
 
 // Waehle hexadezimales Zahlensystem aus.
 template<typename T>
-T& hex(T& os) {
+T &hex(T &os) {
     os.base = 16;
     return os;
 }

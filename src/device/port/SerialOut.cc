@@ -1,5 +1,7 @@
 #include "SerialOut.h"
 
+namespace Device {
+
 const IOport SerialOut::com1(0x3f8);
 
 SerialOut::SerialOut() {
@@ -18,7 +20,7 @@ SerialOut::SerialOut() {
     if (com1.inb() == 0xAE) {
         // If serial is not faulty set it in normal operation mode
         // (not-loopback with IRQs enabled and OUT#1 and OUT#2 bits enabled)
-                com1.outb(4, 0x0F);
+        com1.outb(4, 0x0F);
     }
 }
 
@@ -40,8 +42,10 @@ void SerialOut::write(const char a) {
     com1.outb(a);
 }
 
-void SerialOut::write(const bse::string_view a) {
-    for (char current : a) {
+void SerialOut::write(const String::string_view a) {
+    for (char current: a) {
         write(current);
     }
+}
+
 }

@@ -11,6 +11,8 @@
 
 #include "SpinLock.h"
 
+namespace Async {
+
 /*****************************************************************************
  * Methode:         CAS                                                      *
  *---------------------------------------------------------------------------*
@@ -23,7 +25,7 @@
  *                          *ptr := _new                                     *
  *                      return prev                                          *
  *****************************************************************************/
-static inline uint32_t CAS(const uint32_t* ptr) {
+static inline uint32_t CAS(const uint32_t *ptr) {
     uint32_t prev;
 
     /*
@@ -35,10 +37,10 @@ static inline uint32_t CAS(const uint32_t* ptr) {
      */
     asm volatile("lock;"                           // prevent race conditions with other cores
                  "cmpxchg %1, %2;"                 // %1 = _new; %2 = *ptr
-                                                   // constraints
-                 : "=a"(prev)                      // output: =a: RAX -> prev (%0))
-                 : "r"(1), "m"(*ptr), "a"(0)  // input = %1, %2, %3 (r=register, m=memory, a=accumlator = eax
-                 : "memory");                      // ensures assembly block will not be moved by gcc
+        // constraints
+            : "=a"(prev)                      // output: =a: RAX -> prev (%0))
+            : "r"(1), "m"(*ptr), "a"(0)  // input = %1, %2, %3 (r=register, m=memory, a=accumlator = eax
+            : "memory");                      // ensures assembly block will not be moved by gcc
 
     return prev;  // return pointer instead of prev to prevent unnecessary second call
 }
@@ -61,4 +63,6 @@ void SpinLock::acquire() {
  *****************************************************************************/
 void SpinLock::release() {
     lock = 0;
+}
+
 }

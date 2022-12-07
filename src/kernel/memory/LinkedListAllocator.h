@@ -14,45 +14,52 @@
 
 #include "Allocator.h"
 #include "lib/async/SpinLock.h"
-#include "kernel/log/Logger.h"
+#include "lib/stream/Logger.h"
+
+namespace Kernel {
 
 // Format eines freien Blocks, 4 + 4 + 4 Byte
 typedef struct free_block {
     bool allocated;  // NOTE: I added this to allow easier merging of free blocks:
-                     //       When freeing an allocated block, its next-pointer can
-                     //       point to another allocated block, the next free block
-                     //       can be found by traversing the leading allocated blocks.
-                     //       We only need a way to determine when the free block is reached.
-                     //       This also means that the whole list has to be traversed
-                     //       to merge blocks. Would be faster with doubly linked list.
+    //       When freeing an allocated block, its next-pointer can
+    //       point to another allocated block, the next free block
+    //       can be found by traversing the leading allocated blocks.
+    //       We only need a way to determine when the free block is reached.
+    //       This also means that the whole list has to be traversed
+    //       to merge blocks. Would be faster with doubly linked list.
     uint32_t size;
-    struct free_block* next;
+    struct free_block *next;
 } free_block_t;
 
 class LinkedListAllocator : Allocator {
 private:
     // freie Bloecke werden verkettet
-    struct free_block* free_start = nullptr;
+    struct free_block *free_start = nullptr;
 
     // Traverses the whole list forward till previous block is reached.
     // This can only be called on free blocks as allocated blocks
     // aren't reachable from the freelist.
-    static struct free_block* find_previous_block(struct free_block*);
+    static struct free_block *find_previous_block(struct free_block *);
 
     NamedLogger log;
-    SpinLock lock;
+    Async::SpinLock lock;
 
 public:
-    LinkedListAllocator(Allocator& copy) = delete;  // Verhindere Kopieren
+    LinkedListAllocator(Allocator &copy) = delete;  // Verhindere Kopieren
 
     LinkedListAllocator() : log("LL-Alloc") {}
 
 //    ~LinkedListAllocator() override = default;
 
     void init() override;
+
     void dump_free_memory() override;
-    void* alloc(uint32_t req_size) override;
-    void free(void* ptr) override;
+
+    void *alloc(uint32_t req_size) override;
+
+    void free(void *ptr) override;
 };
+
+}
 
 #endif

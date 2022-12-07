@@ -10,15 +10,17 @@
 
 #include "Globals.h"
 
-CGA_Stream kout;  // Ausgabe-Strom fuer Kernel
-const BIOS& bios = BIOS::instance();        // Schnittstelle zum 16-Bit BIOS
-VESA vesa;        // VESA-Treiber
+namespace Kernel {
 
-PIC pic;               // Interrupt-Controller
+CGA_Stream kout;  // Ausgabe-Strom fuer Kernel
+const Device::BIOS &bios = Device::BIOS::instance();        // Schnittstelle zum 16-Bit BIOS
+Device::VESA vesa;        // VESA-Treiber
+
+Device::PIC pic;               // Interrupt-Controller
 IntDispatcher intdis;  // Unterbrechungsverteilung
-PIT pit(10000);        // 10000
-PCSPK pcspk;           // PC-Lautsprecher
-Keyboard kb;           // Tastatur
+Device::PIT pit(10000);        // 10000
+Device::PCSPK pcspk;           // PC-Lautsprecher
+Device::Keyboard kb;           // Tastatur
 
 // BumpAllocator allocator;
 LinkedListAllocator allocator;
@@ -27,7 +29,9 @@ LinkedListAllocator allocator;
 Scheduler scheduler;
 
 KeyEventManager kevman;
-SerialOut serial;
+Device::SerialOut serial;
 
 unsigned int total_mem;  // RAM total
 uint64_t systime = 0;
+
+}

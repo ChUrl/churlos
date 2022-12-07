@@ -50,7 +50,9 @@
  *****************************************************************************/
 #include "kernel/memory/Paging.h"
 #include "kernel/system/Globals.h"
-#include "kernel/log/Logger.h"
+#include "lib/stream/Logger.h"
+
+namespace Kernel {
 
 // Bits fuer Eintraege in der Page-Table
 constexpr const unsigned int PAGE_PRESENT = 0x001;
@@ -74,10 +76,10 @@ constexpr const unsigned int LST_ALLOCABLE_PAGE = 0x2FF000;
  * Beschreibung:    Alloziert eine 4 KB Seite. Allozieren heisst hier        *
  *                  lediglich Setzen eines eigenen RESERVED-Bits.            *
  *****************************************************************************/
-uint32_t* pg_alloc_page() {
-    uint32_t* p_page;
+uint32_t *pg_alloc_page() {
+    uint32_t *p_page;
 
-    p_page = reinterpret_cast<uint32_t*>(PAGE_TABLE);
+    p_page = reinterpret_cast<uint32_t *>(PAGE_TABLE);
 
     // 1. Eintrag ist fuer Null-Pointer-Exception reserviert
     // ausserdem liegt die Page-Table an Adresse PAGE_TABLE
@@ -87,7 +89,7 @@ uint32_t* pg_alloc_page() {
         // pruefe ob Page frei
         if (((*p_page) & PAGE_RESERVED) == 0) {
             *p_page = (*p_page | PAGE_RESERVED);
-            return reinterpret_cast<uint32_t*>(i << 12);  // Address without flags (Offset 0)
+            return reinterpret_cast<uint32_t *>(i << 12);  // Address without flags (Offset 0)
         }
     }
     return nullptr;
@@ -99,11 +101,12 @@ uint32_t* pg_alloc_page() {
  * Beschreibung:    Schreibschutz fuer die uebergebene Seite aktivieren.     *
  *                  Dies fuer das Debugging nuetzlich.                       *
  *****************************************************************************/
-void pg_write_protect_page(const uint32_t* p_page) {
+void pg_write_protect_page(const uint32_t *p_page) {
 
     /* hier muss Code eingefügt werden */
 
-    uint32_t* page = reinterpret_cast<uint32_t*>(PAGE_TABLE) + (reinterpret_cast<uint32_t>(p_page) >> 12);  // Pagetable entry
+    uint32_t *page =
+            reinterpret_cast<uint32_t *>(PAGE_TABLE) + (reinterpret_cast<uint32_t>(p_page) >> 12);  // Pagetable entry
 
     uint32_t mask = PAGE_WRITEABLE;  // fill to 32bit
     *page = *page & ~mask;               // set writable to 0
@@ -116,11 +119,12 @@ void pg_write_protect_page(const uint32_t* p_page) {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Seite als ausgelagert markieren. Nur fuer Testzwecke.    *
  *****************************************************************************/
-void pg_notpresent_page(const uint32_t* p_page) {
+void pg_notpresent_page(const uint32_t *p_page) {
 
     /* hier muss Code eingefügt werden */
 
-    uint32_t* page = reinterpret_cast<uint32_t*>(PAGE_TABLE) + (reinterpret_cast<uint32_t>(p_page) >> 12);  // Pagetable entry
+    uint32_t *page =
+            reinterpret_cast<uint32_t *>(PAGE_TABLE) + (reinterpret_cast<uint32_t>(p_page) >> 12);  // Pagetable entry
 
     uint32_t mask = PAGE_PRESENT;
     *page = *page & ~mask;  // set present to 0
@@ -134,7 +138,7 @@ void pg_notpresent_page(const uint32_t* p_page) {
  * Beschreibung:    Gibt eine 4 KB Seite frei. Es wird hierbei das RESERVED- *
  *                  Bit geloescht.                                           *
  *****************************************************************************/
-void pg_free_page(uint32_t* p_page) {
+void pg_free_page(uint32_t *p_page) {
     uint32_t idx = reinterpret_cast<uint32_t>(p_page) >> 12;
 
     // ausserhalb Page ?
@@ -143,7 +147,7 @@ void pg_free_page(uint32_t* p_page) {
     }
 
     // Eintrag einlesen und aendern (PAGE_WRITEABLE loeschen)
-    p_page = reinterpret_cast<uint32_t*>(PAGE_TABLE);
+    p_page = reinterpret_cast<uint32_t *>(PAGE_TABLE);
     p_page += idx;
 
     *p_page = ((idx << 12) | PAGE_WRITEABLE | PAGE_PRESENT);
@@ -157,8 +161,8 @@ void pg_free_page(uint32_t* p_page) {
  *****************************************************************************/
 void pg_init() {
     uint32_t i;
-    uint32_t* p_pdir;    // Zeiger auf Page-Directory
-    uint32_t* p_page;    // Zeiger auf einzige Page-Table fuer 4 KB Pages
+    uint32_t *p_pdir;    // Zeiger auf Page-Directory
+    uint32_t *p_page;    // Zeiger auf einzige Page-Table fuer 4 KB Pages
     uint32_t num_pages;  // Anzahl 4 MB Pages die phys. Adressraum umfassen
 
     // wie viele 4 MB Seiten sollen als 'Present' angelegt werden,
@@ -174,7 +178,7 @@ void pg_init() {
     //
 
     // Eintrag 0: Zeiger auf 4 KB Page-Table
-    p_pdir = reinterpret_cast<uint32_t*>(PAGE_DIRECTORY);
+    p_pdir = reinterpret_cast<uint32_t *>(PAGE_DIRECTORY);
     *p_pdir = PAGE_TABLE | PAGE_WRITEABLE | PAGE_PRESENT;
 
     // Eintraege 1-1023: Direktes Mapping (1:1) auf 4 MB Pages (ohne Page-Table)
@@ -190,7 +194,7 @@ void pg_init() {
     //
     // 1. Page-Table
     //
-    p_page = reinterpret_cast<uint32_t*>(PAGE_TABLE);
+    p_page = reinterpret_cast<uint32_t *>(PAGE_TABLE);
 
     // ersten Eintrag loeschen -> not present, write protected -> Null-Pointer abfangen
     *p_page = 0;
@@ -209,5 +213,7 @@ void pg_init() {
     }
 
     // Paging aktivieren (in startup.asm)
-    paging_on(reinterpret_cast<uint32_t*>(PAGE_DIRECTORY));
+    paging_on(reinterpret_cast<uint32_t *>(PAGE_DIRECTORY));
+}
+
 }

@@ -2,8 +2,10 @@
 
 // RBT code taken from https://github.com/Bibeknam/algorithmtutorprograms
 
+namespace Kernel {
+
 // START copy from algorithmtutorprograms
-void TreeAllocator::rbt_transplant(tree_block_t* a, tree_block_t* b) {
+void TreeAllocator::rbt_transplant(tree_block_t *a, tree_block_t *b) {
     if (a->parent == nullptr) {
         free_start = b;
     } else if (a == a->parent->left) {
@@ -16,15 +18,15 @@ void TreeAllocator::rbt_transplant(tree_block_t* a, tree_block_t* b) {
 
 // insert the key to the tree in its appropriate position
 // and fix the tree
-void TreeAllocator::rbt_insert(tree_block_t* node) {
+void TreeAllocator::rbt_insert(tree_block_t *node) {
     // Ordinary Binary Search Insertion
     node->parent = nullptr;
     node->left = nullptr;
     node->right = nullptr;
     node->red = true;  // new node must be red
 
-    tree_block_t* y = nullptr;
-    tree_block_t* x = free_start;
+    tree_block_t *y = nullptr;
+    tree_block_t *x = free_start;
 
     while (x != nullptr) {
         y = x;
@@ -61,8 +63,8 @@ void TreeAllocator::rbt_insert(tree_block_t* node) {
 }
 
 // fix the red-black tree
-void TreeAllocator::rbt_fix_insert(tree_block_t* k) {
-    tree_block_t* u;
+void TreeAllocator::rbt_fix_insert(tree_block_t *k) {
+    tree_block_t *u;
     while (k->parent->red) {
         if (k->parent == k->parent->parent->right) {
             u = k->parent->parent->left;  // uncle
@@ -112,8 +114,8 @@ void TreeAllocator::rbt_fix_insert(tree_block_t* k) {
 }
 
 // rotate left at node x
-void TreeAllocator::rbt_rot_l(tree_block_t* x) {
-    tree_block_t* y = x->right;
+void TreeAllocator::rbt_rot_l(tree_block_t *x) {
+    tree_block_t *y = x->right;
     x->right = y->left;
     if (y->left != nullptr) {
         y->left->parent = x;
@@ -131,8 +133,8 @@ void TreeAllocator::rbt_rot_l(tree_block_t* x) {
 }
 
 // rotate right at node x
-void TreeAllocator::rbt_rot_r(tree_block_t* x) {
-    tree_block_t* y = x->left;
+void TreeAllocator::rbt_rot_r(tree_block_t *x) {
+    tree_block_t *y = x->left;
     x->left = y->right;
     if (y->right != nullptr) {
         y->right->parent = x;
@@ -150,16 +152,16 @@ void TreeAllocator::rbt_rot_r(tree_block_t* x) {
 }
 
 // find the node with the minimum key
-tree_block_t* TreeAllocator::rbt_minimum(tree_block_t* node) {
+tree_block_t *TreeAllocator::rbt_minimum(tree_block_t *node) {
     while (node->left != nullptr) {
         node = node->left;
     }
     return node;
 }
 
-void TreeAllocator::rbt_remove(tree_block_t* z) {
-    tree_block_t* x;
-    tree_block_t* y;
+void TreeAllocator::rbt_remove(tree_block_t *z) {
+    tree_block_t *x;
+    tree_block_t *y;
 
     y = z;
     bool y_original_red = y->red;
@@ -192,8 +194,8 @@ void TreeAllocator::rbt_remove(tree_block_t* z) {
 }
 
 // fix the rb tree modified by the delete operation
-void TreeAllocator::rbt_fix_remove(tree_block_t* x) {
-    tree_block_t* s;
+void TreeAllocator::rbt_fix_remove(tree_block_t *x) {
+    tree_block_t *s;
     while (x != free_start && !x->red) {
         if (x == x->parent->left) {
             s = x->parent->right;
@@ -262,7 +264,7 @@ void TreeAllocator::rbt_fix_remove(tree_block_t* x) {
 // END copy from algorithmtutorprograms
 
 // This is recursive and depends on luck
-tree_block_t* TreeAllocator::rbt_search_bestfit(tree_block_t* node, uint32_t req_size) {
+tree_block_t *TreeAllocator::rbt_search_bestfit(tree_block_t *node, uint32_t req_size) {
     if (node == nullptr) {
         return nullptr;
     }
@@ -289,14 +291,16 @@ tree_block_t* TreeAllocator::rbt_search_bestfit(tree_block_t* node, uint32_t req
 }
 
 // DLL code
-void TreeAllocator::dll_insert(list_block_t* previous, list_block_t* node) {
+void TreeAllocator::dll_insert(list_block_t *previous, list_block_t *node) {
     previous->next->previous = node;
     node->next = previous->next;
     node->previous = previous;
     previous->next = node;
 }
 
-void TreeAllocator::dll_remove(list_block_t* node) {
+void TreeAllocator::dll_remove(list_block_t *node) {
     node->previous->next = node->next;
     node->next->previous = node->previous;
+}
+
 }

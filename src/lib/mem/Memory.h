@@ -3,7 +3,7 @@
 
 #include <utility>
 
-namespace bse {
+namespace Memory {
 
     // add using byte or sth to replace char
 

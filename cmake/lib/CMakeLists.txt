@@ -9,6 +9,8 @@ add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 # Add subdirectories
 add_subdirectory(async)
+add_subdirectory(demo)
+add_subdirectory(graphics)
 add_subdirectory(mem)
 add_subdirectory(stream)
-add_subdirectory(util)
+add_subdirectory(string)

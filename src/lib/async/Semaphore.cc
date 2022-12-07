@@ -1,6 +1,8 @@
 #include "Semaphore.h"
 #include "kernel/system/Globals.h"
 
+namespace Async {
+
 void Semaphore::p() {
     // Lock to allow deterministic operations on counter/queue
     lock.acquire();
@@ -14,11 +16,11 @@ void Semaphore::p() {
         if (!wait_queue.initialized()) {  // TODO: I will replace this suboptimal datastructure in the future
             wait_queue.reserve();
         }
-        wait_queue.push_back(scheduler.get_active());
+        wait_queue.push_back(Kernel::scheduler.get_active());
 
-        CPU::disable_int();  // Make sure the block() comes through after releasing the lock
+        Device::CPU::disable_int();  // Make sure the block() comes through after releasing the lock
         lock.release();
-        scheduler.block();  // Moves to next thread, enables int
+        Kernel::scheduler.block();  // Moves to next thread, enables int
     }
 }
 
@@ -30,12 +32,14 @@ void Semaphore::v() {
         unsigned int tid = wait_queue.front();
         wait_queue.erase(wait_queue.begin());
 
-        CPU::disable_int();  // Make sure the deblock() comes through after releasing the lock
+        Device::CPU::disable_int();  // Make sure the deblock() comes through after releasing the lock
         lock.release();
-        scheduler.deblock(tid);  // Enables int
+        Kernel::scheduler.deblock(tid);  // Enables int
     } else {
         // No more threads want to work so free semaphore
         counter = counter + 1;
         lock.release();
     }
+}
+
 }

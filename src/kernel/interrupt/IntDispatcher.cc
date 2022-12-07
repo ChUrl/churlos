@@ -13,7 +13,7 @@
 #include "IntDispatcher.h"
 #include "device/cpu/CPU.h"
 #include "kernel/system/Globals.h"
-#include "kernel/interrupt/Bluescreen.h"
+#include "kernel/exception//Bluescreen.h"
 
 extern "C" void int_disp(uint8_t vector);
 
@@ -35,15 +35,17 @@ void int_disp(uint8_t vector) {
 
     if (vector < 32) {
         bs_dump(vector);
-        CPU::halt();
+        Device::CPU::halt();
     }
 
-    if (intdis.report(vector) < 0) {
-        kout << "Panic: unexpected interrupt " << vector;
-        kout << " - processor halted." << endl;
-        CPU::halt();
+    if (Kernel::intdis.report(vector) < 0) {
+        Kernel::kout << "Panic: unexpected interrupt " << vector;
+        Kernel::kout << " - processor halted." << endl;
+        Device::CPU::halt();
     }
 }
+
+namespace Kernel {
 
 /*****************************************************************************
  * Methode:         IntDispatcher::assign                                    *
@@ -56,7 +58,7 @@ void int_disp(uint8_t vector) {
  *                                                                           *
  * Rueckgabewert:   0 = Erfolg, -1 = Fehler                                  *
  *****************************************************************************/
-int IntDispatcher::assign(uint8_t vector, ISR& isr) {
+int IntDispatcher::assign(uint8_t vector, ISR &isr) {
 
     /* hier muss Code eingefuegt werden */
 
@@ -89,7 +91,7 @@ int IntDispatcher::report(uint8_t vector) {
         return -1;
     }
 
-    ISR* isr = map[vector];
+    ISR *isr = map[vector];
 
     if (isr == nullptr) {
         log.error() << "No ISR registered for vector " << vector << endl;
@@ -106,4 +108,6 @@ int IntDispatcher::report(uint8_t vector) {
     isr->trigger();
 
     return 0;
+}
+
 }

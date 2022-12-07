@@ -3,20 +3,25 @@
 
 #include "kernel/process/Thread.h"
 
+namespace Kernel {
+
 class KeyEventListener {
 private:
     char lastChar = '\0';
 
     friend class KeyEventManager;
+
     unsigned int tid;  // Thread which contains this listener, so the listener can block the thread
 
 public:
-    KeyEventListener(const KeyEventListener& copy) = delete;
+    KeyEventListener(const KeyEventListener &copy) = delete;
 
     KeyEventListener(unsigned int tid) : tid(tid) {}
 
     char waitForKeyEvent() const;  // Blocks the thread until woken up by manager
     void trigger(char c);          // Gets called from KeyEventManager
 };
+
+}
 
 #endif

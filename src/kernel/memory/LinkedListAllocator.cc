@@ -17,6 +17,8 @@
 // memory addresses of each block
 // (That was the plan at least)
 
+namespace Kernel {
+
 /*****************************************************************************
  * Methode:         LinkedListAllocator::init                                *
  *---------------------------------------------------------------------------*
@@ -31,7 +33,7 @@ void LinkedListAllocator::init() {
 
     /* Hier muess Code eingefuegt werden */
 
-    free_start = reinterpret_cast<free_block_t*>(heap_start);
+    free_start = reinterpret_cast<free_block_t *>(heap_start);
     free_start->allocated = false;
     free_start->size = heap_size - sizeof(free_block_t);
     free_start->next = free_start;  // Only one block, points to itself
@@ -48,16 +50,16 @@ void LinkedListAllocator::dump_free_memory() {
 
     /* Hier muess Code eingefuegt werden */
 
-    kout << "Freier Speicher:" << endl;
+    Kernel::kout << "Freier Speicher:" << endl;
 
     if (free_start == nullptr) {
-        kout << " - No free Blocks" << endl;
+        Kernel::kout << " - No free Blocks" << endl;
     } else {
-        kout << " - Freelist start: " << hex << reinterpret_cast<uint32_t>(free_start) << endl;
+        Kernel::kout << " - Freelist start: " << hex << reinterpret_cast<uint32_t>(free_start) << endl;
 
-        free_block_t* current = free_start;
+        free_block_t *current = free_start;
         do {
-            kout << " - Free Block (Start: " << hex << reinterpret_cast<uint32_t>(current)
+            Kernel::kout << " - Free Block (Start: " << hex << reinterpret_cast<uint32_t>(current)
                  << " Size: " << hex << current->size << ")" << endl;
             current = current->next;
         } while (current != free_start);
@@ -69,7 +71,7 @@ void LinkedListAllocator::dump_free_memory() {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Einen neuen Speicherblock allozieren.                    * 
  *****************************************************************************/
-void* LinkedListAllocator::alloc(uint32_t req_size) {
+void *LinkedListAllocator::alloc(uint32_t req_size) {
     lock.acquire();
 
     /* Hier muess Code eingefuegt werden */
@@ -90,7 +92,7 @@ void* LinkedListAllocator::alloc(uint32_t req_size) {
         log.trace() << " - Rounded to word border (+" << dec << req_size_diff << " bytes)" << endl;
     }
 
-    free_block_t* current = free_start;
+    free_block_t *current = free_start;
     do {
         if (current->size >= rreq_size) {  // Size doesn't contain header, only usable
             // Current block large enough
@@ -104,8 +106,9 @@ void* LinkedListAllocator::alloc(uint32_t req_size) {
                 // [<> | current | new_next | <>]
                 // In case of only one freeblock:
                 // [current | new_next]
-                free_block_t* new_next =
-                  reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(current) + sizeof(free_block_t) + rreq_size);
+                free_block_t *new_next =
+                        reinterpret_cast<free_block_t *>(reinterpret_cast<uint32_t>(current) + sizeof(free_block_t) +
+                                                         rreq_size);
 
                 // If only one block exists, current->next is current
                 // This shouldn't be a problem since the block gets removed from the list later
@@ -138,7 +141,7 @@ void* LinkedListAllocator::alloc(uint32_t req_size) {
             // If block was cut this is obvious, because current->next is a free block
             // If block wasn't cut it also works as current was a free block before, so it's next
             // block should also be free
-            free_block_t* previous = LinkedListAllocator::find_previous_block(current);
+            free_block_t *previous = LinkedListAllocator::find_previous_block(current);
             previous->next = current->next;  // Current block was free so previous block pointed at it
             current->allocated = true;
 
@@ -154,9 +157,11 @@ void* LinkedListAllocator::alloc(uint32_t req_size) {
             // }
             // log.debug() << "Finished check" << endl;
 
-            log.debug() << "returning memory address " << hex << reinterpret_cast<uint32_t>(current) + sizeof(free_block_t) << endl;
+            log.debug() << "returning memory address " << hex
+                        << reinterpret_cast<uint32_t>(current) + sizeof(free_block_t) << endl;
             lock.release();
-            return reinterpret_cast<void*>(reinterpret_cast<uint32_t>(current) + sizeof(free_block_t));  // Speicheranfang, nicht header
+            return reinterpret_cast<void *>(reinterpret_cast<uint32_t>(current) +
+                                            sizeof(free_block_t));  // Speicheranfang, nicht header
         }
 
         current = current->next;
@@ -172,13 +177,14 @@ void* LinkedListAllocator::alloc(uint32_t req_size) {
  *---------------------------------------------------------------------------*
  * Beschreibung:    Einen Speicherblock freigeben.                           *
  *****************************************************************************/
-void LinkedListAllocator::free(void* ptr) {
+void LinkedListAllocator::free(void *ptr) {
     lock.acquire();
 
     /* Hier muess Code eingefuegt werden */
 
     // Account for header
-    free_block_t* block_start = reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(ptr) - sizeof(free_block_t));
+    free_block_t *block_start = reinterpret_cast<free_block_t *>(reinterpret_cast<uint32_t>(ptr) -
+                                                                 sizeof(free_block_t));
 
     log.debug() << "Freeing " << hex << reinterpret_cast<uint32_t>(ptr) << ", Size: " << block_start->size << endl;
 
@@ -200,18 +206,20 @@ void LinkedListAllocator::free(void* ptr) {
         return;
     }
 
-    free_block_t* next_block =
-      reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(block_start) + sizeof(free_block_t) + block_start->size);
+    free_block_t *next_block =
+            reinterpret_cast<free_block_t *>(reinterpret_cast<uint32_t>(block_start) + sizeof(free_block_t) +
+                                             block_start->size);
 
     // Find the next free block, multiple next blocks can be allocated so walk through them
-    free_block_t* next_free = block_start->next;
+    free_block_t *next_free = block_start->next;
     while (next_free->allocated) {
         next_free = next_free->next;
     }
 
-    free_block_t* previous_free = LinkedListAllocator::find_previous_block(next_free);
-    free_block_t* previous_free_next =
-      reinterpret_cast<free_block_t*>(reinterpret_cast<uint32_t>(previous_free) + sizeof(free_block_t) + previous_free->size);
+    free_block_t *previous_free = LinkedListAllocator::find_previous_block(next_free);
+    free_block_t *previous_free_next =
+            reinterpret_cast<free_block_t *>(reinterpret_cast<uint32_t>(previous_free) + sizeof(free_block_t) +
+                                             previous_free->size);
 
     // We have: [previous_free | previous_free_next | <> | block_start | next_block | <> | next_free]
     // The <> spaces don't have to exist and next_block could be the same as next_free
@@ -284,7 +292,8 @@ void LinkedListAllocator::free(void* ptr) {
 
         if (free_start == block_start) {
             // block_start is now invalid after merge
-            log.trace() << " - Moving freelist start to " << hex << reinterpret_cast<unsigned int>(previous_free) << endl;
+            log.trace() << " - Moving freelist start to " << hex << reinterpret_cast<unsigned int>(previous_free)
+                        << endl;
             free_start = previous_free;
         }
     }
@@ -294,17 +303,19 @@ void LinkedListAllocator::free(void* ptr) {
     lock.release();
 }
 
-free_block_t* LinkedListAllocator::find_previous_block(free_block_t* next_block) {
+free_block_t *LinkedListAllocator::find_previous_block(free_block_t *next_block) {
     // Durchlaufe die ganze freispeicherliste bis zum Block der auf next_block zeigt
-    free_block_t* current = next_block;
+    free_block_t *current = next_block;
     while (current->next != next_block) {
         // NOTE: This will get stuck if called on the wrong block
         current = current->next;
     }
 
     // if (current == next_block) {
-    //     kout << "LinkedListAllocator::find_previous_block returned the input block" << endl;
+    //     Kernel::kout << "LinkedListAllocator::find_previous_block returned the input block" << endl;
     // }
 
     return current;
+}
+
 }

@@ -33,12 +33,14 @@
 #ifndef Allocator_include__
 #define Allocator_include__
 
+namespace Kernel {
+
 constexpr const unsigned int BASIC_ALIGN = 4;                // 32 Bit so 4 Bytes?
 constexpr const unsigned int HEAP_MIN_FREE_BLOCK_SIZE = 64;  // min. Groesse eines freien Blocks
 
 class Allocator {
 public:
-    Allocator(Allocator& copy) = delete;  // Verhindere Kopieren
+    Allocator(Allocator &copy) = delete;  // Verhindere Kopieren
 
     Allocator();
 
@@ -50,9 +52,14 @@ public:
     unsigned int initialized;
 
     virtual void init() = 0;
+
     virtual void dump_free_memory() = 0;
-    virtual void* alloc(unsigned int req_size) = 0;
-    virtual void free(void* ptr) = 0;
+
+    virtual void *alloc(unsigned int req_size) = 0;
+
+    virtual void free(void *ptr) = 0;
 };
+
+}
 
 #endif

@@ -11,16 +11,16 @@
  *****************************************************************************/
 
 #include "kernel/system/Globals.h"
-#include "kernel/demo/MainMenu.h"
-#include "kernel/log/Logger.h"
+#include "lib/demo/MainMenu.h"
+#include "lib/stream/Logger.h"
 #include "device/cpu/CPU.h"
 #include "kernel/memory/Paging.h"
 #include "lib/stream/OutStream.h"
 
 void print_startup_message() {
-    kout.lock();
-    kout.clear();
-    kout << "BSEos 1.0\n"
+    Kernel::kout.lock();
+    Kernel::kout.clear();
+    Kernel::kout << "BSEos 1.0\n"
          << "=========\n"
          << "Unterstuetzte Funktionen:\n"
          << "   - Bildschirmausgaben\n"
@@ -38,47 +38,46 @@ void print_startup_message() {
          << "   - Serial Output Logging\n"
          << "\nPress Enter to continue\n"
          << endl;
-    kout.unlock();
+    Kernel::kout.unlock();
 }
-
-// #include "test/VectorTest.h"
 
 int main() {
     Logger::set_level(Logger::TRACE);
-    Logger::disable_kout();
     Logger::enable_serial();
 
     // Speicherverwaltung initialisieren
-    allocator.init();
-    scheduler.init();
-    kevman.init();
+    Kernel::allocator.init();
+    Kernel::scheduler.init();
+    Kernel::kevman.init();
 
     // Tastatur-Unterbrechungsroutine 'einstoepseln'
-    kb.plugin();
-    pit.plugin();
+    Kernel::kb.plugin();
+    Kernel::pit.plugin();
 
     // Interrupts erlauben (Tastatur, PIT)
-    CPU::enable_int();
+    Device::CPU::enable_int();
 
     // Activate paging
     // This has to happen after the allocator is initialized but before the scheduler is started
-    pg_init();
+    Kernel::pg_init();
 
     // Startmeldung
     print_startup_message();
 
     // Scheduler starten (schedule() erzeugt den Idle-Thread)
-    scheduler.ready<MainMenu>();  // NOTE: A thread that manages other threads has to be added before scheduler.schedule(),
+    Kernel::scheduler.ready<MainMenu>();  // NOTE: A thread that manages other threads has to be added before scheduler.schedule(),
                                   //       because scheduler.schedule() doesn't return, only threads get cpu time
-    scheduler.schedule();
+    Kernel::scheduler.schedule();
 
     // NOTE: Pre-Post ToDo's
     // DONE: Reorganize the project similar to hhuOS:
     //       - DONE: Use CMake
     //       - DONE: Copy file structure: build, cmake, src
     //       - DONE: Translate the src/Makefile and boot/Makefile
-    // TODO: Switch char/short/int/long to uint_ sized types where appropriate
-    // TODO: Namespace that shit
+    // DONE: Switch char/short/int/long to uint_ sized types where appropriate (I will find you...and then I will kill you)
+    // DONE: Namespace that shit (Except for OutStream)
+    // TODO: Change filenames to .cpp
+    // TODO: Check data types of register/port read/write functions
     // TODO: Investigate: C++20 (I wanted to use reference optionals somewhere...)
     // TODO: Compare current (hhuOS) compiler flags with old BSEos compiler flags
     // TODO: Change int types to cstdint

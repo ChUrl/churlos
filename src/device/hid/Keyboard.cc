@@ -12,40 +12,42 @@
 #include "kernel/system/Globals.h"
 #include "Key.h"
 
+namespace Device {
+
 const IOport Keyboard::ctrl_port(0x64);
 const IOport Keyboard::data_port(0x60);
 
 /* Tabellen fuer ASCII-Codes (Klassenvariablen) intiialisieren */
 
 constexpr const uint8_t Keyboard::normal_tab[] = {
-  0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 225, 39, '\b',
-  0, 'q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 129, '+', '\n',
-  0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 148, 132, '^', 0, '#',
-  'y', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '-', 0,
-  '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-',
-  0, 0, 0, '+', 0, 0, 0, 0, 0, 0, 0, '<', 0, 0};
+        0, 0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 225, 39, '\b',
+        0, 'q', 'w', 'e', 'r', 't', 'z', 'u', 'i', 'o', 'p', 129, '+', '\n',
+        0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 148, 132, '^', 0, '#',
+        'y', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '-', 0,
+        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-',
+        0, 0, 0, '+', 0, 0, 0, 0, 0, 0, 0, '<', 0, 0};
 
 constexpr const uint8_t Keyboard::shift_tab[] = {
-  0, 0, '!', '"', 21, '$', '%', '&', '/', '(', ')', '=', '?', 96, 0,
-  0, 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 154, '*', 0,
-  0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 153, 142, 248, 0, 39,
-  'Y', 'X', 'C', 'V', 'B', 'N', 'M', ';', ':', '_', 0,
-  0, 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '>', 0, 0};
+        0, 0, '!', '"', 21, '$', '%', '&', '/', '(', ')', '=', '?', 96, 0,
+        0, 'Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P', 154, '*', 0,
+        0, 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 153, 142, 248, 0, 39,
+        'Y', 'X', 'C', 'V', 'B', 'N', 'M', ';', ':', '_', 0,
+        0, 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '>', 0, 0};
 
 constexpr const uint8_t Keyboard::alt_tab[] = {
-  0, 0, 0, 253, 0, 0, 0, 0, '{', '[', ']', '}', '\\', 0, 0,
-  0, '@', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '~', 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 230, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '|', 0, 0};
+        0, 0, 0, 253, 0, 0, 0, 0, '{', '[', ']', '}', '\\', 0, 0,
+        0, '@', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '~', 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 230, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '|', 0, 0};
 
 constexpr const uint8_t Keyboard::asc_num_tab[] = {
-  '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ','};
+        '7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', ','};
 
 constexpr const uint8_t Keyboard::scan_num_tab[] = {
-  8, 9, 10, 53, 5, 6, 7, 27, 2, 3, 4, 11, 51};
+        8, 9, 10, 53, 5, 6, 7, 27, 2, 3, 4, 11, 51};
 
 /*****************************************************************************
  * Methode:         Keyboard::key_decoded                                    *
@@ -71,26 +73,26 @@ bool Keyboard::key_decoded() {
     // ignoriert werden.
     if (code & break_bit) {
         code &= ~break_bit;  // Der Break-Code einer Taste ist gleich dem
-                             // Make-Code mit gesetzten break_bit.
+        // Make-Code mit gesetzten break_bit.
         switch (code) {
-        case 42:
-        case 54:
-            gather.shift(false);
-            break;
-        case 56:
-            if (prefix == prefix1) {
-                gather.alt_right(false);
-            } else {
-                gather.alt_left(false);
-            }
-            break;
-        case 29:
-            if (prefix == prefix1) {
-                gather.ctrl_right(false);
-            } else {
-                gather.ctrl_left(false);
-            }
-            break;
+            case 42:
+            case 54:
+                gather.shift(false);
+                break;
+            case 56:
+                if (prefix == prefix1) {
+                    gather.alt_right(false);
+                } else {
+                    gather.alt_left(false);
+                }
+                break;
+            case 29:
+                if (prefix == prefix1) {
+                    gather.ctrl_right(false);
+                } else {
+                    gather.ctrl_left(false);
+                }
+                break;
         }
 
         // Ein Prefix gilt immer nur fuer den unmittelbar nachfolgenden Code.
@@ -110,52 +112,52 @@ bool Keyboard::key_decoded() {
     // code der Taste fehlt.
 
     switch (code) {
-    case 42:
-    case 54:
-        gather.shift(true);
-        break;
-    case 56:
-        if (prefix == prefix1) {
-            gather.alt_right(true);
-        } else {
-            gather.alt_left(true);
-        }
-        break;
-    case 29:
-        if (prefix == prefix1) {
-            gather.ctrl_right(true);
-        } else {
-            gather.ctrl_left(true);
-        }
-        break;
-    case 58:
-        gather.caps_lock(!gather.caps_lock());
-        set_led(led::caps_lock, gather.caps_lock());
-        break;
-    case 70:
-        gather.scroll_lock(!gather.scroll_lock());
-        set_led(led::scroll_lock, gather.scroll_lock());
-        break;
-    case 69:                       // Numlock oder Pause ?
-        if (gather.ctrl_left()) {  // Pause Taste
-            // Auf alten Tastaturen konnte die Pause-Funktion wohl nur
-            // ueber Ctrl+NumLock erreicht werden. Moderne MF-II Tastaturen
-            // senden daher diese Codekombination, wenn Pause gemeint ist.
-            // Die Pause Taste liefert zwar normalerweise keinen ASCII-
-            // Code, aber Nachgucken schadet auch nicht. In jedem Fall ist
-            // die Taste nun komplett.
+        case 42:
+        case 54:
+            gather.shift(true);
+            break;
+        case 56:
+            if (prefix == prefix1) {
+                gather.alt_right(true);
+            } else {
+                gather.alt_left(true);
+            }
+            break;
+        case 29:
+            if (prefix == prefix1) {
+                gather.ctrl_right(true);
+            } else {
+                gather.ctrl_left(true);
+            }
+            break;
+        case 58:
+            gather.caps_lock(!gather.caps_lock());
+            set_led(led::caps_lock, gather.caps_lock());
+            break;
+        case 70:
+            gather.scroll_lock(!gather.scroll_lock());
+            set_led(led::scroll_lock, gather.scroll_lock());
+            break;
+        case 69:                       // Numlock oder Pause ?
+            if (gather.ctrl_left()) {  // Pause Taste
+                // Auf alten Tastaturen konnte die Pause-Funktion wohl nur
+                // ueber Ctrl+NumLock erreicht werden. Moderne MF-II Tastaturen
+                // senden daher diese Codekombination, wenn Pause gemeint ist.
+                // Die Pause Taste liefert zwar normalerweise keinen ASCII-
+                // Code, aber Nachgucken schadet auch nicht. In jedem Fall ist
+                // die Taste nun komplett.
+                get_ascii_code();
+                done = true;
+            } else {  // NumLock
+                gather.num_lock(!gather.num_lock());
+                set_led(led::num_lock, gather.num_lock());
+            }
+            break;
+
+        default:  // alle anderen Tasten
+            // ASCII-Codes aus den entsprechenden Tabellen auslesen, fertig.
             get_ascii_code();
             done = true;
-        } else {  // NumLock
-            gather.num_lock(!gather.num_lock());
-            set_led(led::num_lock, gather.num_lock());
-        }
-        break;
-
-    default:  // alle anderen Tasten
-        // ASCII-Codes aus den entsprechenden Tabellen auslesen, fertig.
-        get_ascii_code();
-        done = true;
     }
 
     // Ein Prefix gilt immer nur fuer den unmittelbar nachfolgenden Code.
@@ -183,9 +185,9 @@ void Keyboard::get_ascii_code() {
         gather.scancode(Key::scan::div);
     }
 
-    // Anhand der Modifierbits muss die richtige Tabelle ausgewaehlt
-    // werden. Der Einfachheit halber hat NumLock Vorrang vor Alt,
-    // Shift und CapsLock. Fuer Ctrl gibt es keine eigene Tabelle
+        // Anhand der Modifierbits muss die richtige Tabelle ausgewaehlt
+        // werden. Der Einfachheit halber hat NumLock Vorrang vor Alt,
+        // Shift und CapsLock. Fuer Ctrl gibt es keine eigene Tabelle
     else if (gather.num_lock() && !prefix && code >= 71 && code <= 83) {
         // Bei eingeschaltetem NumLock und der Betaetigung einer der
         // Tasten des separaten Ziffernblocks (Codes 71-83), sollen
@@ -288,7 +290,7 @@ void Keyboard::reboot() {
 
     // Dem BIOS mitteilen, dass das Reset beabsichtigt war
     // und kein Speichertest durchgefuehrt werden muss.
-    *reinterpret_cast<uint16_t*>(0x472) = 0x1234;
+    *reinterpret_cast<uint16_t *>(0x472) = 0x1234;
 
     // Der Tastaturcontroller soll das Reset ausloesen.
     do {
@@ -332,7 +334,7 @@ void Keyboard::set_led(char led, bool on) {
 // Registriert die Tastatur ISR im IntDispatcher
 // und erlaubt den keyboard interrupt im PIC
 void Keyboard::plugin() {
-    intdis.assign(IntDispatcher::keyboard, *this);
+    Kernel::intdis.assign(Kernel::IntDispatcher::keyboard, *this);
     PIC::allow(PIC::keyboard);
 }
 
@@ -344,6 +346,8 @@ void Keyboard::trigger() {
     if (key.ctrl_left() && key.alt_left() && static_cast<char>(key) == 'r') {
         reboot();
     } else if (key != 0) {
-        kevman.broadcast(key);  // Send key to all subscribed threads
+        Kernel::kevman.broadcast(key);  // Send key to all subscribed threads
     }
+}
+
 }

@@ -13,23 +13,27 @@
 
 #include "kernel/interrupt/ISR.h"
 #include "device/port/IOport.h"
-#include "lib/util/Array.h"
+#include "lib/container/Array.h"
 #include <cstdint>
 
-class PIT : public ISR {
+namespace Device {
+
+class PIT : public Kernel::ISR {
 private:
     const static IOport control;
     const static IOport data0;
 
-    enum { time_base = 838 }; /* ns */
+    enum {
+        time_base = 838
+    }; /* ns */
     uint32_t timer_interval;
 
-    const bse::array<char, 4> indicator{'|', '/', '-', '\\'};
+    const Container::array<char, 4> indicator{'|', '/', '-', '\\'};
     uint8_t indicator_pos = 0;
     uint64_t last_indicator_refresh = 0;
 
 public:
-    PIT(const PIT& copy) = delete;  // Verhindere Kopieren
+    PIT(const PIT &copy) = delete;  // Verhindere Kopieren
 
 //    ~PIT() override = default;
 
@@ -51,5 +55,7 @@ public:
     // Unterbrechnungsroutine des Zeitgebers.
     void trigger() override;
 };
+
+}
 
 #endif

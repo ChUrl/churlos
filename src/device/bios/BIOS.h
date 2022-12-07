@@ -12,6 +12,8 @@
 
 #include <cstdint>
 
+namespace Device {
+
 // Speicherseite fuer Rueckgabewerte von BIOS-Aufrufen
 constexpr const unsigned int RETURN_MEM = 0x9F000;
 
@@ -51,5 +53,7 @@ public:
     // BIOS-Aufruf, per Software-Interrupt
     static void Int(uint8_t inter);
 };
+
+}
 
 #endif

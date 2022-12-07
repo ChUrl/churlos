@@ -8,10 +8,9 @@ include_directories(${CHURLOS_SRC_DIR})
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
 # Add subdirectories
-add_subdirectory(demo)
 add_subdirectory(event)
+add_subdirectory(exception)
 add_subdirectory(interrupt)
-add_subdirectory(log)
 add_subdirectory(memory)
 add_subdirectory(process)
 add_subdirectory(system)

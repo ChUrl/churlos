@@ -34,6 +34,8 @@
 #include "Allocator.h"
 #include "kernel/system/Globals.h"
 
+namespace Kernel {
+
 constexpr const unsigned int MEM_SIZE_DEF = 8 * 1024 * 1024;  // Groesse des Speichers = 8 MB
 constexpr const unsigned int HEAP_START = 0x300000;    // Startadresse des Heaps
 constexpr const unsigned int HEAP_SIZE = 1024 * 1024;  // Default-Groesse des Heaps, falls \
@@ -42,39 +44,42 @@ constexpr const unsigned int HEAP_SIZE = 1024 * 1024;  // Default-Groesse des He
 /*****************************************************************************
  * Konstruktor:     Allocator::Allocator                                     *
  *****************************************************************************/
-Allocator::Allocator() : heap_start(HEAP_START), heap_end(HEAP_START + HEAP_SIZE), heap_size(HEAP_SIZE), initialized(1) {
+Allocator::Allocator() : heap_start(HEAP_START), heap_end(HEAP_START + HEAP_SIZE), heap_size(HEAP_SIZE),
+                         initialized(1) {
     // Groesse des Hauptspeichers (kann über das BIOS abgefragt werden,
     // aber sehr umstaendlich, daher hier fest eingetragen
     total_mem = MEM_SIZE_DEF;
+}
+
 }
 
 /*****************************************************************************
  * Nachfolgend sind die Operatoren von C++, die wir hier ueberschreiben      *
  * und entsprechend 'mm_alloc' und 'mm_free' aufrufen.                       *
  *****************************************************************************/
-void* operator new(std::size_t size) {
-    return allocator.alloc(size);
+void *operator new(std::size_t size) {
+    return Kernel::allocator.alloc(size);
 }
 
-void* operator new[](std::size_t count) {
-    return allocator.alloc(count);
+void *operator new[](std::size_t count) {
+    return Kernel::allocator.alloc(count);
 }
 
-void operator delete(void* ptr) {
-    allocator.free(ptr);
+void operator delete(void *ptr) {
+    Kernel::allocator.free(ptr);
 }
 
-void operator delete[](void* ptr) {
-    allocator.free(ptr);
+void operator delete[](void *ptr) {
+    Kernel::allocator.free(ptr);
 }
 
-void operator delete(void* ptr, unsigned int sz) {
-    allocator.free(ptr);
+void operator delete(void *ptr, unsigned int sz) {
+    Kernel::allocator.free(ptr);
 }
 
 // I don't know if accidentally deleted it but one delete was missing
 // https://en.cppreference.com/w/cpp/memory/new/operator_delete
 
-void operator delete[](void* ptr, unsigned int sz) {
-    allocator.free(ptr);
+void operator delete[](void *ptr, unsigned int sz) {
+    Kernel::allocator.free(ptr);
 }

@@ -14,9 +14,11 @@
 #include "kernel/system/Globals.h"
 #include "Thread.h"
 
+namespace Kernel {
+
 class IdleThread : public Thread {
 public:
-    IdleThread(const Thread& copy) = delete;  // Verhindere Kopieren
+    IdleThread(const Thread &copy) = delete;  // Verhindere Kopieren
 
     IdleThread() : Thread("IdleThread") {}
 
@@ -29,10 +31,12 @@ public:
         }
 
         while (true) {
-            // kout << "Idle!" << endl;
+            // Kernel::kout << "Idle!" << endl;
             scheduler.yield();
         }
     }
 };
+
+}
 
 #endif

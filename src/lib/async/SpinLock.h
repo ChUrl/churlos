@@ -14,13 +14,15 @@
 
 #include <cstdint>
 
+namespace Async {
+
 class SpinLock {
 private:
     uint32_t lock;
-    uint32_t* ptr;
+    uint32_t *ptr;
 
 public:
-    SpinLock(const SpinLock& copy) = delete;  // Verhindere Kopieren
+    SpinLock(const SpinLock &copy) = delete;  // Verhindere Kopieren
 
     SpinLock() : lock(0), ptr(&lock) {}
 
@@ -28,5 +30,7 @@ public:
 
     void release();
 };
+
+}
 
 #endif

@@ -20,13 +20,15 @@
 #include <cstdint>
 #include "device/port/IOport.h"
 
+namespace Device {
+
 class PIC {
 private:
     static const IOport IMR1;  // interrupt mask register von PIC 1
     static const IOport IMR2;  // interrupt mask register von PIC 2
 
 public:
-    PIC(const PIC& copy) = delete;  // Verhindere Kopieren
+    PIC(const PIC &copy) = delete;  // Verhindere Kopieren
 
     PIC() = default;
 
@@ -48,5 +50,7 @@ public:
     // Abfragen, ob die Weiterleitung fuer einen bestimmten IRQ unterdrueckt ist
     static bool status(uint8_t interrupt_device);
 };
+
+}
 
 #endif

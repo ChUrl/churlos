@@ -12,9 +12,11 @@
 #ifndef ISR_include__
 #define ISR_include__
 
+namespace Kernel {
+
 class ISR {
 public:
-    ISR(const ISR& copy) = delete;  // Verhindere Kopieren
+    ISR(const ISR &copy) = delete;  // Verhindere Kopieren
 
 //    virtual ~ISR() = default;
 
@@ -23,5 +25,7 @@ public:
     // Unterbrechungsbehandlungsroutine
     virtual void trigger() = 0;
 };
+
+}
 
 #endif
