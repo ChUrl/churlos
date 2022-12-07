@@ -1,5 +1,5 @@
 {
-  description = "BSEos flake for development shell";
+  description = "ChUrlOS flake for development shell";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
@@ -16,8 +16,7 @@
 
         # bintools with multilib
         bintools_multi = pkgs.wrapBintoolsWith {
-          bintools =
-            pkgs.bintools.bintools; # Get the unwrapped bintools from the wrapper
+          bintools = pkgs.bintools.bintools; # Get the unwrapped bintools from the wrapper
           libc = pkgs.glibc_multi;
         };
 
@@ -34,37 +33,44 @@
           libc = pkgs.glibc_multi;
           bintools = bintools_multi;
         };
+
+        # Used to generate beep files
+        hhuOS_python = pkgs.python310.withPackages (p: with p; [
+          requests
+        ]);
       in {
         # devShell = pkgs.devshell.mkShell ...
         devShell = pkgs.devshell.mkShell {
-          name = "BSEos";
+          name = "ChUrlOS";
 
           packages = with pkgs; [
             gcc12_multi
             bintools_multi
             clang14_multi
-            # clang-tools_14 # clangd + clang-format + clang-tidy
+            hhuOS_python
 
+            # Native buildinputs
             nasm
+            cmake
             gnumake
+            gnutar # should be in stdenv
+            findutils
+            dosfstools
+            mtools # Generate floppy0.img etc.
+            grub2
+            xorriso
+            util-linux
+
+            # Buildinputs
+            qemu # Start os in virtual machine
+
+            # Development
+            jetbrains.clion
             bear # To generate compilation database
             gdb
-            qemu # Start os in virtual machine
-            doxygen # Generate docs + graphs
-
-            # glibc_multi # Needed for lsp to find some headers
-            # clang_14 # To view template generation, also alternative error messages, conflicts with gcc
-
-            jetbrains.clion
-
-            # TODO: Figure out what is needed to make cling work
-            # llvmPackages_14.llvm
-            # cling # To try out my bullshit implementations
-            # root
+            cling # To try out my bullshit implementations
+            # doxygen # Generate docs + graphs
           ];
-
-          # Not for devshell
-          # hardeningDisable = [ "fortify" ]; # FORTIFY_SOURCE needs -O2 but we compile with -O0
 
           commands = [
             {
@@ -73,34 +79,9 @@
               command = "clion &>/dev/null ./ &";
             }
             {
-              name = "build";
-              help = "Build the OS";
-              command = "make --jobs 6";
-            }
-            {
-              name = "build-clang";
-              help = "Build the OS using clang";
-              command = "GCCFLAGS='' CC=clang CXX=clang++ make --jobs 6";
-            }
-            {
-              name = "run";
-              help = "Start OS in qemu";
-              command = "make qemu --jobs 6";
-            }
-            {
-              name = "clean";
-              help = "Cleanup build files";
-              command = "make clean";
-            }
-            {
-              name = "generate-compile-commands";
-              help = "Generate the compilation database for clangd";
-              command = "make clean && GCCFLAGS='' bear -- make --jobs 6";
-            }
-            {
-              name = "debug";
-              help = "Start OS for gdb connection and run gdb";
-              command = "(make clean) && (make qemu-gdb --jobs 6 &) && (make gdb)";
+              name = "cpuinfo";
+              help = "Show qemu i386 architecture information";
+              command = "qemu-system-i386 -cpu help";
             }
           ];
         };
