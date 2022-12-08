@@ -15,9 +15,10 @@
 #include "kernel/system/Globals.h"
 #include "kernel/exception/Bluescreen.h"
 #include "lib/util/System.h"
-#include "kernel/system/System.h"
 
 namespace Kernel {
+
+NamedLogger IntDispatcher::log = NamedLogger("IntDispatcher");
 
 int IntDispatcher::assign(uint8_t vector, ISR &isr) {
 
