@@ -1,18 +1,10 @@
-/*****************************************************************************
- *                                                                           *
- *                             I D L E T H R E A D                           *
- *                                                                           *
- *---------------------------------------------------------------------------*
- * Beschreibung:    Wird nur aktiviert, wenn kein Thread arbeiten moechte.   *
- *                                                                           *
- * Autor:           Michael, Schoettner, HHU, 13.8.2016                      *
- *****************************************************************************/
-
 #ifndef IdleThread_include__
 #define IdleThread_include__
 
 #include "kernel/system/Globals.h"
 #include "Thread.h"
+#include "kernel/service/SchedulerService.h"
+#include "kernel/system/System.h"
 
 namespace Kernel {
 
@@ -20,19 +12,14 @@ class IdleThread : public Thread {
 public:
     IdleThread(const Thread &copy) = delete;  // Verhindere Kopieren
 
-    IdleThread() : Thread("IdleThread") {}
+    IdleThread() {
+        tid = Thread::IDLE; // The IdleThread gets a fixed id for convenience
+    }
 
     [[noreturn]] void run() override {
-        // Idle-Thread läuft, ab jetzt ist der Scheduler fertig initialisiert
-        log.info() << "IdleThread enabled preemption" << endl;
-        scheduler.enable_preemption(tid);
-        if (!scheduler.preemption_enabled()) {
-            log.error() << "Preemption disabled" << endl;
-        }
-
+        auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
         while (true) {
-            // Util::System::out << "Idle!" << endl;
-            scheduler.yield();
+            schedulerService.yield();
         }
     }
 };

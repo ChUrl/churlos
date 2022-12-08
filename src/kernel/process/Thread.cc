@@ -22,20 +22,20 @@
 
 #include "Thread.h"
 
+// TODO: Move to thread_interface or sth.
 // Funktionen, die auf der Assembler-Ebene implementiert werden, muessen als
 // extern "C" deklariert werden, da sie nicht dem Name-Mangeling von C++
 // entsprechen.
 extern "C" {
 void Thread_start(uint32_t esp);
 
-// NOTE: Only when backing up the previous thread the esp gets updated,
-//       so only esp_pre is a pointer
+// NOTE: Only when backing up the previous thread the esp gets updated, so only esp_pre is a pointer
 void Thread_switch(uint32_t *esp_prev, uint32_t esp_next);
 }
 
 namespace Kernel {
 
-uint32_t ThreadCnt = 1;  // Skip tid 0 as the scheduler indicates no preemption with 0
+uint16_t ThreadCnt = 2;  // Skip IDs that are fixed to specific unique threads
 
 /*****************************************************************************
  * Prozedur:        Coroutine_init                                           *
@@ -99,13 +99,11 @@ void Thread_init(uint32_t *esp, uint32_t *stack, void (*kickoff)(Thread *), void
  * Parameter:                                                                *
  *      stack       Stack für die neue Koroutine                             *
  *****************************************************************************/
-Thread::Thread(char *name) : stack(new uint32_t[1024]), esp(0), log(name), name(name), tid(ThreadCnt++) {
+Thread::Thread() : tid(ThreadCnt++), stack(new uint32_t[1024]), esp(0) {
     if (stack == nullptr) {
-        log.error() << "Couldn't initialize Thread (couldn't alloc stack)" << endl;
+        // TODO: Exception
         return;
     }
-
-    log.info() << "Initialized thread with ID: " << tid << " (" << name << ")" << endl;
     Thread_init(&esp, &stack[1024], kickoff, this);  // Stack grows from top to bottom
 }
 
@@ -118,7 +116,6 @@ void Thread::switchTo(Thread &next) {
 
     /* hier muss Code eingefügt werden */
 
-    // log.trace() << name << ":: Has esp " << hex << esp << endl;
     Thread_switch(&esp, next.esp);
 }
 

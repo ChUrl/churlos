@@ -33,25 +33,33 @@
 namespace Kernel {
 
 class Thread {
-private:
-    uint32_t *stack;
-    uint32_t esp;
+    friend class SchedulerService;
+
+    friend class Scheduler;
 
 protected:
-    Thread(char *name);
+    // TODO: Remove this
+    bool running = true; // For soft exit, if thread uses infinite loop inside run(), use this as condition
 
-    NamedLogger log;
-
-    bool running = true;     // For soft exit, if thread uses infinite loop inside run(), use this as condition
-    char *name;              // For logging
-    uint32_t tid;        // Thread-ID (wird im Konstruktor vergeben)
-    friend class Scheduler;  // Scheduler can access tid
+    // TODO: Public this
+    uint16_t tid; // Thread-ID (wird im Konstruktor vergeben)
 
 public:
-    Thread(const Thread &copy) = delete;  // Verhindere Kopieren
+    // TODO: Is this a good idea?
+    enum Threads : uint16_t {
+        IDLE = 0,
+        CLEANUP = 1 // TODO: Can cleanup be done in a thread?
+    };
 
+public:
+    Thread();
+
+    Thread(const Thread &copy) = delete; // Verhindere Kopieren
+
+    // TODO: Rest of constructors
+
+    // TODO: Investigate this
     virtual ~Thread() {
-        log.info() << "Uninitialized thread, ID: " << dec << tid << " (" << name << ")" << endl;
         delete[] stack;
     }
 
@@ -66,6 +74,10 @@ public:
 
     // Methode des Threads, muss in Sub-Klasse implementiert werden
     virtual void run() = 0;
+
+private:
+    uint32_t *stack;
+    uint32_t esp;
 };
 
 }
