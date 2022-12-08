@@ -31,12 +31,9 @@ namespace Kernel {
 
 // I wanted to make more of these singletons but there were problems with atexit missing because of nostdlib I guess
 
-extern CGA_Stream kout;  // Ausgabe-Strom fuer Kernel
 extern const Device::BIOS &bios;        // Schnittstelle zum 16-Bit BIOS
 extern Device::VESA vesa;        // VESA-Treiber
 
-extern Device::PIC pic;               // Interrupt-Controller
-extern IntDispatcher intdis;  // Unterbrechungsverteilung
 extern Device::PIT pit;               // Zeitgeber
 extern Device::PCSPK pcspk;           // PC-Lautsprecher
 extern Device::Keyboard kb;           // Tastatur

@@ -12,15 +12,12 @@
 
 namespace Kernel {
 
-CGA_Stream kout;  // Ausgabe-Strom fuer Kernel
-const Device::BIOS &bios = Device::BIOS::instance();        // Schnittstelle zum 16-Bit BIOS
-Device::VESA vesa;        // VESA-Treiber
+const Device::BIOS &bios = Device::BIOS::instance();
+Device::VESA vesa;
 
-Device::PIC pic;               // Interrupt-Controller
-IntDispatcher intdis;  // Unterbrechungsverteilung
-Device::PIT pit(10000);        // 10000
-Device::PCSPK pcspk;           // PC-Lautsprecher
-Device::Keyboard kb;           // Tastatur
+Device::PIT pit(10000); // 10000
+Device::PCSPK pcspk; // PC-Lautsprecher
+Device::Keyboard kb; // Tastatur
 
 // BumpAllocator allocator;
 LinkedListAllocator allocator;
@@ -31,7 +28,7 @@ Scheduler scheduler;
 KeyEventManager kevman;
 Device::SerialOut serial;
 
-unsigned int total_mem;  // RAM total
+unsigned int total_mem; // RAM total
 uint64_t systime = 0;
 
 }
