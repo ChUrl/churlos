@@ -25,7 +25,13 @@ public:
 
     MakeUnmovable(SchedulerService)
 
-    // Helper that directly constructs the thread, then readys it
+    /**
+     * Construct a thread inplace and add it to the schedulers ready queue.
+     *
+     * @tparam T The type of thread to construct
+     * @param args The arguments for the thread's constructor
+     * @return The constructed thread's id
+     */
     template<typename T, typename... Args>
     uint32_t ready(Args... args) {
         Memory::unique_ptr<Thread> thread = Memory::make_unique<T>(std::forward<Args>(args)...);
