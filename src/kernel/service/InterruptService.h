@@ -5,6 +5,7 @@
 #include "kernel/interrupt/IntDispatcher.h"
 #include "device/interrupt/PIC.h"
 #include "lib/stream/Logger.h"
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Kernel {
 
@@ -18,9 +19,11 @@ public:
     static const constexpr uint8_t ID = Service::INTERRUPT;
 
 public:
-    InterruptService() = default;
+    MakeDefault(InterruptService)
 
-    // TODO: Rest of constructors
+    MakeUncopyable(InterruptService)
+
+    MakeUnmovable(InterruptService)
 
     void assignInterrupt(IntDispatcher::Vector vector, ISR &isr);
 
@@ -41,7 +44,7 @@ public:
 private:
     IntDispatcher intDispatcher;
 
-    uint32_t spuriousCounter;
+    uint32_t spuriousCounter = 0;
 
     static NamedLogger log;
 };
