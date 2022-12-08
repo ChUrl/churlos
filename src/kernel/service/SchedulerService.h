@@ -34,7 +34,7 @@ public:
      */
     template<typename T, typename... Args>
     uint32_t ready(Args... args) {
-        Memory::unique_ptr<Thread> thread = Memory::make_unique<T>(std::forward<Args>(args)...);
+        Memory::UniquePtr<Thread> thread = Memory::make_unique<T>(std::forward<Args>(args)...);
         uint32_t tid = thread->tid;
 
         scheduler.ready(std::move(thread));

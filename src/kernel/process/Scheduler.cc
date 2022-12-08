@@ -10,13 +10,13 @@ Scheduler::Scheduler() {
     // TODO: Cleanup thread
 }
 
-void Scheduler::ready(Memory::unique_ptr<Thread> &&thread) {
+void Scheduler::ready(Memory::UniquePtr<Thread> &&thread) {
     Device::CPU::disable_int();
     ready_queue.push_back(std::move(thread));
     Device::CPU::enable_int();
 }
 
-void Scheduler::start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next) {
+void Scheduler::start(Container::Vector<Memory::UniquePtr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
         // By jumping to the start of the queue we can always start the next ready thread by
@@ -28,7 +28,7 @@ void Scheduler::start(Container::Vector<Memory::unique_ptr<Thread>>::iterator ne
 
 // Use a raw pointer for the previous thread because the unique_ptr of that thread is still in the ready_queue,
 // this way we don't need to take care of moving it to this function and then back to the ready_queue
-void Scheduler::start(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next) {
+void Scheduler::start(Thread *prev_raw, Container::Vector<Memory::UniquePtr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
         active = ready_queue.begin();
@@ -65,7 +65,7 @@ void Scheduler::block() {
 void Scheduler::deblock(uint16_t tid) {
     Device::CPU::disable_int();
 
-    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin();
+    for (Container::Vector<Memory::UniquePtr<Thread>>::iterator it = block_queue.begin();
          it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread with correct tid
@@ -98,7 +98,7 @@ void Scheduler::exit() {
     // dispatch kehrt nicht zurueck
 }
 
-void Scheduler::kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr) {
+void Scheduler::kill(uint16_t tid, Memory::UniquePtr<Thread> *ptr) {
     Device::CPU::disable_int();
 
     uint16_t prev_tid = (*active)->tid;
@@ -128,7 +128,7 @@ void Scheduler::kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr) {
         return;
     }
 
-    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = ready_queue.begin();
+    for (Container::Vector<Memory::UniquePtr<Thread>>::iterator it = ready_queue.begin();
          it != ready_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
@@ -163,10 +163,10 @@ void Scheduler::kill(uint16_t tid) {
 
 // TODO: Can't retrieve the thread right now because it's not clear when it's finished,
 //       maybe introduce a exited_queue and get it from there
-void Scheduler::nice_kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr) {
+void Scheduler::nice_kill(uint16_t tid, Memory::UniquePtr<Thread> *ptr) {
     Device::CPU::disable_int();
 
-    for (Memory::unique_ptr<Thread> &thread: block_queue) {
+    for (Memory::UniquePtr<Thread> &thread: block_queue) {
         if (thread->tid == tid) {
             thread->suicide();
             deblock(tid);
@@ -175,7 +175,7 @@ void Scheduler::nice_kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr) {
         }
     }
 
-    for (Memory::unique_ptr<Thread> &thread: ready_queue) {
+    for (Memory::UniquePtr<Thread> &thread: ready_queue) {
         if (thread->tid == tid) {
             thread->suicide();
             Device::CPU::enable_int();

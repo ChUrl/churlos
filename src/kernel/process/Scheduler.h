@@ -32,7 +32,7 @@ private:
      *
      * @param thread The thread to add to the ready_queue
      */
-    void ready(Memory::unique_ptr<Thread> &&thread);
+    void ready(Memory::UniquePtr<Thread> &&thread);
 
     /**
      * Start/continue a thread independently of the previous running thread.
@@ -40,7 +40,7 @@ private:
      *
      * @param next The next thread to run
      */
-    void start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next);
+    void start(Container::Vector<Memory::UniquePtr<Thread>>::iterator next);
 
     /**
      * Start/continue a thread.
@@ -49,7 +49,7 @@ private:
      * @param prev_raw The raw pointer to the previous running thread
      * @param next The next thread to run
      */
-    void start(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next);
+    void start(Thread *prev_raw, Container::Vector<Memory::UniquePtr<Thread>>::iterator next);
 
     /**
      * Give CPU time to the next waiting thread from the ready_queue.
@@ -81,7 +81,7 @@ private:
      * @param tid The thread to exit
      * @param ptr The pointer to the killed thread for external use
      */
-    void kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr);
+    void kill(uint16_t tid, Memory::UniquePtr<Thread> *ptr);
 
     /**
      * Forcefully exit a thread and discard it.
@@ -96,19 +96,19 @@ private:
     //       or were involved in any locking mechanisms, so with this a thread can make sure
     //       to "set things right" before exiting itself (but could also be ignored)
     // TODO: "Setting things right" should be done in the thread's destructor
-    void nice_kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr);
+    void nice_kill(uint16_t tid, Memory::UniquePtr<Thread> *ptr);
 
     void nice_kill(uint16_t tid);
 
 private:
-    Container::Vector<Memory::unique_ptr<Thread>> ready_queue;
-    Container::Vector<Memory::unique_ptr<Thread>> block_queue;
-    Container::Vector<Memory::unique_ptr<Thread>> exit_queue; // TODO: Manage exited threads
+    Container::Vector<Memory::UniquePtr<Thread>> ready_queue;
+    Container::Vector<Memory::UniquePtr<Thread>> block_queue;
+    Container::Vector<Memory::UniquePtr<Thread>> exit_queue; // TODO: Manage exited threads
 
     // It makes sense to keep track of the active thread through this as it makes handling the
     // unique_ptr easier and reduces the copying in the vector when cycling through the threads
     // as we don't have to keep the active thread at the front (would only make sense with a queue)
-    Container::Vector<Memory::unique_ptr<Thread>>::iterator active = nullptr;
+    Container::Vector<Memory::UniquePtr<Thread>>::iterator active = nullptr;
 
     // TODO: Synchronization
 };
