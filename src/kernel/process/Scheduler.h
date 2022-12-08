@@ -36,10 +36,10 @@ private:
     uint32_t idle_tid = 0;
 
     // Roughly the old dispatcher functionality
-    void
-    start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next);                        // Start next without prev
-    void switch_to(Thread *prev_raw,
-                   Container::Vector<Memory::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
+    void start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next); // Start next without prev
+
+    // Switch from prev to next
+    void switch_to(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next);
 
     // Kann nur vom Idle-Thread aufgerufen werden (erster Thread der vom Scheduler gestartet wird)
     void enable_preemption(uint32_t tid) { idle_tid = tid; }
@@ -102,13 +102,13 @@ public:
     void nice_kill(uint32_t tid) { nice_kill(tid, nullptr); }
 
     // CPU freiwillig abgeben und Auswahl des naechsten Threads
-    void yield();  // Returns when only the idle thread runs
+    void yield(); // Returns when only the idle thread runs
 
     // Thread umschalten; wird aus der ISR des PITs gerufen
-    void preempt();  // Returns when only the idle thread runs
+    void preempt(); // Returns when only the idle thread runs
 
     // Blocks current thread (move to block_queue)
-    void block();  // Returns on error because we don't have exceptions
+    void block(); // Returns on error because we don't have exceptions
 
     // Deblock by tid (move to ready_queue)
     void deblock(uint32_t tid);

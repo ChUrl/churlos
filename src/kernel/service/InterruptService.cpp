@@ -14,10 +14,12 @@ void int_disp(uint8_t vector) {
     if (vector < 32) {
         bs_dump(vector);
         Device::CPU::halt();
+
+        // TODO: Exception
     }
 
-    Kernel::System::getService<Kernel::InterruptService>().dispatchInterrupt(
-            static_cast<Kernel::IntDispatcher::Vector>(vector));
+    Kernel::System::getService<Kernel::InterruptService>()
+            .dispatchInterrupt(static_cast<Kernel::IntDispatcher::Vector>(vector));
 }
 
 namespace Kernel {

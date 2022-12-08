@@ -11,19 +11,23 @@
 // https://en.cppreference.com/w/cpp/container/vector
 namespace Container {
 
+/**
+ * This class implements a dynamically allocated array list.
+ *
+ * @tparam T The type of the held objects
+ */
 template<typename T>
 class Vector {
 public:
     using iterator = ContinuousIterator<T>;
 
 private:
-    static constexpr const std::size_t default_cap = 10;  // Arbitrary but very small because this isn't a real OS :(
-    static constexpr const std::size_t min_cap = 5;       // Slots to allocate extra when array full
+    static constexpr const std::size_t default_cap = 16;  // Arbitrary but very small
+    static constexpr const std::size_t min_cap = 8;       // Slots to allocate extra when array full
 
     T *buf = nullptr;  // Heap allocated as size needs to change during runtime
-    // Can't use Array for the same reason so we use a C Style array
-    std::size_t buf_pos = 0;
-    std::size_t buf_cap = 0;
+    std::size_t sz = 0; // The current size of the buffer (marks the slot where to insert a new element)
+    std::size_t buf_cap = 0; // The current capacity of the buffer
 
     void init(std::size_t cap = Vector::default_cap) {
         if (buf != nullptr) {
@@ -74,24 +78,24 @@ private:
     // Index is location where space should be made
     void copy_right(std::size_t i) {
         if (i >= size()) {
-            // We don't need to copy anything as space is already there
-            return;
+            return; // We don't need to copy anything as space is already there
         }
 
+        // TODO: Delete instead of ~T()?
         for (std::size_t idx = size(); idx > i; --idx) {
-            buf[idx].~T();                       // Delete previously contained element that will be overridden
-            buf[idx] = std::move(buf[idx - 1]);  // This leaves a "shell" of the old object that has to be deleted
-            buf[idx - 1].~T();                   // Delete element in moved-out state
+            buf[idx].~T(); // Delete previously contained element that will be overridden
+            buf[idx] = std::move(buf[idx - 1]); // This leaves a "shell" of the old object that has to be deleted
+            buf[idx - 1].~T(); // Delete element in moved-out state
         }
     }
 
     // Index is the location that will be removed
     void copy_left(std::size_t i) {
         if (i >= size()) {
-            // We don't need to copy anything as nothing will be overridden
-            return;
+            return; // We don't need to copy anything as nothing will be overridden
         }
 
+        // TODO: Delete instead of ~T()?
         for (std::size_t idx = i; idx < size(); ++idx) {
             buf[idx].~T();  // Delete the element that will be overwritten
             buf[idx] = std::move(buf[idx + 1]);
@@ -101,26 +105,33 @@ private:
 
 public:
     explicit Vector(bool lazy = false) {
-        if (!lazy) {  // I added this as a work around, the scheduler can't initialize the queues right
-            // away because when the scheduler is started the allocator is not ready.
+        if (!lazy) {
+            // I added this as a workaround, the scheduler can't initialize the queues right
+            // away because when the scheduler is started the allocator is not ready
             init();
         }
     };
 
-    // TODO: This doesn't account for initializer lists of the wrong length, last value should be repeated
-    //       Only increment iterator when it < list.end() - 1?
     // Initialize like this: bse::vector<int> vec {1, 2, 3, 4, 5};
-    Vector(std::initializer_list<T> list) : buf_cap(list.size()), buf(new T[buf_cap]) {
+    /**
+     * Initialize the Vector with initial values provided by an initializer list.
+     * The Vector will have as many slots as initial values are provided.
+     *
+     * @param list The initial values
+     */
+    Vector(std::initializer_list<T> list) : sz(list.size()), buf_cap(sz), buf(new T[buf_cap]) {
+        // TODO: Exception on wrong size? Can't static_assert on list.size()
         typename std::initializer_list<T>::iterator it = list.begin();
-        for (unsigned int i = 0; i < buf_pos; ++i) {
+
+        for (unsigned int i = 0; i < sz; ++i) {
             buf[i] = *it;
             ++it;
         }
     }
 
-    Vector(const Vector &copy) : buf_pos(copy.buf_pos), buf_cap(copy.buf_cap), buf(new T[buf_cap]) {
-        for (unsigned int i = 0; i < buf_pos; ++i) {
-            buf[i] = copy[i];  // Does a copy since copy is marked const reference
+    Vector(const Vector &copy) : sz(copy.sz), buf_cap(copy.buf_cap), buf(new T[buf_cap]) {
+        for (unsigned int i = 0; i < sz; ++i) {
+            buf[i] = copy[i]; // Does a copy since copy is marked const reference
         }
     }
 
@@ -129,29 +140,29 @@ public:
             ~Vector();
 
             buf_cap = copy.buf_cap;
-            buf_pos = copy.buf_pos;
+            sz = copy.sz;
             buf = new T[buf_cap];
-            for (unsigned int i = 0; i < buf_pos; ++i) {
+            for (unsigned int i = 0; i < sz; ++i) {
                 buf[i] = copy[i];
             }
         }
         return *this;
     }
 
-    Vector(Vector &&move) noexcept: buf(move.buf), buf_pos(move.buf_pos), buf_cap(move.buf_cap) {
+    Vector(Vector &&move) noexcept: buf(move.buf), sz(move.sz), buf_cap(move.buf_cap) {
         move.buf_cap = 0;
-        move.buf_pos = 0;
+        move.sz = 0;
         move.buf = nullptr;
     }
 
     Vector &operator=(Vector &&move) noexcept {
         if (this != &move) {
             buf_cap = move.buf_cap;
-            buf_pos = move.buf_pos;
+            sz = move.sz;
             buf = move.buf;
 
             move.buf_cap = 0;
-            move.buf_pos = 0;
+            move.sz = 0;
             move.buf = nullptr;
         }
         return *this;
@@ -181,13 +192,13 @@ public:
     // https://en.cppreference.com/w/cpp/container/vector/push_back
     void push_back(const T &copy) {
         buf[size()] = copy;
-        ++buf_pos;
+        ++sz;
         min_expand();
     }
 
     void push_back(T &&move) {
         buf[size()] = std::move(move);
-        ++buf_pos;
+        ++sz;
         min_expand();
     }
 
@@ -197,7 +208,7 @@ public:
         std::size_t idx = distance(begin(), pos);  // begin() does init if necessary
         copy_right(idx);                           // nothing will be done if pos == end()
         buf[idx] = copy;
-        ++buf_pos;
+        ++sz;
         min_expand();
         return iterator(&buf[idx]);
     }
@@ -206,7 +217,7 @@ public:
         std::size_t idx = distance(begin(), pos);  // begin() does init if necessary
         copy_right(idx);
         buf[idx] = std::move(move);
-        ++buf_pos;
+        ++sz;
         min_expand();
         return iterator(&buf[idx]);
     }
@@ -217,7 +228,7 @@ public:
     iterator erase(iterator pos) {
         std::size_t idx = distance(begin(), pos);
         copy_left(idx);
-        --buf_pos;
+        --sz;
         // shrink();
         return iterator(&buf[idx]);
     }
@@ -232,11 +243,11 @@ public:
     }
 
     T &back() {
-        return buf[size() - 1];
+        return buf[sz - 1];
     }
 
     const T &back() const {
-        return buf[size() - 1];
+        return buf[sz - 1];
     }
 
     T &operator[](std::size_t pos) {
@@ -249,17 +260,17 @@ public:
 
     // Misc
     [[nodiscard]] bool empty() const {
-        return !size();
+        return !static_cast<bool>(sz);
     }
 
     [[nodiscard]] std::size_t size() const {
-        return buf_pos;
+        return sz;
     }
 
     void clear() {
-        while (buf_pos > 0) {
-            --buf_pos;
-            buf[buf_pos].~T();
+        while (sz > 0) {
+            --sz;
+            buf[sz].~T();
         }
     }
 
