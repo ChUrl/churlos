@@ -18,6 +18,7 @@
 #include "lib/util/System.h"
 #include "kernel/system/System.h"
 #include "kernel/service/InterruptService.h"
+#include "kernel/service/SchedulerService.h"
 
 // TODO: Read from file
 void print_startup_message() {
@@ -50,10 +51,10 @@ int main() {
 
     // Speicherverwaltung initialisieren
     Kernel::allocator.init(); // TODO: MemoryService
-    Kernel::scheduler.init(); // TODO: SchedulerService
     Kernel::kevman.init(); // TODO: EventService
 
     Kernel::System::registerService<Kernel::InterruptService>();
+    Kernel::System::registerService<Kernel::SchedulerService>();
 
     // Tastatur-Unterbrechungsroutine 'einstoepseln'
     Kernel::kb.plugin();
@@ -69,11 +70,9 @@ int main() {
     // Startmeldung
     print_startup_message();
 
-    // TODO: SchedulerService
-    // Scheduler starten (schedule() erzeugt den Idle-Thread)
-    Kernel::scheduler.ready<MainMenu>();  // NOTE: A thread that manages other threads has to be added before scheduler.schedule(),
-    //       because scheduler.schedule() doesn't return, only threads get cpu time
-    Kernel::scheduler.schedule();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.ready<MainMenu>();
+    schedulerService.startScheduling();
 
     // NOTE: Pre-Post ToDo's
     // DONE: Reorganize the project similar to hhuOS:
@@ -89,6 +88,7 @@ int main() {
     // TODO: Investigate: C++20 (I wanted to use reference optionals somewhere...)
     // TODO: Rearrange code inside classes (public structs, public functions, private structs, private functions, private variables)
     // TODO: Write documentation comments
+    // TODO: Investigate what stuff has to be synchronized...
 
     // NOTE: Post ToDo's
     // TODO: Investigate the memory cleanup (esp. with threads), I guess the whole thing is a memory leak currently lol
@@ -108,6 +108,7 @@ int main() {
     //       There should be in/out/err system streams, stream for serial, with filesystem also filestreams
     //       Investigate StreamWriter, StreamReader, Buffered, Synchronized etc...
     //       Objects (e.g. Logger) should be able to just work on streams that will be passed in
+    //       Also change Logger to lib/util Util:: namespace and streams to lib/stream Stream::
 
     // NOTE: Large post ToDo's
     // TODO: Add a RB-Tree datastructure and use it for memory management?
