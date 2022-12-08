@@ -19,11 +19,7 @@ Device::PIT pit(10000); // 10000
 Device::PCSPK pcspk; // PC-Lautsprecher
 Device::Keyboard kb; // Tastatur
 
-// BumpAllocator allocator;
 LinkedListAllocator allocator;
-// TreeAllocator allocator;
-
-Scheduler scheduler;
 
 KeyEventManager kevman;
 Device::SerialOut serial;

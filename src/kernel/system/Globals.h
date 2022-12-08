@@ -38,11 +38,7 @@ extern Device::PIT pit;               // Zeitgeber
 extern Device::PCSPK pcspk;           // PC-Lautsprecher
 extern Device::Keyboard kb;           // Tastatur
 
-// extern BumpAllocator allocator;
 extern LinkedListAllocator allocator;
-// extern TreeAllocator allocator;
-
-extern Scheduler scheduler;
 
 extern KeyEventManager kevman;
 extern Device::SerialOut serial;
