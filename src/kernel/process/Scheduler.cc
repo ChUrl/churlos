@@ -1,5 +1,6 @@
 #include "Scheduler.h"
 #include "IdleThread.h"
+#include "device/cpu/CPU.h"
 #include <utility>
 
 namespace Kernel {
