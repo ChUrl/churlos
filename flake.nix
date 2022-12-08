@@ -83,6 +83,16 @@
               help = "Show qemu i386 architecture information";
               command = "qemu-system-i386 -cpu help";
             }
+            {
+              name = "build";
+              help = "Build ChUrlOS";
+              command = "./build.sh";
+            }
+            {
+              name = "run";
+              help = "Run ChUrlOS";
+              command = "./run.sh";
+            }
           ];
         };
       });
