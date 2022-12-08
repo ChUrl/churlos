@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.14)
 
 target_sources(lib PUBLIC
         ${CHURLOS_SRC_DIR}/lib/demo/ArrayDemo.cc
-        ${CHURLOS_SRC_DIR}/lib/demo/bmp_hhu.cc
         ${CHURLOS_SRC_DIR}/lib/demo/HeapDemo.cc
         ${CHURLOS_SRC_DIR}/lib/demo/KeyboardDemo.cc
         ${CHURLOS_SRC_DIR}/lib/demo/MainMenu.cc

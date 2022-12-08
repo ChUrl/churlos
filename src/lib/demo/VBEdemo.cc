@@ -9,7 +9,6 @@
  *****************************************************************************/
 
 #include "VBEdemo.h"
-#include "bmp_hhu.cc"
 #include "kernel/system/System.h"
 #include "kernel/service/SchedulerService.h"
 
@@ -52,22 +51,6 @@ void VBEdemo::drawColors() {
 }
 
 /*****************************************************************************
- * Methode:         VBEdemo::drawBitmap                                      *
- *---------------------------------------------------------------------------*
- * Beschreibung:    Bitmap aus GIMP ausgeben.                                *
- *****************************************************************************/
-void VBEdemo::drawBitmap() {
-    unsigned int sprite_width = hhu.width;
-    unsigned int sprite_height = hhu.height;
-    unsigned int sprite_bpp = hhu.bytes_per_pixel;
-    const uint8_t *sprite_pixel = reinterpret_cast<const uint8_t *>(hhu.pixel_data);
-
-    /* Hier muss Code eingefuegt werden */
-
-    Kernel::vesa.drawSprite(sprite_width, sprite_height, sprite_bpp, sprite_pixel);
-}
-
-/*****************************************************************************
  * Methode:         VBEdemo::drawFonts                                       *
  *---------------------------------------------------------------------------*
  * Beschreibung:    Fonts ausgeben.                                          *
@@ -96,7 +79,6 @@ void VBEdemo::run() {
 
     /* Hier muss Code eingefuegt werden */
     Kernel::vesa.drawRectangle(100, 100, 300, 300, 0);
-    drawBitmap();
     drawFonts();
 
     while (running) {}
