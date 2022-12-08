@@ -15,40 +15,45 @@
 #include "lib/stream/Logger.h"
 #include "device/cpu/CPU.h"
 #include "kernel/memory/Paging.h"
-#include "lib/stream/OutStream.h"
+#include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/InterruptService.h"
 
+// TODO: Read from file
 void print_startup_message() {
-    Kernel::kout.lock();
-    Kernel::kout.clear();
-    Kernel::kout << "BSEos 1.0\n"
-         << "=========\n"
-         << "Unterstuetzte Funktionen:\n"
-         << "   - Bildschirmausgaben\n"
-         << "   - Sound ueber den PC-Lautsprecher\n"
-         << "   - Tastatureingaben per Abfrage\n"
-         << "   - Einfache Heapverwaltung\n"
-         << "   - Tastatureingaben per Interrupt\n"
-         << "   - Kooperative Threads\n"
-         << "   - VESA Graphics Mode\n"
-         << "   - Einfaches Paging\n"
-         << "   - Preemptive Threads\n"
-         << "   - Einfache Synchronisierung\n"
+    Util::System::out.lock();
+    Util::System::out.clear();
+    Util::System::out << "BSEos 1.0\n"
+                      << "=========\n"
+                      << "Unterstuetzte Funktionen:\n"
+                      << "   - Bildschirmausgaben\n"
+                      << "   - Sound ueber den PC-Lautsprecher\n"
+                      << "   - Tastatureingaben per Abfrage\n"
+                      << "   - Einfache Heapverwaltung\n"
+                      << "   - Tastatureingaben per Interrupt\n"
+                      << "   - Kooperative Threads\n"
+                      << "   - VESA Graphics Mode\n"
+                      << "   - Einfaches Paging\n"
+                      << "   - Preemptive Threads\n"
+                      << "   - Einfache Synchronisierung\n"
 
-         << "   - Einfache (Tastatur-)Eventverwaltung\n"
-         << "   - Serial Output Logging\n"
-         << "\nPress Enter to continue\n"
-         << endl;
-    Kernel::kout.unlock();
+                      << "   - Einfache (Tastatur-)Eventverwaltung\n"
+                      << "   - Serial Output Logging\n"
+                      << "\nPress Enter to continue\n"
+                      << endl;
+    Util::System::out.unlock();
 }
 
 int main() {
     Logger::set_level(Logger::TRACE);
-    Logger::enable_serial();
+    Logger::enable_serial(); // TODO: This is shitty, should pass an output stream to the logger instead
 
     // Speicherverwaltung initialisieren
-    Kernel::allocator.init();
-    Kernel::scheduler.init();
-    Kernel::kevman.init();
+    Kernel::allocator.init(); // TODO: MemoryService
+    Kernel::scheduler.init(); // TODO: SchedulerService
+    Kernel::kevman.init(); // TODO: EventService
+
+    Kernel::System::registerService<Kernel::InterruptService>();
 
     // Tastatur-Unterbrechungsroutine 'einstoepseln'
     Kernel::kb.plugin();
@@ -59,14 +64,15 @@ int main() {
 
     // Activate paging
     // This has to happen after the allocator is initialized but before the scheduler is started
-    Kernel::pg_init();
+    Kernel::pg_init(); // TODO: MemoryService
 
     // Startmeldung
     print_startup_message();
 
+    // TODO: SchedulerService
     // Scheduler starten (schedule() erzeugt den Idle-Thread)
     Kernel::scheduler.ready<MainMenu>();  // NOTE: A thread that manages other threads has to be added before scheduler.schedule(),
-                                  //       because scheduler.schedule() doesn't return, only threads get cpu time
+    //       because scheduler.schedule() doesn't return, only threads get cpu time
     Kernel::scheduler.schedule();
 
     // NOTE: Pre-Post ToDo's
@@ -76,26 +82,32 @@ int main() {
     //       - DONE: Translate the src/Makefile and boot/Makefile
     // DONE: Switch char/short/int/long to uint_ sized types where appropriate (I will find you...and then I will kill you)
     // DONE: Namespace that shit (Except for OutStream)
-    // TODO: Change filenames to .cpp
+    // TODO: Change Globals.cpp/.h to System class
+    // TODO: Constructors are missing in many places (Move, Copy, Moveass, Copyass, Destructor)
+    // TODO: Change filenames to .cpp (ugh)
     // TODO: Check data types of register/port read/write functions
     // TODO: Investigate: C++20 (I wanted to use reference optionals somewhere...)
-    // TODO: Compare current (hhuOS) compiler flags with old BSEos compiler flags
-    // TODO: Change int types to cstdint
     // TODO: Rearrange code inside classes (public structs, public functions, private structs, private functions, private variables)
     // TODO: Write documentation comments
 
     // NOTE: Post ToDo's
-    // TODO: Singleton class wrapper
-    // TODO: Optional type for addresses
-    // TODO: Generalize key event system to eventbus (where custom events can be registered)
+    // TODO: Investigate the memory cleanup (esp. with threads), I guess the whole thing is a memory leak currently lol
+    // TODO: Singleton class wrapper? Or investigate usual singleton pattern for devices once again...
+    // TODO: Use Optional type (e.g. for addresses), can implement a very simple version that handles vals/ptrs/refs
     // TODO: Introduce kernel services and abstract time, memory, scheduler, interrupt etc. (like in hhuOS)
+    // TODO: Generalize key event system to eventservice (where custom events can be registered)
     // TODO: Use linear framebuffer to draw output/shell/text instead of CGA
-    // TODO: Add worker threads that execute a function and return a value
+    // TODO: Add worker threads that execute a function and return a value?
     // TODO: Manage exited threads in scheduler
     // TODO: Query thread state in scheduler
     // TODO: Bitfield lib class that has defined behavior regarding ordering/packing (for easy register access)?
     // TODO: Port my APIC code from hhuOS
     // TODO: Exceptions
+    // TODO: The streams need to be completely redone, they are absolute chaos right now (copy C++ stream interfaces)
+    //       I wouldn't touch them in their current state, just redo...
+    //       There should be in/out/err system streams, stream for serial, with filesystem also filestreams
+    //       Investigate StreamWriter, StreamReader, Buffered, Synchronized etc...
+    //       Objects (e.g. Logger) should be able to just work on streams that will be passed in
 
     // NOTE: Large post ToDo's
     // TODO: Add a RB-Tree datastructure and use it for memory management?
@@ -110,8 +122,9 @@ int main() {
     // TODO: Add simple shell (check hhuOS)
 
     // NOTE: Insane ToDo's
-    // TODO: Write a very simple text editor that can save files to the filesystem
-    // TODO: Small interpreter to run source code on the system
+    // TODO: Write a very simple text editor that can save files to the filesystem (maybe I could port something...)
+    // TODO: Small interpreter to run some source code on the system
+    // TODO: User/Kernel mode separation with syscalls
 
     // NOTE: Enforced ToDo's (needed)
     // DONE: Rewrite demos for threads
