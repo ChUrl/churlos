@@ -5,6 +5,9 @@
 
 namespace Util {
 
+/**
+ * This class implements the system utility class that provides streams and other global objects.
+ */
 class System {
 public:
     // TODO: Something like "CGA_Stream" shouldn't exists, the stream should not be coupled to the output device
