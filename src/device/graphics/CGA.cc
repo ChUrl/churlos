@@ -17,6 +17,7 @@
 
 namespace Device {
 
+// TODO: Move into class as static members
 const IOport CGA::index_port(0x3d4);
 const IOport CGA::data_port(0x3d5);
 

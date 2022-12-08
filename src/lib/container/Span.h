@@ -7,7 +7,7 @@
 namespace Container {
 
 /**
- * This class implements a readonly view on a memory region of uniform type
+ * This class implements a view on a continuous memory region of uniform type
  * with runtime bounds checking and iterator support.
  *
  * @tparam T The type of the objects located in the memory region
@@ -28,9 +28,9 @@ public:
 
     // TODO: Rest of constructors
 
-    iterator begin() const { return iterator(ptr); }
+    iterator begin() { return iterator(ptr); }
 
-    iterator end() const { return iterator(&ptr[N]); }
+    iterator end() { return iterator(&ptr[N]); }
 
     T *operator[](std::size_t i) const {
         if (i >= N) {
@@ -39,7 +39,7 @@ public:
         return &ptr[i];
     }
 
-    const T *data() const { return ptr; }
+    T *data() const { return ptr; }
 
     explicit operator T *() const { return ptr; }
 
@@ -56,7 +56,7 @@ public:
     }
 
 private:
-    const T *const ptr;
+    T *const ptr;
 };
 
 }  // namespace bse
