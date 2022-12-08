@@ -20,28 +20,26 @@
 namespace Kernel {
 
 class IntDispatcher {
-private:
-    NamedLogger log;
-
-    enum {
-        size = 256
+public:
+    // Vektor-Nummern
+    enum Vector {
+        TIMER = 32,
+        KEYBOARD = 33,
+        COM1 = 36
     };
-    Container::Array<ISR *, size> map;
 
 public:
     IntDispatcher(const IntDispatcher &copy) = delete;  // Verhindere Kopieren
 
-    // Vektor-Nummern
-    enum {
-        timer = 32,
-        keyboard = 33,
-        com1 = 36
-    };
-
-    // Initialisierung der ISR map mit einer Default-ISR.
+    // TODO: Somehow the logs don't appear, is this not executed, does the Array::iterator not work?
     IntDispatcher() : log("IntDis") {
-        for (ISR *&slot: map) {
-            slot = nullptr;
+        for (ISR *&slot: handlerMap) { // TODO: What the fuck is *&
+            if (slot == nullptr) {
+                log.debug() << "SLOT IS NULLPTR" << endl;
+            } else {
+                log.debug() << "SLOT IS NOT NULLPTR" << endl;
+                slot = nullptr;
+            }
         }
     }
 
@@ -49,7 +47,13 @@ public:
     int assign(uint8_t vector, ISR &isr);
 
     // ISR fuer 'vector' ausfuehren
-    int report(uint8_t vector);
+    int dispatch(uint8_t vector);
+
+private:
+    // TODO: Initialize to nullptr like this: handlerMap = {nullptr};
+    Container::Array<ISR *, 256> handlerMap;
+
+    NamedLogger log;
 };
 
 }

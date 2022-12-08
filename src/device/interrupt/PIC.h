@@ -35,10 +35,10 @@ public:
     // Can't make static because atexit
 
     // IRQ-Nummern von Geraeten
-    enum {
-        timer = 0,     // Programmable Interrupt Timer (PIT)
-        keyboard = 1,  // Tastatur
-        com1 = 4
+    enum Irq {
+        TIMER = 0,     // Programmable Interrupt Timer (PIT)
+        KEYBOARD = 1,  // Tastatur
+        COM1 = 4
     };
 
     // Freischalten der Weiterleitung eines IRQs durch den PIC an die CPU
