@@ -29,14 +29,6 @@ namespace Kernel {
 
 constexpr const bool INSANE_TRACE = false;
 
-/*****************************************************************************
- * Methode:         Dispatcher::dispatch                                     *
- *---------------------------------------------------------------------------*
- * Beschreibung:    Auf den active thread wechseln.                          *
- *                                                                           *
- * Parameter:                                                                *
- *      next        Thread der die CPU::erhalten soll.                        *
- *****************************************************************************/
 void Scheduler::start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next) {
     active = next;
     if (active >= ready_queue.end()) {
@@ -139,7 +131,8 @@ void Scheduler::kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr) {
     uint32_t prev_tid = (*active)->tid;
 
     // Block queue, can always kill
-    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
+    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin();
+         it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
 
@@ -165,7 +158,8 @@ void Scheduler::kill(uint32_t tid, Memory::unique_ptr<Thread> *ptr) {
         return;
     }
 
-    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = ready_queue.begin(); it != ready_queue.end(); ++it) {
+    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = ready_queue.begin();
+         it != ready_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread to kill
 
@@ -322,7 +316,8 @@ void Scheduler::deblock(uint32_t tid) {
 
     Device::CPU::disable_int();
 
-    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin(); it != block_queue.end(); ++it) {
+    for (Container::Vector<Memory::unique_ptr<Thread>>::iterator it = block_queue.begin();
+         it != block_queue.end(); ++it) {
         if ((*it)->tid == tid) {
             // Found thread with correct tid
 

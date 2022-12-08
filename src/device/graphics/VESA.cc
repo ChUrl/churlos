@@ -91,7 +91,7 @@ bool VESA::initGraphicMode(uint16_t mode) {
         return false;
     }
 
-    //    Kernel::kout << "TotalVideoMemory:  " << ((ib->TotalMemory*65536) / (1024*1024)) << " MB" << endl;
+    //    Util::System::out << "TotalVideoMemory:  " << ((ib->TotalMemory*65536) / (1024*1024)) << " MB" << endl;
 
     // Gewuenschten Grafikmodus aus Antwort suchen
     auto *modePtr = reinterpret_cast<uint16_t *>((ib->VideoModePtr[1] << 4) + ib->VideoModePtr[0]);

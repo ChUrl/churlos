@@ -31,7 +31,7 @@ public:
         }
 
         while (true) {
-            // Kernel::kout << "Idle!" << endl;
+            // Util::System::out << "Idle!" << endl;
             scheduler.yield();
         }
     }

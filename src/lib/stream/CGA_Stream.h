@@ -51,8 +51,6 @@ private:
     CGA::color color_bg;
     bool blink;
 
-    friend class Logger;  // Give access to the color
-
 public:
     CGA_Stream(CGA_Stream &copy) = delete;  // Verhindere Kopieren
 
@@ -60,9 +58,9 @@ public:
         pos = 0;
     }
 
-    // CAn't make singleton because atexit
+    // Can't make singleton because atexit
 
-//    ~CGA_Stream() override = default;
+    // ~CGA_Stream() override = default;
 
     void lock() { sem.p(); }
 

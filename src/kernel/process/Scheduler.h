@@ -13,7 +13,7 @@
 #define Scheduler_include__
 
 #include "Thread.h"
-#include "lib/mem/UniquePointer.h"
+#include "lib/memory/UniquePointer.h"
 #include "lib/stream/Logger.h"
 #include "lib/container/Vector.h"
 
@@ -26,17 +26,20 @@ private:
     Container::Vector<Memory::unique_ptr<Thread>> ready_queue;
     Container::Vector<Memory::unique_ptr<Thread>> block_queue;
 
-    // NOTE: It makes sense to keep track of the active thread through this as it makes handling the
-    //       unique_ptr easier and reduces the copying in the vector when cycling through the threads
+    // It makes sense to keep track of the active thread through this as it makes handling the
+    // unique_ptr easier and reduces the copying in the vector when cycling through the threads
+    // as we don't have to keep the active thread at the front (would only make sense with a queue)
     Container::Vector<Memory::unique_ptr<Thread>>::iterator active = nullptr;
 
     // Scheduler wird evt. von einer Unterbrechung vom Zeitgeber gerufen,
     // bevor er initialisiert wurde
-    uint32_t idle_tid = 0U;
+    uint32_t idle_tid = 0;
 
     // Roughly the old dispatcher functionality
-    void start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next);                        // Start next without prev
-    void switch_to(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
+    void
+    start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next);                        // Start next without prev
+    void switch_to(Thread *prev_raw,
+                   Container::Vector<Memory::unique_ptr<Thread>>::iterator next);  // Switch from prev to next
 
     // Kann nur vom Idle-Thread aufgerufen werden (erster Thread der vom Scheduler gestartet wird)
     void enable_preemption(uint32_t tid) { idle_tid = tid; }
@@ -56,14 +59,14 @@ public:
         block_queue.reserve();
     }
 
-    uint32_t get_active() const {
+    [[nodiscard]] uint32_t get_active() const {
         return (*active)->tid;
     }
 
     // Scheduler initialisiert?
     // Zeitgeber-Unterbrechung kommt evt. bevor der Scheduler fertig
     // intiialisiert wurde!
-    bool preemption_enabled() const { return idle_tid != 0U; }
+    [[nodiscard]] bool preemption_enabled() const { return idle_tid != 0U; }
 
     // Scheduler starten
     void schedule();
