@@ -12,7 +12,7 @@
  *                  Aenderungen von Michael Schoettner, HHU, 21.8.2016       *
  *****************************************************************************/
 #include "CGA.h"
-#include "lib/mem/Memory.h"
+#include "lib/memory/Memory.h"
 #include <cstdint>
 
 namespace Device {
@@ -20,7 +20,8 @@ namespace Device {
 const IOport CGA::index_port(0x3d4);
 const IOport CGA::data_port(0x3d5);
 
-const Container::Span<CGA::cga_char_t, CGA::ROWS * CGA::COLUMNS> CGA::SCREEN{reinterpret_cast<CGA::cga_char_t *>(0xb8000U)};
+const Container::Span<CGA::cga_char_t, CGA::ROWS * CGA::COLUMNS> CGA::SCREEN{
+        reinterpret_cast<CGA::cga_char_t *>(0xb8000U)};
 const Container::Span<CGA::cga_line_t, CGA::ROWS> CGA::SCREEN_ROWS{reinterpret_cast<CGA::cga_line_t *>(0xb8000U)};
 CGA::cga_page_t *const CGA::SCREEN_PAGE{reinterpret_cast<CGA::cga_page_t *>(0xb8000U)};
 
