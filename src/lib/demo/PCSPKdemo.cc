@@ -1,16 +1,17 @@
 #include "PCSPKdemo.h"
+#include "lib/util/System.h"
 
 void PCSPKdemo::run() {
-    Kernel::kout.lock();
-    Kernel::kout.clear();
-    Kernel::kout << "Playing..." << endl;
-    Kernel::kout.unlock();
+    Util::System::out.lock();
+    Util::System::out.clear();
+    Util::System::out << "Playing..." << endl;
+    Util::System::out.unlock();
 
     (*melody)();  // This syntax is confusing as hell
 
-    Kernel::kout.lock();
-    Kernel::kout << "Finished" << endl;
-    Kernel::kout.unlock();
+    Util::System::out.lock();
+    Util::System::out << "Finished" << endl;
+    Util::System::out.unlock();
 
     Kernel::scheduler.exit();
 }

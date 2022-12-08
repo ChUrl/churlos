@@ -11,6 +11,7 @@
 
 #include "LinkedListAllocator.h"
 #include "kernel/system/Globals.h"
+#include "lib/util/System.h"
 
 // I don't order the list by size so that the block order corresponds to the location in memory
 // Then I can easily merge adjacent free blocks by finding the previous block without looking at
@@ -50,17 +51,17 @@ void LinkedListAllocator::dump_free_memory() {
 
     /* Hier muess Code eingefuegt werden */
 
-    Kernel::kout << "Freier Speicher:" << endl;
+    Util::System::out << "Freier Speicher:" << endl;
 
     if (free_start == nullptr) {
-        Kernel::kout << " - No free Blocks" << endl;
+        Util::System::out << " - No free Blocks" << endl;
     } else {
-        Kernel::kout << " - Freelist start: " << hex << reinterpret_cast<uint32_t>(free_start) << endl;
+        Util::System::out << " - Freelist start: " << hex << reinterpret_cast<uint32_t>(free_start) << endl;
 
         free_block_t *current = free_start;
         do {
-            Kernel::kout << " - Free Block (Start: " << hex << reinterpret_cast<uint32_t>(current)
-                 << " Size: " << hex << current->size << ")" << endl;
+            Util::System::out << " - Free Block (Start: " << hex << reinterpret_cast<uint32_t>(current)
+                              << " Size: " << hex << current->size << ")" << endl;
             current = current->next;
         } while (current != free_start);
     }
@@ -312,7 +313,7 @@ free_block_t *LinkedListAllocator::find_previous_block(free_block_t *next_block)
     }
 
     // if (current == next_block) {
-    //     Kernel::kout << "LinkedListAllocator::find_previous_block returned the input block" << endl;
+    //     Util::System::out << "LinkedListAllocator::find_previous_block returned the input block" << endl;
     // }
 
     return current;

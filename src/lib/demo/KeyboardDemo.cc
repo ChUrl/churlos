@@ -14,21 +14,21 @@ void KeyboardDemo::run() {
 
     /* Hier muess Code eingefuegt werden */
 
-    Kernel::kout << "Keyboard Demo: " << endl;
+    Util::System::out << "Keyboard Demo: " << endl;
 
-    Kernel::kout.lock();
-    Kernel::kout.clear();
-    Kernel::kout << "Info: Die Keyboard Demo sperrt den Output Stream:\n"
-         << "      Wenn die Preemption Demo laeuft wird diese also erst\n"
-         << "      fortfahren wenn die Keyboard Demo wieder beendet ist." << endl;
-    Kernel::kout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInput: ";
-    Kernel::kout.flush();
+    Util::System::out.lock();
+    Util::System::out.clear();
+    Util::System::out << "Info: Die Keyboard Demo sperrt den Output Stream:\n"
+                      << "      Wenn die Preemption Demo laeuft wird diese also erst\n"
+                      << "      fortfahren wenn die Keyboard Demo wieder beendet ist." << endl;
+    Util::System::out << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nInput: ";
+    Util::System::out.flush();
 
     while (running) {
-        Kernel::kout << listener.waitForKeyEvent();
-        Kernel::kout.flush();
+        Util::System::out << listener.waitForKeyEvent();
+        Util::System::out.flush();
     }
 
-    Kernel::kout.unlock();
+    Util::System::out.unlock();
     Kernel::scheduler.exit();
 }

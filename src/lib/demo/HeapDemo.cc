@@ -9,30 +9,31 @@
  *****************************************************************************/
 
 #include "HeapDemo.h"
+#include "lib/util/System.h"
 
 void HeapDemo::run() {
-    Kernel::kout.lock();
-    Kernel::kout.clear();
-    Kernel::kout << "HEAP_DEMO ===================================================================" << endl;
+    Util::System::out.lock();
+    Util::System::out.clear();
+    Util::System::out << "HEAP_DEMO ===================================================================" << endl;
 
     /* hier muss Code eingefuegt werden */
 
     Kernel::allocator.dump_free_memory();
 
     // Rounding to word border
-    Kernel::kout << "ROUNDING ====================================================================" << endl;
-    void* alloc = Kernel::allocator.alloc(1);  // 1 Byte
+    Util::System::out << "ROUNDING ====================================================================" << endl;
+    void *alloc = Kernel::allocator.alloc(1);  // 1 Byte
     Kernel::allocator.dump_free_memory();
     Kernel::allocator.free(alloc);
     Kernel::allocator.dump_free_memory();
 
     // Some objects and forward/backward merging
-    Kernel::kout << "SOME OBJECTS ================================================================" << endl;
-    MyObj* a = new MyObj(5);
+    Util::System::out << "SOME OBJECTS ================================================================" << endl;
+    MyObj *a = new MyObj(5);
     Kernel::allocator.dump_free_memory();
-    MyObj* b = new MyObj(10);
+    MyObj *b = new MyObj(10);
     Kernel::allocator.dump_free_memory();
-    MyObj* c = new MyObj(15);
+    MyObj *c = new MyObj(15);
     Kernel::allocator.dump_free_memory();
     delete b;  // No merge
     Kernel::allocator.dump_free_memory();
@@ -48,7 +49,7 @@ void HeapDemo::run() {
     // allocator.dump_free_memory();
 
     // Allocate too much
-    Kernel::kout << "TOO MUCH ====================================================================" << endl;
+    Util::System::out << "TOO MUCH ====================================================================" << endl;
     Kernel::allocator.alloc(1024 * 1024);  // should fail as only 1024 * 1024 - Headersize bytes are available
     Kernel::allocator.dump_free_memory();
 
@@ -65,14 +66,14 @@ void HeapDemo::run() {
     // allocator.dump_free_memory();
 
     // Array allocation
-    Kernel::kout << "ARRAY =======================================================================" << endl;
-    MyObj* objs = new MyObj[1024];
+    Util::System::out << "ARRAY =======================================================================" << endl;
+    MyObj *objs = new MyObj[1024];
     Kernel::allocator.dump_free_memory();
     delete[] objs;
     Kernel::allocator.dump_free_memory();
 
-    Kernel::kout << "HEAP_DEMO END ===============================================================" << endl;
+    Util::System::out << "HEAP_DEMO END ===============================================================" << endl;
 
-    Kernel::kout.unlock();
+    Util::System::out.unlock();
     Kernel::scheduler.exit();
 }

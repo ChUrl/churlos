@@ -1,40 +1,41 @@
 #include "ArrayDemo.h"
+#include "lib/util/System.h"
 
 void ArrayDemo::run() {
-    Container::Array<int, 10> arr1 {};
-    Container::Array<int, 10> arr2 {};
+    Container::Array<int, 10> arr1{};
+    Container::Array<int, 10> arr2{};
 
-    Kernel::kout.lock();
-    Kernel::kout.clear();
+    Util::System::out.lock();
+    Util::System::out.clear();
 
-    Kernel::kout << "Adding..." << endl;
+    Util::System::out << "Adding..." << endl;
     for (int i = 0; i < 10; ++i) {
         arr1[i] = i;
     }
 
-    Kernel::kout << "Iterator printing arr1:" << endl;
-    for (int i : arr1) {
-        Kernel::kout << i << " ";
+    Util::System::out << "Iterator printing arr1:" << endl;
+    for (int i: arr1) {
+        Util::System::out << i << " ";
     }
-    Kernel::kout << endl;
+    Util::System::out << endl;
 
-    Kernel::kout << "Swapping arr1 and arr2..." << endl;
+    Util::System::out << "Swapping arr1 and arr2..." << endl;
     arr1.swap(arr2);
 
-    Kernel::kout << "Iterator printing arr1:" << endl;
-    for (int i : arr1) {
-        Kernel::kout << i << " ";
+    Util::System::out << "Iterator printing arr1:" << endl;
+    for (int i: arr1) {
+        Util::System::out << i << " ";
     }
-    Kernel::kout << endl;
+    Util::System::out << endl;
 
-    Kernel::kout << "Iterator printing arr2:" << endl;
-    for (int i : arr2) {
-        Kernel::kout << i << " ";
+    Util::System::out << "Iterator printing arr2:" << endl;
+    for (int i: arr2) {
+        Util::System::out << i << " ";
     }
-    Kernel::kout << endl;
+    Util::System::out << endl;
 
     // arr1.swap(arr3);  // Not possible as type/size has to match
 
-    Kernel::kout.unlock();
+    Util::System::out.unlock();
     Kernel::scheduler.exit();
 }

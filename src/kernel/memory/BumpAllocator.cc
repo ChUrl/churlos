@@ -11,6 +11,7 @@
 
 #include "BumpAllocator.h"
 #include "kernel/system/Globals.h"
+#include "lib/util/System.h"
 
 namespace Kernel {
 
@@ -38,9 +39,9 @@ void BumpAllocator::dump_free_memory() {
 
     /* Hier muess Code eingefuegt werden */
 
-    Kernel::kout << "Freier Speicher:" << endl
-         << " - Next: " << hex << reinterpret_cast<uint32_t>(next)
-         << ", Allocations: " << dec << allocations << endl;
+    Util::System::out << "Freier Speicher:" << endl
+                      << " - Next: " << hex << reinterpret_cast<uint32_t>(next)
+                      << ", Allocations: " << dec << allocations << endl;
 }
 
 /*****************************************************************************

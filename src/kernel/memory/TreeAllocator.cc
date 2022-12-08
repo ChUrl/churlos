@@ -17,13 +17,13 @@ void TreeAllocator::init() {
 }
 
 void TreeAllocator::dump_free_memory() {
-    Kernel::kout << "Free Memory:" << endl;
+    Util::System::out << "Free Memory:" << endl;
     list_block_t *current = reinterpret_cast<list_block_t *>(heap_start);
     do {
         if (!current->allocated) {
-            Kernel::kout << " - Free Block at " << reinterpret_cast<uint32_t>(current) << ", Size: "
-                 << reinterpret_cast<uint32_t>(current->next) - reinterpret_cast<uint32_t>(current)
-                 << endl;
+            Util::System::out << " - Free Block at " << reinterpret_cast<uint32_t>(current) << ", Size: "
+                              << reinterpret_cast<uint32_t>(current->next) - reinterpret_cast<uint32_t>(current)
+                              << endl;
         }
         current = current->next;
     } while (reinterpret_cast<uint32_t>(current) != heap_start);

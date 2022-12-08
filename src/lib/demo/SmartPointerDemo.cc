@@ -1,11 +1,12 @@
 #include "SmartPointerDemo.h"
 #include "kernel/process/IdleThread.h"
+#include "lib/util/System.h"
 
 void SmartPointerDemo::run() {
-    Kernel::kout.lock();
-    Kernel::kout.clear();
+    Util::System::out.lock();
+    Util::System::out.clear();
 
-    Kernel::kout << "Output is written to log to be able to trace memory allocations/deallocations" << endl;
+    Util::System::out << "Output is written to log to be able to trace memory allocations/deallocations" << endl;
 
     {
         log.info() << "Allocating new unique_ptr<int>..." << endl;
@@ -76,7 +77,7 @@ void SmartPointerDemo::run() {
 
     // NOTE: This wasn't working because of a missing operator[] delete in the allocator
     log.info() << "Allocating unique_ptr<int>*..." << endl;
-    Memory::unique_ptr<int>* ptrptr = new Memory::unique_ptr<int>[10];
+    Memory::unique_ptr<int> *ptrptr = new Memory::unique_ptr<int>[10];
     delete[] ptrptr;
     log.info() << "Should be deleted by now..." << endl;
 
@@ -95,7 +96,7 @@ void SmartPointerDemo::run() {
 
     {
         log.info() << "Heapallocating Array<bse::unique_ptr<int>, 10>..." << endl;
-        Container::Array<Memory::unique_ptr<int>, 10>* arr = new Container::Array<Memory::unique_ptr<int>, 10>;
+        Container::Array<Memory::unique_ptr<int>, 10> *arr = new Container::Array<Memory::unique_ptr<int>, 10>;
         log.info() << "Populating slot 0..." << endl;
         (*arr)[0] = Memory::make_unique<int>(1);
         log.info() << "Moving slot 0 to slot 1..." << endl;
@@ -117,6 +118,6 @@ void SmartPointerDemo::run() {
     }
     log.info() << "Should be deleted by now..." << endl;
 
-    Kernel::kout.unlock();
+    Util::System::out.unlock();
     Kernel::scheduler.exit();
 }

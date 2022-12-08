@@ -9,35 +9,36 @@
  *****************************************************************************/
 
 #include "TextDemo.h"
+#include "lib/util/System.h"
 
 void TextDemo::run() {
 
     /* Hier muess Code eingefuegt werden */
 
-    Kernel::kout.lock();
-    Kernel::kout.clear();
-    Kernel::kout << "TextDemo\n"
-         << endl;
+    Util::System::out.lock();
+    Util::System::out.clear();
+    Util::System::out << "TextDemo\n"
+                      << endl;
 
-    Kernel::kout << "Attribut (GREEN on WHITE): "
-         << bgc(Device::CGA::WHITE) << green << "GREEN on WHITE" << endl
-         << "Attribut (WHITE on BLACK): "
-         << bgc(Device::CGA::BLACK) << white << "WHITE on BLACK" << endl;
-    Kernel::kout << endl;
+    Util::System::out << "Attribut (GREEN on WHITE): "
+                      << bgc(Device::CGA::WHITE) << green << "GREEN on WHITE" << endl
+                      << "Attribut (WHITE on BLACK): "
+                      << bgc(Device::CGA::BLACK) << white << "WHITE on BLACK" << endl;
+    Util::System::out << endl;
 
-    Kernel::kout << "Test der Zahlenausgabefunktion:" << endl
-         << "|  dec  |  hex  |  bin  |" << endl
-         << "+-------+-------+-------+" << endl;
+    Util::System::out << "Test der Zahlenausgabefunktion:" << endl
+                      << "|  dec  |  hex  |  bin  |" << endl
+                      << "+-------+-------+-------+" << endl;
 
     for (uint16_t num = 0; num < 17; ++num) {
-        Kernel::kout << fillw(0) << "| " << fillw(6) << dec << num
-             << fillw(0) << "| " << fillw(6) << hex << num
-             << fillw(0) << "| " << fillw(6) << bin << num
-             << fillw(0) << "|" << endl;
+        Util::System::out << fillw(0) << "| " << fillw(6) << dec << num
+                          << fillw(0) << "| " << fillw(6) << hex << num
+                          << fillw(0) << "| " << fillw(6) << bin << num
+                          << fillw(0) << "|" << endl;
     }
 
-    Kernel::kout << endl;
+    Util::System::out << endl;
 
-    Kernel::kout.unlock();
+    Util::System::out.unlock();
     Kernel::scheduler.exit();
 }

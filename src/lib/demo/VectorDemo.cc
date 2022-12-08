@@ -1,8 +1,9 @@
 #include "VectorDemo.h"
+#include "lib/util/System.h"
 
-void print(OutStream& os, const Container::Vector<int>& list) {
+void print(OutStream &os, const Container::Vector<int> &list) {
     os << "Printing List: ";
-    for (const int i : list) {
+    for (const int i: list) {
         os << i << " ";
     }
     os << endl;
@@ -11,9 +12,9 @@ void print(OutStream& os, const Container::Vector<int>& list) {
 void VectorDemo::run() {
     Container::Vector<int> list;
 
-    Kernel::kout.lock();
-    Kernel::kout.clear();
-    Kernel::kout << "Logs are written to serial to see the memory interactions" << endl;
+    Util::System::out.lock();
+    Util::System::out.clear();
+    Util::System::out << "Logs are written to serial to see the memory interactions" << endl;
 
     log.info() << "Initial list size: " << dec << list.size() << endl;
 
@@ -101,10 +102,10 @@ void VectorDemo::run() {
     // ============================================================
 
     log.info() << "Range based for support" << endl;
-    for (int i : list) {
+    for (int i: list) {
         log.info() << "List contains element: " << dec << i << endl;
     }
 
-    Kernel::kout.unlock();
+    Util::System::out.unlock();
     Kernel::scheduler.exit();
 }

@@ -14,13 +14,14 @@
 #include "kernel/system/Globals.h"
 #include "kernel/process/Thread.h"
 #include "kernel/event/KeyEventListener.h"
+#include "lib/util/System.h"
 
 class KeyboardDemo : public Kernel::Thread {
 private:
     Kernel::KeyEventListener listener;
 
 public:
-    KeyboardDemo(const KeyboardDemo& copy) = delete;
+    KeyboardDemo(const KeyboardDemo &copy) = delete;
 
     KeyboardDemo() : Thread("KeyboardDemo"), listener(tid) {
         Kernel::kevman.subscribe(listener);
@@ -30,10 +31,10 @@ public:
     ~KeyboardDemo() override {
         if (running) {
             // NOTE: If the thread was exited nicely it can unlock before destructor,
-            //       but on forced kill Kernel::kout has to be unlocked in the destructor.
+            //       but on forced kill Util::System::out has to be unlocked in the destructor.
             //       This is bad since it could release the lock although some other
             //       thread set it (so use nice_kill)
-            Kernel::kout.unlock();
+            Util::System::out.unlock();
         }
         Kernel::kevman.unsubscribe(listener);
     }
