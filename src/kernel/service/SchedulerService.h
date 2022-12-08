@@ -8,6 +8,8 @@
 
 namespace Kernel {
 
+// NOTE: I mainly have this to be able to implement additional schedulers easily
+
 /**
  * This class implements the scheduling system service.
  */
@@ -49,7 +51,7 @@ public:
 
     void exit();
 
-    void suicide(uint16_t tid);
+    void suicide(uint16_t tid); // TODO: Remove
 
     void kill(uint16_t tid);
 

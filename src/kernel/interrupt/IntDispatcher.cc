@@ -25,7 +25,7 @@ int IntDispatcher::assign(uint8_t vector, ISR &isr) {
     /* hier muss Code eingefuegt werden */
 
     handlerMap[vector] = &isr;
-    log.info() << "Registered ISR for vector " << dec << vector << endl;
+    log.info() << "Registered ISR for vector " << dec << vector << endl; // TODO: Numbers don't show up in log
 
     return 0;
 }
@@ -37,7 +37,7 @@ int IntDispatcher::dispatch(uint8_t vector) {
     ISR *isr = handlerMap[vector];
 
     if (isr == nullptr) {
-        log.error() << "No ISR registered for vector " << vector << endl;
+        log.error() << "No ISR registered for vector " << vector << endl; // TODO: Numbers don't show up in log
 
         // TODO: Throw exception
 

@@ -7,7 +7,7 @@ void SchedulerService::startScheduling() {
 }
 
 uint16_t SchedulerService::active() const {
-    return scheduler.get_active();
+    return (*scheduler.active)->tid;
 }
 
 void SchedulerService::yield() {

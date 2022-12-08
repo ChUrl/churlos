@@ -1,28 +1,18 @@
-/*****************************************************************************
- *                                                                           *
- *                          S C H E D U L E R                                *
- *                                                                           *
- *---------------------------------------------------------------------------*
- * Beschreibung:    Implementierung eines einfachen Zeitscheiben-Schedulers. *
- *                  Rechenbereite Threads werden in 'readQueue' verwaltet.   *
- *                                                                           *
- * Autor:           Michael, Schoettner, HHU, 22.8.2016                      *
- *****************************************************************************/
-
 #ifndef Scheduler_include__
 #define Scheduler_include__
 
 #include "Thread.h"
 #include "lib/memory/UniquePointer.h"
-#include "lib/stream/Logger.h"
 #include "lib/container/Vector.h"
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Kernel {
 
+/**
+ * This class implements a simple round-robin scheduler.
+ */
 class Scheduler {
     friend class SchedulerService;
-
-    friend class IdleThread;
 
 public:
     /**
@@ -30,55 +20,90 @@ public:
      */
     Scheduler();
 
-    Scheduler(const Scheduler &copy) = delete;  // Verhindere Kopieren
+    MakeUncopyable(Scheduler)
 
-    // TODO: Rest of constructors
+    MakeUnmovable(Scheduler)
+
+    ~Scheduler() = default;
 
 private:
-    [[nodiscard]] uint16_t get_active() const {
-        return (*active)->tid;
-    }
-
+    /**
+     * Place a thread in the scheduler's ready_queue.
+     *
+     * @param thread The thread to add to the ready_queue
+     */
     void ready(Memory::unique_ptr<Thread> &&thread);
 
-    // Roughly the old dispatcher functionality
-    void start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next); // Start next without prev
+    /**
+     * Start/continue a thread independently of the previous running thread.
+     * Is applicable when the previous thread terminated/was killed.
+     *
+     * @param next The next thread to run
+     */
+    void start(Container::Vector<Memory::unique_ptr<Thread>>::iterator next);
 
-    // Switch from prev to next
-    void switch_to(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next);
+    /**
+     * Start/continue a thread.
+     * Is applicable when the previous thread wants to continue execution at a later point.
+     *
+     * @param prev_raw The raw pointer to the previous running thread
+     * @param next The next thread to run
+     */
+    void start(Thread *prev_raw, Container::Vector<Memory::unique_ptr<Thread>>::iterator next);
 
-    // CPU freiwillig abgeben und Auswahl des naechsten Threads
-    void yield(); // Returns when only the idle thread runs
+    /**
+     * Give CPU time to the next waiting thread from the ready_queue.
+     */
+    void yield();
 
-    // Blocks current thread (move to block_queue)
-    void block(); // Returns on error because we don't have exceptions
+    /**
+     * Block a thread from receiving CPU time.
+     * Blocked threads are managed in the block_queue.
+     */
+    void block();
 
-    // Deblock by tid (move to ready_queue)
+    /**
+     * Allow a blocked thread to receive CPU time again.
+     *
+     * @param tid
+     */
     void deblock(uint16_t tid);
 
-    // Thread terminiert sich selbst
-    // NOTE: When a thread exits itself it will disappear...
-    //       Maybe put exited threads in an exited queue?
-    //       Then they would have to be acquired from there to exit...
-    void exit();  // Returns on error because we don't have exceptions
+    /**
+     * Remove a thread from the ready_queue and give CPU time to the next waiting thread.
+     * Exited threads are managed in the exit_queue.
+     */
+    void exit();
 
-    // Thread mit 'Gewalt' terminieren
+    /**
+     * Forcefully exit a thread and retrieve it.
+     *
+     * @param tid The thread to exit
+     * @param ptr The pointer to the killed thread for external use
+     */
     void kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr);
 
-    void kill(uint16_t tid) { kill(tid, nullptr); }
+    /**
+     * Forcefully exit a thread and discard it.
+     *
+     * @param tid The thread to exit
+     */
+    void kill(uint16_t tid);
 
+    // TODO: Remove this
     // Asks thread to exit
     // NOTE: I had many problems with killing threads that were stuck in some semaphore
     //       or were involved in any locking mechanisms, so with this a thread can make sure
     //       to "set things right" before exiting itself (but could also be ignored)
+    // TODO: "Setting things right" should be done in the thread's destructor
     void nice_kill(uint16_t tid, Memory::unique_ptr<Thread> *ptr);
 
-    void nice_kill(uint16_t tid) { nice_kill(tid, nullptr); }
+    void nice_kill(uint16_t tid);
 
 private:
     Container::Vector<Memory::unique_ptr<Thread>> ready_queue;
     Container::Vector<Memory::unique_ptr<Thread>> block_queue;
-    Container::Vector<Memory::unique_ptr<Thread>> exited; // TODO: Manage exited threads
+    Container::Vector<Memory::unique_ptr<Thread>> exit_queue; // TODO: Manage exited threads
 
     // It makes sense to keep track of the active thread through this as it makes handling the
     // unique_ptr easier and reduces the copying in the vector when cycling through the threads

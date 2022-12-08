@@ -7,9 +7,14 @@
 
 namespace Kernel {
 
+// NOTE: I mainly have this to be able to implement additional interrupt controllers easily
+
+/**
+ * This class implements the interrupt system service.
+ */
 class InterruptService : public Service {
 public:
-    static const constexpr uint8_t ID = 0;
+    static const constexpr uint8_t ID = Service::INTERRUPT;
 
 public:
     InterruptService() = default;

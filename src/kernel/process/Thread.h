@@ -33,23 +33,22 @@
 namespace Kernel {
 
 class Thread {
-    friend class SchedulerService;
-
     friend class Scheduler;
 
-protected:
-    // TODO: Remove this
-    bool running = true; // For soft exit, if thread uses infinite loop inside run(), use this as condition
-
-    // TODO: Public this
+public:
     uint16_t tid; // Thread-ID (wird im Konstruktor vergeben)
 
-public:
-    // TODO: Is this a good idea?
+    /**
+     * Reserved thread ids.
+     */
     enum Threads : uint16_t {
         IDLE = 0,
         CLEANUP = 1 // TODO: Can cleanup be done in a thread?
     };
+
+protected:
+    // TODO: Remove this
+    bool running = true; // For soft exit, if thread uses infinite loop inside run(), use this as condition
 
 public:
     Thread();
@@ -63,6 +62,10 @@ public:
         delete[] stack;
     }
 
+    // Methode des Threads, muss in Sub-Klasse implementiert werden
+    virtual void run() = 0;
+
+private:
     // Thread aktivieren
     void start() const;
 
@@ -71,9 +74,6 @@ public:
 
     // Ask thread to terminate itself
     void suicide() { running = false; }
-
-    // Methode des Threads, muss in Sub-Klasse implementiert werden
-    virtual void run() = 0;
 
 private:
     uint32_t *stack;
