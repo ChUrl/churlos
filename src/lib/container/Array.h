@@ -46,7 +46,7 @@ public:
         }
     }
 
-    // TODO: Rest of constructors
+    ~Array() = default;
 
     iterator begin() { return iterator(&buf[0]); }
 

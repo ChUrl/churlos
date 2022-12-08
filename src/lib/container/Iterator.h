@@ -3,20 +3,22 @@
 
 namespace Container {
 
-// This iterator works for structures where the elements are adjacent in memory.
+/**
+ * This class implements an iterator that works on continuous memory regions
+ * of uniform type.
+ *
+ * @tparam T The type of the elements contained in the memory region
+ */
 template<typename T>
 class ContinuousIterator {
-private:
-    T *ptr = nullptr;
-
 public:
     ContinuousIterator() = delete;
 
     // Use const_cast as the iterator has to increment the pointer
     // Don't make this explicit: Want to write Container::Vector<int>::iterator = nullptr;
-    ContinuousIterator(const T *ptr) : ptr(const_cast<T *>(ptr)) {}
+    ContinuousIterator(const T *ptr) : ptr(const_cast<T *>(ptr)) {} // NOLINT(google-explicit-constructor)
 
-    // TODO: Rest of constructors
+    ~ContinuousIterator() = default;
 
     ContinuousIterator &operator++() {
         ++ptr;
@@ -36,7 +38,7 @@ public:
         return ContinuousIterator(ptr - sub);
     }
 
-    // Convenience
+    // Convenience operators
     T *operator->() { return ptr; }
 
     const T *operator->() const { return ptr; }
@@ -57,8 +59,12 @@ public:
 
     bool operator!=(const ContinuousIterator &other) const { return ptr != other.ptr; }
 
+    // Convenience function
     template<typename t>
     friend unsigned int distance(const ContinuousIterator<t> &first, const ContinuousIterator<t> &last);
+
+private:
+    T *ptr = nullptr;
 };
 
 template<typename T>

@@ -1,10 +1,6 @@
 #ifndef VECTOR_INCLUDE_H_
 #define VECTOR_INCLUDE_H_
 
-// NOTE: I decided to implement this because I wanted some sort of dynamic array (for example for the keyeventmanager).
-//       Also I wanted to template the Queue (for the scheduler) but with this I can just replace the Queue and use the
-//       ArrayList instead
-
 #include "Iterator.h"
 #include <utility>
 
@@ -118,8 +114,11 @@ public:
         return iterator(&buf[size()]);
     }
 
-    // Add elements
-    // https://en.cppreference.com/w/cpp/container/vector/push_back
+    /**
+     * Insert an element at the front of the vector by copying.
+     *
+     * @param copy The element that will be copied to the front of the vector
+     */
     void push_back(const T &copy) {
         initIfNecessary();
 
@@ -128,6 +127,11 @@ public:
         min_expand();
     }
 
+    /**
+     * Insert an element at the front of the vector by moving.
+     *
+     * @param move The element that will be moved to the front of the vector
+     */
     void push_back(T &&move) {
         initIfNecessary();
 
@@ -136,8 +140,14 @@ public:
         min_expand();
     }
 
-    // https://en.cppreference.com/w/cpp/container/vector/insert
-    // The element will be inserted before the pos iterator, pos can be the end() iterator
+    /**
+     * Insert an element into the vector by copying it.
+     * The element will be inserted before pos, so pos can be the end() iterator.
+     *
+     * @param pos The position after the slot where the element will be inserted
+     * @param move The element that will be copied into the vector
+     * @return The iterator pointing to the inserted element
+     */
     iterator insert(iterator pos, const T &copy) {
         if (pos > end()) {
             // TODO: Exception
@@ -152,6 +162,14 @@ public:
         return iterator(&buf[idx]);
     }
 
+    /**
+     * Insert an element into the vector by moving it.
+     * The element will be inserted before pos, so pos can be the end() iterator.
+     *
+     * @param pos The position after the slot where the element will be inserted
+     * @param move The element that will be moved into the vector
+     * @return The iterator pointing to the inserted element
+     */
     iterator insert(iterator pos, T &&move) {
         if (pos > end()) {
             // TODO: Exception
@@ -166,9 +184,13 @@ public:
         return iterator(&buf[idx]);
     }
 
-    // Remove elements
-    // https://en.cppreference.com/w/cpp/container/vector/erase
-    // Returns the iterator after the removed element, pos can't be end() iterator
+    /**
+     * Remove an element from the vector.
+     * Returns the iterator after the removed element.
+     *
+     * @param pos The element to remove
+     * @return The next iterator
+     */
     iterator erase(iterator pos) {
         if (sz == 0 || pos >= end()) {
             // TODO: Exception
@@ -242,6 +264,11 @@ public:
         }
     }
 
+    /**
+     * Allocate a number of slots in the vector.
+     *
+     * @param cap The minimal number of slots to allocate
+     */
     void reserve(std::size_t cap = Vector::default_cap) {
         // The first reserve could allocate double if cap != default_cap
         if (buf == nullptr) {
@@ -347,9 +374,16 @@ private:
     }
 };
 
-// Erase all elements that match a predicate
 // NOTE: pred is no real predicate as one would need closures for this, but we don't have <functional> available
 //       This means the result has to be passed separately and the function differs from the c++20 std::erase_if
+/**
+ * Erase all elements that match a condition.
+ *
+ * @param vec The vector to erase elements from
+ * @param pred The decider function
+ * @param result The result that will be compared to the passed functions return value
+ * @return The number of removed elements
+ */
 template<typename T, typename arg>
 std::size_t erase_if(Vector<T> &vec, arg (*pred)(const T &), arg result) {
     std::size_t erased_els = 0;

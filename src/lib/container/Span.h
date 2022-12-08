@@ -24,9 +24,7 @@ public:
     Span() = delete;
 
     // Don't mark explicit to allow Span<uint32_t, 32> span = &int;
-    Span(T *first) : ptr(first) {}
-
-    // TODO: Rest of constructors
+    Span(T *first) : ptr(first) {} // NOLINT(google-explicit-constructor)
 
     iterator begin() { return iterator(ptr); }
 
