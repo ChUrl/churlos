@@ -1,5 +1,5 @@
 #include "String.h"
-#include "lib/mem/Memory.h"
+#include "lib/memory/Memory.h"
 
 namespace String {
 
