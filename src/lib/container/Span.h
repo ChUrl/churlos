@@ -7,71 +7,56 @@
 namespace Container {
 
 /**
- * This class implements a readonly view on a memory region of uniform type.
- * The Span can be initialized wihout size checking by supplying 0 as size
- * and using the one-argument constructor. Then iterators become invalid.
+ * This class implements a readonly view on a memory region of uniform type
+ * with runtime bounds checking and iterator support.
  *
  * @tparam T The type of the objects located in the memory region
  * @tparam N The size of the memory region
  */
-template<typename T, std::size_t N = 0>
+template<typename T, std::size_t N>
 class Span {
+    static_assert(N > 0, "Invalid size!");
+
 public:
     using iterator = ContinuousIterator<T>;
-
-private:
-    T *const ptr;
-    const std::size_t sz = N;
 
 public:
     Span() = delete;
 
-    explicit Span(T *first) : ptr(first) {}
-
-    Span(T *first, T *last) : ptr(first), sz(last - first) {}
+    // Don't mark explicit to allow Span<uint32_t, 32> span = &int;
+    Span(T *first) : ptr(first) {}
 
     // TODO: Rest of constructors
 
-    iterator begin() { return iterator(ptr); }
-
     iterator begin() const { return iterator(ptr); }
 
-    // If size is unchecked end() is equal to begin()
-    iterator end() { return iterator(&ptr[sz]); }
-
-    // If size is unchecked end() is equal to begin()
-    iterator end() const { return iterator(&ptr[sz]); }
-
-    T *operator[](std::size_t i) {
-        if (sz != 0) {
-            if (i >= sz) { return nullptr; }
-        }
-        return &ptr[i];
-    }
+    iterator end() const { return iterator(&ptr[N]); }
 
     T *operator[](std::size_t i) const {
-        if (sz != 0) {
-            if (i >= sz) { return nullptr; }
+        if (i >= N) {
+            // TODO: Exception
         }
         return &ptr[i];
     }
-
-    T *data() { return ptr; }
 
     const T *data() const { return ptr; }
 
-    explicit operator T *() {
-        return ptr;
-    }
+    explicit operator T *() const { return ptr; }
 
     // First is inclusive, last exclusive [first, last)
-    Span &subspan(std::size_t first, std::size_t last) {
-        return Span(ptr + first, ptr + last - 1);
+    template<std::size_t Offset, std::size_t Count>
+    Span &subspan() const {
+        static_assert(Offset + Count <= N, "Ivalid range!");
+
+        return Span<T, Count>(ptr + Offset);
     }
 
-    [[nodiscard]] std::size_t size() const {
-        return sz;
+    [[nodiscard]] constexpr std::size_t size() const {
+        return N;
     }
+
+private:
+    const T *const ptr;
 };
 
 }  // namespace bse
