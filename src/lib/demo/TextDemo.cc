@@ -10,6 +10,8 @@
 
 #include "TextDemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 void TextDemo::run() {
 
@@ -40,5 +42,6 @@ void TextDemo::run() {
     Util::System::out << endl;
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

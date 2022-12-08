@@ -9,6 +9,8 @@
  *****************************************************************************/
 
 #include "KeyboardDemo.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 void KeyboardDemo::run() {
 
@@ -30,5 +32,6 @@ void KeyboardDemo::run() {
     }
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

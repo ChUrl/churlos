@@ -1,5 +1,7 @@
 #include "KeyEventManager.h"
 #include "kernel/system/Globals.h"
+#include "kernel/service/SchedulerService.h"
+#include "kernel/system/System.h"
 
 namespace Kernel {
 
@@ -20,10 +22,11 @@ void KeyEventManager::unsubscribe(KeyEventListener &unsub) {
 
 void KeyEventManager::broadcast(char c) {
     log.trace() << "Beginning Broadcast" << endl;
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
     for (KeyEventListener *listener: listeners) {
         log.trace() << "Broadcasting " << c << " to Thread ID: " << dec << listener->tid << endl;
         listener->trigger(c);
-        scheduler.deblock(listener->tid);
+        schedulerService.deblock(listener->tid);
     }
 }
 

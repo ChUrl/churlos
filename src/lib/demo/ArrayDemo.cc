@@ -1,5 +1,7 @@
 #include "ArrayDemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 void ArrayDemo::run() {
     Container::Array<int, 10> arr1{};
@@ -37,5 +39,6 @@ void ArrayDemo::run() {
     // arr1.swap(arr3);  // Not possible as type/size has to match
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

@@ -1,5 +1,7 @@
 #include "PreemptiveThreadDemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 void PreemptiveLoopThread::run() {
     int cnt = 0;
@@ -15,7 +17,8 @@ void PreemptiveLoopThread::run() {
         Util::System::out.unlock();
     }
 
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }
 
 void PreemptiveThreadDemo::run() {
@@ -25,11 +28,12 @@ void PreemptiveThreadDemo::run() {
     Util::System::out << "Preemptive Thread Demo:" << endl;
 
     Util::System::out << "Readying LoopThreads" << endl;
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
     for (unsigned int i = 0; i < number_of_threads; ++i) {
-        Kernel::scheduler.ready<PreemptiveLoopThread>(i);
+        schedulerService.ready<PreemptiveLoopThread>(i);
     }
 
     Util::System::out << "Exiting main thread" << endl;
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    schedulerService.exit();
 }

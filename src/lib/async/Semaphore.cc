@@ -1,5 +1,7 @@
 #include "Semaphore.h"
 #include "kernel/system/Globals.h"
+#include "kernel/service/SchedulerService.h"
+#include "kernel/system/System.h"
 
 namespace Async {
 
@@ -16,11 +18,12 @@ void Semaphore::p() {
         if (!wait_queue.initialized()) {  // TODO: I will replace this suboptimal datastructure in the future
             wait_queue.reserve();
         }
-        wait_queue.push_back(Kernel::scheduler.get_active());
+        auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+        wait_queue.push_back(schedulerService.active());
 
         Device::CPU::disable_int();  // Make sure the block() comes through after releasing the lock
         lock.release();
-        Kernel::scheduler.block();  // Moves to next thread, enables int
+        schedulerService.block();  // Moves to next thread, enables int
     }
 }
 
@@ -34,7 +37,9 @@ void Semaphore::v() {
 
         Device::CPU::disable_int();  // Make sure the deblock() comes through after releasing the lock
         lock.release();
-        Kernel::scheduler.deblock(tid);  // Enables int
+
+        auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+        schedulerService.deblock(tid);  // Enables int
     } else {
         // No more threads want to work so free semaphore
         counter = counter + 1;

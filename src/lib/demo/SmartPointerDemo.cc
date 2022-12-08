@@ -2,6 +2,8 @@
 #include "kernel/process/IdleThread.h"
 #include "lib/util/System.h"
 
+NamedLogger SmartPointerDemo::log = NamedLogger("SmartPointerDemo");
+
 void SmartPointerDemo::run() {
     Util::System::out.lock();
     Util::System::out.clear();
@@ -119,5 +121,6 @@ void SmartPointerDemo::run() {
     log.info() << "Should be deleted by now..." << endl;
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

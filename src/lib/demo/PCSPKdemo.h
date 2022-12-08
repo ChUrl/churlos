@@ -9,9 +9,9 @@ private:
     void (*melody)();  // Allow to pass a melody to play when initializing the demo
 
 public:
-    PCSPKdemo(const PCSPKdemo& copy) = delete;
+    PCSPKdemo(const PCSPKdemo &copy) = delete;
 
-    PCSPKdemo(void (*melody)()) : Thread("PCSPKdemo"), melody(melody) {}
+    PCSPKdemo(void (*melody)()) : melody(melody) {}
 
     ~PCSPKdemo() override {
         Device::PCSPK::off();

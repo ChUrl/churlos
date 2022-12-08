@@ -1,5 +1,9 @@
 #include "PagingDemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
+
+NamedLogger PagingDemo::log = NamedLogger("PagingDemo");
 
 void PagingDemo::writeprotect_page() {
     Util::System::out << "Accessing a writeprotected page triggers bluescreen,\nif you can read this it didn't work"
@@ -48,5 +52,6 @@ void PagingDemo::run() {
             break;
     }
 
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

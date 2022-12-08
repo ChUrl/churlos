@@ -7,11 +7,14 @@
 
 class VectorDemo : public Kernel::Thread {
 public:
-    VectorDemo(const VectorDemo& copy) = delete;
+    VectorDemo(const VectorDemo &copy) = delete;
 
-    VectorDemo() : Thread("VectorDemo") {}
+    VectorDemo() = default;
 
     void run() override;
+
+private:
+    static NamedLogger log;
 };
 
 #endif

@@ -12,6 +12,7 @@
 #include "kernel/system/Globals.h"
 #include "kernel/system/System.h"
 #include "kernel/service/InterruptService.h"
+#include "kernel/service/SchedulerService.h"
 
 namespace Device {
 
@@ -72,11 +73,7 @@ void PIT::trigger() {
     // log << TRACE << "Incrementing systime" << endl;
 
     // alle 10ms, Systemzeit weitersetzen
-    Kernel::systime++;
-
-    // Bei jedem Tick einen Threadwechsel ausloesen.
-    // Aber nur wenn der Scheduler bereits fertig intialisiert wurde
-    // und ein weiterer Thread rechnen moechte
+    Kernel::systime++; // TODO: Timeservice
 
     /* hier muss Code eingefuegt werden */
 
@@ -88,12 +85,9 @@ void PIT::trigger() {
         last_indicator_refresh = Kernel::systime;
     }
 
-    // TODO: Use schedulerservice
     // Preemption
-    if (Kernel::scheduler.preemption_enabled()) {
-        // log << TRACE << "Preemption" << endl;
-        Kernel::scheduler.preempt();
-    }
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.yield();
 }
 
 }

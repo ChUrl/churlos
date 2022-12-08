@@ -5,11 +5,14 @@
 
 class SmartPointerDemo : public Kernel::Thread {
 public:
-    SmartPointerDemo(const SmartPointerDemo& copy) = delete;
+    SmartPointerDemo(const SmartPointerDemo &copy) = delete;
 
-    SmartPointerDemo() : Thread("SmartPointerDemo") {}
+    SmartPointerDemo() = default;
 
     void run() override;
+
+private:
+    static NamedLogger log;
 };
 
 #endif

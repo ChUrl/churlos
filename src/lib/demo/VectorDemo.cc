@@ -1,5 +1,9 @@
 #include "VectorDemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
+
+NamedLogger VectorDemo::log = NamedLogger("VectorDemo");
 
 void print(OutStream &os, const Container::Vector<int> &list) {
     os << "Printing List: ";
@@ -107,5 +111,6 @@ void VectorDemo::run() {
     }
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

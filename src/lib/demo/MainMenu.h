@@ -10,9 +10,9 @@ private:
     Kernel::KeyEventListener listener;
 
 public:
-    MainMenu(const MainMenu& copy) = delete;
+    MainMenu(const MainMenu &copy) = delete;
 
-    MainMenu() : Thread("MainMenu"), listener(tid) {
+    MainMenu() : listener(tid) {
         Kernel::kevman.subscribe(listener);
     }
 

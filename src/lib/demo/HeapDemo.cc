@@ -10,6 +10,8 @@
 
 #include "HeapDemo.h"
 #include "lib/util/System.h"
+#include "kernel/service/SchedulerService.h"
+#include "kernel/system/System.h"
 
 void HeapDemo::run() {
     Util::System::out.lock();
@@ -75,5 +77,7 @@ void HeapDemo::run() {
     Util::System::out << "HEAP_DEMO END ===============================================================" << endl;
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

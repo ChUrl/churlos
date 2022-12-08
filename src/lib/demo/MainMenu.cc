@@ -10,6 +10,8 @@
 #include "TextDemo.h"
 #include "VBEdemo.h"
 #include "VectorDemo.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 void print_demo_menu() {
     Util::System::out.lock();
@@ -36,55 +38,56 @@ void MainMenu::run() {
 
     char input = '\0';
     unsigned int running_demo = 0;
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
     while (running) {
         input = listener.waitForKeyEvent();
 
         if ((input >= '0' && input <= '9') || input == '!') {
             switch (input) {
                 case '1':
-                    running_demo = Kernel::scheduler.ready<TextDemo>();
+                    running_demo = schedulerService.ready<TextDemo>();
                     break;
                 case '2':
-                    running_demo = Kernel::scheduler.ready<PCSPKdemo>(&Device::PCSPK::aerodynamic);
+                    running_demo = schedulerService.ready<PCSPKdemo>(&Device::PCSPK::aerodynamic);
                     break;
                 case '3':
-                    running_demo = Kernel::scheduler.ready<KeyboardDemo>();
+                    running_demo = schedulerService.ready<KeyboardDemo>();
                     break;
                 case '4':
-                    running_demo = Kernel::scheduler.ready<HeapDemo>();
+                    running_demo = schedulerService.ready<HeapDemo>();
                     break;
                 case '5':
-                    running_demo = Kernel::scheduler.ready<VBEdemo>();
+                    running_demo = schedulerService.ready<VBEdemo>();
                     break;
                 case '6':
-                    running_demo = Kernel::scheduler.ready<PagingDemo>();
+                    running_demo = schedulerService.ready<PagingDemo>();
                     break;
                 case '7':
-                    running_demo = Kernel::scheduler.ready<PreemptiveThreadDemo>(3);
+                    running_demo = schedulerService.ready<PreemptiveThreadDemo>(3);
                     break;
 
                 case '8':
-                    running_demo = Kernel::scheduler.ready<VectorDemo>();
+                    running_demo = schedulerService.ready<VectorDemo>();
                     break;
                 case '9':
-                    running_demo = Kernel::scheduler.ready<ArrayDemo>();
+                    running_demo = schedulerService.ready<ArrayDemo>();
                     break;
                 case '0':
-                    running_demo = Kernel::scheduler.ready<SmartPointerDemo>();
+                    running_demo = schedulerService.ready<SmartPointerDemo>();
                     break;
                 case '!':
-                    running_demo = Kernel::scheduler.ready<StringDemo>();
+                    running_demo = schedulerService.ready<StringDemo>();
                     break;
             }
         } else if (input == 'k') {
-            Kernel::scheduler.nice_kill(running_demo);  // NOTE: If thread exits itself this will throw error
+            schedulerService.suicide(running_demo);  // NOTE: If thread exits itself this will throw error
             print_demo_menu();
         } else if (input == 'K') {
-            Kernel::scheduler.kill(running_demo);
+            schedulerService.kill(running_demo);
             print_demo_menu();
         }
     }
 
-    Kernel::scheduler.exit();
+    schedulerService.exit();
     // This thread won't be deleted...
 }

@@ -5,18 +5,22 @@
 #include "kernel/process/Thread.h"
 #include "kernel/event/KeyEventListener.h"
 
-class PagingDemo: public Kernel::Thread {
+class PagingDemo : public Kernel::Thread {
 private:
     void writeprotect_page();
+
     void free_page();
+
     void notpresent_page();
 
     Kernel::KeyEventListener listener;
 
-public:
-    PagingDemo(const PagingDemo& copy) = delete;
+    static NamedLogger log;
 
-    PagingDemo(): Thread("PagingDemo"), listener(tid) {
+public:
+    PagingDemo(const PagingDemo &copy) = delete;
+
+    PagingDemo() : listener(tid) {
         Kernel::kevman.subscribe(listener);
     }
 

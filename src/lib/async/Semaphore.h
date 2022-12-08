@@ -29,7 +29,7 @@ public:
     Semaphore(const Semaphore &copy) = delete;  // Verhindere Kopieren
 
     // Konstruktor: Initialisieren des Semaphorzaehlers
-    Semaphore(int c) : wait_queue(true), counter(c) {}
+    explicit Semaphore(int c) : counter(c) {}
 
     // 'Passieren': Warten auf das Freiwerden eines kritischen Abschnitts.
     void p();

@@ -19,7 +19,7 @@ private:
 public:
     KeyEventManager(const KeyEventManager &copy) = delete;
 
-    KeyEventManager() : log("KEvMan"), listeners(true) {}
+    KeyEventManager() : log("KEvMan") {}
 
     void init() {
         listeners.reserve();

@@ -17,16 +17,18 @@ class VBEdemo : public Kernel::Thread {
 private:
     // Hilfsfunktionen fuer drawColors()
     static int linInterPol1D(int x, int xr, int l, int r);
+
     static int linInterPol2D(int x, int y, int lt, int rt, int lb, int rb);
 
 public:
-    VBEdemo(const VBEdemo& copy) = delete;  // Verhindere Kopieren
+    VBEdemo(const VBEdemo &copy) = delete;  // Verhindere Kopieren
 
     // Gib dem Anwendungsthread einen Stack.
-    VBEdemo() : Thread("VBEdemo") {}
+    VBEdemo() = default;
 
     ~VBEdemo() override {
-        Kernel::allocator.free(reinterpret_cast<void*>(Kernel::vesa.hfb));  // Memory is allocated after every start and never deleted, so add that
+        Kernel::allocator.free(
+                reinterpret_cast<void *>(Kernel::vesa.hfb));  // Memory is allocated after every start and never deleted, so add that
         Device::VESA::initTextMode();
     }
 

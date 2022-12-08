@@ -23,7 +23,7 @@ private:
 public:
     KeyboardDemo(const KeyboardDemo &copy) = delete;
 
-    KeyboardDemo() : Thread("KeyboardDemo"), listener(tid) {
+    KeyboardDemo() : listener(tid) {
         Kernel::kevman.subscribe(listener);
     }
 

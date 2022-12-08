@@ -1,5 +1,9 @@
 #include "StringDemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
+
+NamedLogger StringDemo::log = NamedLogger("StringDemo");
 
 void StringDemo::run() {
     Util::System::out.lock();
@@ -55,5 +59,6 @@ void StringDemo::run() {
                       << static_cast<int>(String::string(arr) == str2) << endl;
 
     Util::System::out.unlock();
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

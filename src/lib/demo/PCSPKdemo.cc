@@ -1,5 +1,7 @@
 #include "PCSPKdemo.h"
 #include "lib/util/System.h"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 void PCSPKdemo::run() {
     Util::System::out.lock();
@@ -13,5 +15,6 @@ void PCSPKdemo::run() {
     Util::System::out << "Finished" << endl;
     Util::System::out.unlock();
 
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

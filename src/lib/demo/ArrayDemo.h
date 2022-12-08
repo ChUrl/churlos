@@ -6,9 +6,9 @@
 
 class ArrayDemo : public Kernel::Thread {
 public:
-    ArrayDemo(const ArrayDemo& copy) = delete;
+    ArrayDemo(const ArrayDemo &copy) = delete;
 
-    ArrayDemo() : Thread("ArrayDemo") {}
+    ArrayDemo() = default;
 
     void run() override;
 };

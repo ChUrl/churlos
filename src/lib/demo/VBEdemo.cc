@@ -10,6 +10,8 @@
 
 #include "VBEdemo.h"
 #include "bmp_hhu.cc"
+#include "kernel/system/System.h"
+#include "kernel/service/SchedulerService.h"
 
 /*****************************************************************************
  * Methode:         VBEdemo::linInterPol1D                                   *
@@ -17,7 +19,9 @@
  * Beschreibung:    Farbwert in einer Dimension interpoliert berechnen.      *
  *****************************************************************************/
 int VBEdemo::linInterPol1D(int x, int xr, int l, int r) {
-    return ((((l >> 16) * (xr - x) + (r >> 16) * x) / xr) << 16) | (((((l >> 8) & 0xFF) * (xr - x) + ((r >> 8) & 0xFF) * x) / xr) << 8) | (((l & 0xFF) * (xr - x) + (r & 0xFF) * x) / xr);
+    return ((((l >> 16) * (xr - x) + (r >> 16) * x) / xr) << 16) |
+           (((((l >> 8) & 0xFF) * (xr - x) + ((r >> 8) & 0xFF) * x) / xr) << 8) |
+           (((l & 0xFF) * (xr - x) + (r & 0xFF) * x) / xr);
 }
 
 /*****************************************************************************
@@ -56,7 +60,7 @@ void VBEdemo::drawBitmap() {
     unsigned int sprite_width = hhu.width;
     unsigned int sprite_height = hhu.height;
     unsigned int sprite_bpp = hhu.bytes_per_pixel;
-    const uint8_t* sprite_pixel = reinterpret_cast<const uint8_t*>(hhu.pixel_data);
+    const uint8_t *sprite_pixel = reinterpret_cast<const uint8_t *>(hhu.pixel_data);
 
     /* Hier muss Code eingefuegt werden */
 
@@ -98,5 +102,6 @@ void VBEdemo::run() {
     while (running) {}
 
     // selbst terminieren
-    Kernel::scheduler.exit();
+    auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
+    schedulerService.exit();
 }

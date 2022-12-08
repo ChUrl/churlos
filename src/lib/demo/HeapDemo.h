@@ -16,15 +16,16 @@
 class MyObj {
 public:
     constexpr MyObj() : value(5) {};
+
     constexpr MyObj(const unsigned int val) : value(val) {};
     const unsigned int value;
 };
 
 class HeapDemo : public Kernel::Thread {
 public:
-    HeapDemo(const HeapDemo& copy) = delete;
+    HeapDemo(const HeapDemo &copy) = delete;
 
-    HeapDemo() : Thread("HeapDemo") {}
+    HeapDemo() = default;
 
     void run() override;
 };

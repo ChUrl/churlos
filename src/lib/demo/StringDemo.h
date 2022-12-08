@@ -4,10 +4,13 @@
 #include "kernel/system/Globals.h"
 
 class StringDemo : public Kernel::Thread {
-public:
-    StringDemo(const StringDemo& copy) = delete;
+private:
+    static NamedLogger log;
 
-    StringDemo() : Thread("StringDemo") {}
+public:
+    StringDemo(const StringDemo &copy) = delete;
+
+    StringDemo() = default;
 
     void run() override;
 };

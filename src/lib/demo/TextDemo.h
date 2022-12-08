@@ -16,9 +16,9 @@
 
 class TextDemo : public Kernel::Thread {
 public:
-    TextDemo(const TextDemo& copy) = delete;
+    TextDemo(const TextDemo &copy) = delete;
 
-    TextDemo() : Thread("TextDemo") {}
+    TextDemo() = default;
 
     void run() override;
 };
