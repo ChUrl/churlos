@@ -24,7 +24,7 @@ public:
 
     static void write(char a);
 
-    static void write(String::string_view a);
+    static void write(String::StringView a);
 
 private:
     static const IOport com1;

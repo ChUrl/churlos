@@ -17,7 +17,7 @@ void memset(uint8_t *destination, uint8_t value, std::size_t bytes);
 
 template<typename T>
 void zero(T *destination) {
-    memset(reinterpret_cast<uint8_t *>(destination), '\0', sizeof(T));
+    memset(reinterpret_cast<uint8_t *>(destination), 0, sizeof(T));
 }
 
 }  // namespace bse

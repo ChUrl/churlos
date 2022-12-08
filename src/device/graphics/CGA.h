@@ -99,7 +99,7 @@ public:
     static void show(uint8_t x, uint8_t y, char character, uint8_t attrib = STD_ATTR);
 
     // Anzeige mehrerer Zeichen ab der aktuellen Cursorposition
-    void print(String::string_view substring, uint8_t attrib = STD_ATTR) const;
+    void print(String::StringView substring, uint8_t attrib = STD_ATTR) const;
 
     // Verschiebt den Bildschirminhalt um eine Zeile nach oben.
     // Neue Zeile am unteren Bildrand mit Leerzeichen fuellen

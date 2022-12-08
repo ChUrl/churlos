@@ -106,7 +106,7 @@ void CGA::show(uint8_t x, uint8_t y, char character, uint8_t attrib) {
  *      n           Laenger der Zeichenkette                                 *
  *      attrib      Attributbyte fuer alle Zeichen der Zeichenkette          *
  *****************************************************************************/
-void CGA::print(const String::string_view string, uint8_t attrib) const {
+void CGA::print(const String::StringView string, uint8_t attrib) const {
 
     /* Hier muess Code eingefuegt werden */
 

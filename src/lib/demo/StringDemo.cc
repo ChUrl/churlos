@@ -10,7 +10,7 @@ void StringDemo::run() {
     Util::System::out.clear();
 
     log.info() << "Allocating new string" << endl;
-    String::string str1 = "This is a dynamically allocated string!";
+    String::String str1 = "This is a dynamically allocated string!";
     Util::System::out << str1 << endl;
 
     log.info() << "Reassign string" << endl;
@@ -25,7 +25,7 @@ void StringDemo::run() {
 
     Util::System::out << "Hello += World" << endl;
     log.info() << "Hello += World" << endl;
-    String::string str3 = "Hello";
+    String::String str3 = "Hello";
     str3 += " World";
     Util::System::out << str3 << endl;
 
@@ -40,7 +40,7 @@ void StringDemo::run() {
     Util::System::out << endl;
 
     log.info() << "Allocating new string" << endl;
-    String::string str2 = "Hello World";
+    String::String str2 = "Hello World";
     Util::System::out << "str1 == str2: " << static_cast<int>(str1 == str2) << endl;
     Util::System::out << "strcmp(Hello, Hello): " << String::strcmp("Hello", "Hello") << endl;
 
@@ -53,10 +53,10 @@ void StringDemo::run() {
     arr[2] = 'l';
     arr[3] = 'l';
     arr[4] = 'o';
-    Util::System::out << "bse::array<char, 5> to bse::string: " << static_cast<String::string>(arr) << ", size: "
-                      << (String::string(arr)).size() << endl;
-    Util::System::out << "(bse::string)arr (" << static_cast<String::string>(arr) << ") == str2 (" << str2 << "): "
-                      << static_cast<int>(String::string(arr) == str2) << endl;
+    Util::System::out << "bse::array<char, 5> to bse::string: " << static_cast<String::String>(arr) << ", size: "
+                      << (String::String(arr)).size() << endl;
+    Util::System::out << "(bse::string)arr (" << static_cast<String::String>(arr) << ") == str2 (" << str2 << "): "
+                      << static_cast<int>(String::String(arr) == str2) << endl;
 
     Util::System::out.unlock();
     auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();

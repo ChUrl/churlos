@@ -88,7 +88,7 @@ public:
 
     // Darstellung einer nullterminierten Zeichenkette
     template<typename T>
-    friend T &operator<<(T &os, const String::string_view string) {
+    friend T &operator<<(T &os, const String::StringView string) {
         for (char current: string) {
             os.put(current);
         }

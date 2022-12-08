@@ -21,7 +21,7 @@ private:
 
     static bool serial_enabled;
 
-    void log(String::string_view message, Device::CGA::color col) const;
+    void log(String::StringView message, Device::CGA::color col) const;
 
     Async::SpinLock sem;              // Semaphore would be a cyclic include, also there is just one logger...
     static void lock() { Logger::instance().sem.acquire(); }
@@ -46,20 +46,20 @@ public:
 
     void flush() override;
 
-    void trace(String::string_view message) const;
+    void trace(String::StringView message) const;
 
-    void debug(String::string_view message) const;
+    void debug(String::StringView message) const;
 
-    void error(String::string_view message) const;
+    void error(String::StringView message) const;
 
-    void info(String::string_view message) const;
+    void info(String::StringView message) const;
 
     // TODO: Make lvl change accessible over menu
     static void set_level(LogLevel lvl) {
         Logger::level = lvl;
     }
 
-    static String::string_view level_to_string(LogLevel lvl) {
+    static String::StringView level_to_string(LogLevel lvl) {
         switch (lvl) {
             case Logger::TRACE:
                 return "TRC";

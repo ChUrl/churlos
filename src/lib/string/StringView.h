@@ -7,34 +7,45 @@
 
 namespace String {
 
-    class string_view {
-    private:
-        std::size_t len = 0;
-        const char* buf = nullptr;
+// TODO: Investigate this class
 
-    public:
-        using iterator = Container::ContinuousIterator<char>;
+/**
+ * This class implements a simple wrapper for usual string literals.
+ */
+class StringView {
+    using iterator = Container::ContinuousIterator<char>;
 
-        string_view() = default;
+public:
+    StringView() = default;
 
-        // Important that char* and string& can be implicitly converted: Only have to provide one
-        // implementation using stringview for everything (OutStream only uses string_view for example)
-        string_view(const char* str) : len(strlen(str)), buf(str) {}
-        string_view(const string& str) : len(str.size()), buf(static_cast<char*>(str)) {}
+    // Important that char* and string& can be implicitly converted: Only have to provide one
+    // implementation using stringview for everything (OutStream only uses StringView for example)
+    StringView(const char *str) : len(strlen(str)), buf(str) {} // NOLINT(google-explicit-constructor)
 
-        iterator begin() const { return iterator(buf); }
-        iterator end() const { return iterator(&buf[len]); }
+    StringView(const String &str) : len(str.size()), // NOLINT(google-explicit-constructor)
+                                    buf(static_cast<char *>(str)) {}
 
-        explicit operator const char*() const { return buf; }
-        char operator[](std::size_t pos) const { return buf[pos]; }
-        bool operator==(const string_view& other) const { return buf == other.buf; }
-        bool operator!=(const string_view& other) const { return buf != other.buf; }
+    [[nodiscard]] iterator begin() const { return {buf}; }
 
-        std::size_t size() const { return len; }
+    [[nodiscard]] iterator end() const { return {&buf[len]}; }
 
-        string_view substring(std::size_t first, std::size_t last) const;
-    };
+    explicit operator const char *() const { return buf; }
 
-}  // namespace bse
+    char operator[](std::size_t pos) const { return buf[pos]; }
 
-#endif  //C_OS_STRINGVIEW_H
+    bool operator==(const StringView &other) const { return buf == other.buf; }
+
+    bool operator!=(const StringView &other) const { return buf != other.buf; }
+
+    [[nodiscard]] std::size_t size() const { return len; }
+
+    [[nodiscard]] StringView substring(std::size_t first, std::size_t last) const;
+
+private:
+    std::size_t len = 0;
+    const char *buf = nullptr;
+};
+
+} // namespace bse
+
+#endif //C_OS_STRINGVIEW_H

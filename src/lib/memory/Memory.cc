@@ -2,7 +2,7 @@
 
 namespace Memory {
 
-void memset(char *destination, const char value, std::size_t bytes) {
+void memset(uint8_t *destination, const uint8_t value, std::size_t bytes) {
     for (std::size_t byte = 0; byte < bytes; ++byte) {
         *(destination + byte) = value;
     }

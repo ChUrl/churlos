@@ -14,7 +14,7 @@ constexpr const char *ansi_cyan = "\033[1;36m";
 constexpr const char *ansi_white = "\033[1;37m";
 constexpr const char *ansi_default = "\033[0;39m ";
 
-void Logger::log(const String::string_view message, Device::CGA::color col) const {
+void Logger::log(const String::StringView message, Device::CGA::color col) const {
     if (!Logger::serial_enabled) {
         return;
     }
@@ -66,25 +66,25 @@ void Logger::flush() {
     Logger::unlock();
 }
 
-void Logger::trace(const String::string_view message) const {
+void Logger::trace(const String::StringView message) const {
     if (Logger::level <= Logger::TRACE) {
         log(message, Device::CGA::WHITE);
     }
 }
 
-void Logger::debug(const String::string_view message) const {
+void Logger::debug(const String::StringView message) const {
     if (Logger::level <= Logger::DEBUG) {
         log(message, Device::CGA::LIGHT_MAGENTA);
     }
 }
 
-void Logger::error(const String::string_view message) const {
+void Logger::error(const String::StringView message) const {
     if (Logger::level <= Logger::ERROR) {
         log(message, Device::CGA::LIGHT_RED);
     }
 }
 
-void Logger::info(const String::string_view message) const {
+void Logger::info(const String::StringView message) const {
     if (Logger::level <= Logger::INFO) {
         log(message, Device::CGA::LIGHT_BLUE);
     }

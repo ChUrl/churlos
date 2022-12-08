@@ -42,7 +42,7 @@ void SerialOut::write(const char a) {
     com1.outb(a);
 }
 
-void SerialOut::write(const String::string_view a) {
+void SerialOut::write(const String::StringView a) {
     for (char current: a) {
         write(current);
     }
