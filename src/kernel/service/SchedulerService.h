@@ -5,6 +5,7 @@
 #include "lib/memory/UniquePointer.h"
 #include "kernel/process/Thread.h"
 #include "kernel/process/Scheduler.h"
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Kernel {
 
@@ -18,9 +19,11 @@ public:
     static const constexpr uint8_t ID = Service::SCHEDULER;
 
 public:
-    SchedulerService() = default;
+    MakeDefault(SchedulerService)
 
-    // TODO: Rest of constructors
+    MakeUncopyable(SchedulerService)
+
+    MakeUnmovable(SchedulerService)
 
     // Helper that directly constructs the thread, then readys it
     template<typename T, typename... Args>
@@ -38,6 +41,11 @@ public:
      */
     void startScheduling();
 
+    /**
+     * Get the thread id of the currently running thread.
+     *
+     * @return The id of the active thread
+     */
     [[nodiscard]] uint16_t active() const;
 
     /**
@@ -45,14 +53,30 @@ public:
      */
     void yield();
 
+    /**
+     * Move a thread to from the schedulers ready queue to its block queue.
+     */
     void block();
 
+    /**
+     * Move a thread from the schedulers block queue to its ready queue.
+     *
+     * @param tid The thread to unblock
+     */
     void deblock(uint16_t tid);
 
+    /**
+     * Exit a thread.
+     */
     void exit();
 
     void suicide(uint16_t tid); // TODO: Remove
 
+    /**
+     * Forcefully exit a thread.
+     *
+     * @param tid The thread to kill
+     */
     void kill(uint16_t tid);
 
     // TODO: Thread that cleans up exited threads
