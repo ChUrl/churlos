@@ -21,88 +21,6 @@ class Vector {
 public:
     using iterator = ContinuousIterator<T>;
 
-private:
-    static constexpr const std::size_t default_cap = 16;  // Arbitrary but very small
-    static constexpr const std::size_t min_cap = 8;       // Slots to allocate extra when array full
-
-    T *buf = nullptr;  // Heap allocated as size needs to change during runtime
-    std::size_t sz = 0; // The current size of the buffer (marks the slot where to insert a new element)
-    std::size_t buf_cap = 0; // The current capacity of the buffer
-
-    void init(std::size_t cap = Vector::default_cap) {
-        if (buf != nullptr) {
-            return;
-        }
-        buf = new T[cap];
-        buf_cap = cap;
-    }
-
-    [[nodiscard]] std::size_t get_rem_cap() const {
-        return buf_cap - size();
-    }
-
-    // Enlarges the buffer if we run out of space
-    void min_expand() {
-        // Init if necessary
-        if (buf == nullptr) {
-            init();
-            return;  // Dont have to realloc after init
-        }
-
-        // Since we only ever add single elements this should never get below zero
-        if (get_rem_cap() < min_cap) {
-            switch_buf(buf_cap + min_cap);
-        }
-    }
-
-    // 1. Allocates new buffer
-    // 2. Moves stuff to new buffer
-    // 3. Deletes old buffer
-    // 4. Sets new pos/cap
-    void switch_buf(std::size_t cap) {
-        // Alloc new array
-        T *new_buf = new T[cap];
-
-        // Swap current elements to new array
-        for (std::size_t i = 0; i < size(); ++i) {
-            new_buf[i] = std::move(buf[i]);
-            buf[i].~T();  // TODO: I think delete[] buf calls these, verify that
-        }
-
-        // Move new array to buf, deleting the old array
-        delete[] buf;
-        buf = new_buf;
-        buf_cap = cap;
-    }
-
-    // Index is location where space should be made
-    void copy_right(std::size_t i) {
-        if (i >= size()) {
-            return; // We don't need to copy anything as space is already there
-        }
-
-        // TODO: Delete instead of ~T()?
-        for (std::size_t idx = size(); idx > i; --idx) {
-            buf[idx].~T(); // Delete previously contained element that will be overridden
-            buf[idx] = std::move(buf[idx - 1]); // This leaves a "shell" of the old object that has to be deleted
-            buf[idx - 1].~T(); // Delete element in moved-out state
-        }
-    }
-
-    // Index is the location that will be removed
-    void copy_left(std::size_t i) {
-        if (i >= size()) {
-            return; // We don't need to copy anything as nothing will be overridden
-        }
-
-        // TODO: Delete instead of ~T()?
-        for (std::size_t idx = i; idx < size(); ++idx) {
-            buf[idx].~T();  // Delete the element that will be overwritten
-            buf[idx] = std::move(buf[idx + 1]);
-            buf[idx + 1].~T();
-        }
-    }
-
 public:
     explicit Vector(bool lazy = false) {
         if (!lazy) {
@@ -292,6 +210,89 @@ public:
 
     [[nodiscard]] bool initialized() const {
         return buf != nullptr;
+    }
+
+private:
+    static constexpr const std::size_t default_cap = 16;  // Arbitrary but very small
+    static constexpr const std::size_t min_cap = 8;       // Slots to allocate extra when array full
+
+    T *buf = nullptr;  // Heap allocated as size needs to change during runtime
+    std::size_t sz = 0; // The current size of the buffer (marks the slot where to insert a new element)
+    std::size_t buf_cap = 0; // The current capacity of the buffer
+
+private:
+    void init(std::size_t cap = Vector::default_cap) {
+        if (buf != nullptr) {
+            return;
+        }
+        buf = new T[cap];
+        buf_cap = cap;
+    }
+
+    [[nodiscard]] std::size_t get_rem_cap() const {
+        return buf_cap - size();
+    }
+
+    // Enlarges the buffer if we run out of space
+    void min_expand() {
+        // Init if necessary
+        if (buf == nullptr) {
+            init();
+            return;  // Dont have to realloc after init
+        }
+
+        // Since we only ever add single elements this should never get below zero
+        if (get_rem_cap() < min_cap) {
+            switch_buf(buf_cap + min_cap);
+        }
+    }
+
+    // 1. Allocates new buffer
+    // 2. Moves stuff to new buffer
+    // 3. Deletes old buffer
+    // 4. Sets new pos/cap
+    void switch_buf(std::size_t cap) {
+        // Alloc new array
+        T *new_buf = new T[cap];
+
+        // Swap current elements to new array
+        for (std::size_t i = 0; i < size(); ++i) {
+            new_buf[i] = std::move(buf[i]);
+            buf[i].~T();  // TODO: I think delete[] buf calls these, verify that
+        }
+
+        // Move new array to buf, deleting the old array
+        delete[] buf;
+        buf = new_buf;
+        buf_cap = cap;
+    }
+
+    // Index is location where space should be made
+    void copy_right(std::size_t i) {
+        if (i >= size()) {
+            return; // We don't need to copy anything as space is already there
+        }
+
+        // TODO: Delete instead of ~T()?
+        for (std::size_t idx = size(); idx > i; --idx) {
+            buf[idx].~T(); // Delete previously contained element that will be overridden
+            buf[idx] = std::move(buf[idx - 1]); // This leaves a "shell" of the old object that has to be deleted
+            buf[idx - 1].~T(); // Delete element in moved-out state
+        }
+    }
+
+    // Index is the location that will be removed
+    void copy_left(std::size_t i) {
+        if (i >= size()) {
+            return; // We don't need to copy anything as nothing will be overridden
+        }
+
+        // TODO: Delete instead of ~T()?
+        for (std::size_t idx = i; idx < size(); ++idx) {
+            buf[idx].~T();  // Delete the element that will be overwritten
+            buf[idx] = std::move(buf[idx + 1]);
+            buf[idx + 1].~T();
+        }
     }
 };
 
