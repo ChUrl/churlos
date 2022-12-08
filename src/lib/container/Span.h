@@ -6,59 +6,73 @@
 
 namespace Container {
 
-    // 0 is unchecked
-    template<typename T, std::size_t N = 0>
-    class Span {
-    public:
-        using iterator = ContinuousIterator<T>;
+/**
+ * This class implements a readonly view on a memory region of uniform type.
+ * The Span can be initialized wihout size checking by supplying 0 as size
+ * and using the one-argument constructor. Then iterators become invalid.
+ *
+ * @tparam T The type of the objects located in the memory region
+ * @tparam N The size of the memory region
+ */
+template<typename T, std::size_t N = 0>
+class Span {
+public:
+    using iterator = ContinuousIterator<T>;
 
-    private:
-        T* const ptr;
-        const std::size_t sz = N;
+private:
+    T *const ptr;
+    const std::size_t sz = N;
 
-    public:
-        Span() = default;
+public:
+    Span() = delete;
 
-        Span(T* first) : ptr(first) {}
+    explicit Span(T *first) : ptr(first) {}
 
-        Span(T* first, T* last) : ptr(first), sz(last - first) {}
+    Span(T *first, T *last) : ptr(first), sz(last - first) {}
 
-        iterator begin() { return iterator(ptr); }
-        iterator begin() const { return iterator(ptr); }
-        // If size is unchecked end() is equal to begin()
-        iterator end() { return iterator(&ptr[N]); }
-        iterator end() const { return iterator(&ptr[N]); }
+    // TODO: Rest of constructors
 
-        T* operator[](std::size_t i) {
-            if constexpr (N != 0) {
-                if (i < 0 || i >= N) { return nullptr; }
-            }
-            return &ptr[i];
+    iterator begin() { return iterator(ptr); }
+
+    iterator begin() const { return iterator(ptr); }
+
+    // If size is unchecked end() is equal to begin()
+    iterator end() { return iterator(&ptr[sz]); }
+
+    // If size is unchecked end() is equal to begin()
+    iterator end() const { return iterator(&ptr[sz]); }
+
+    T *operator[](std::size_t i) {
+        if (sz != 0) {
+            if (i >= sz) { return nullptr; }
         }
+        return &ptr[i];
+    }
 
-        T* operator[](std::size_t i) const {
-            if constexpr (N != 0) {
-                if (i < 0 || i >= N) { return nullptr; }
-            }
-            return &ptr[i];
+    T *operator[](std::size_t i) const {
+        if (sz != 0) {
+            if (i >= sz) { return nullptr; }
         }
+        return &ptr[i];
+    }
 
-        T* data() { return ptr; }
-        const T* data() const { return ptr; }
+    T *data() { return ptr; }
 
-        explicit operator T*() {
-            return ptr;
-        }
+    const T *data() const { return ptr; }
 
-        // First is inclusive, last exclusive [first, last)
-        Span& subspan(std::size_t first, std::size_t last = N) {
-            return Span(ptr + first, ptr + last - 1);
-        }
+    explicit operator T *() {
+        return ptr;
+    }
 
-        std::size_t size() const {
-            return sz;
-        }
-    };
+    // First is inclusive, last exclusive [first, last)
+    Span &subspan(std::size_t first, std::size_t last) {
+        return Span(ptr + first, ptr + last - 1);
+    }
+
+    [[nodiscard]] std::size_t size() const {
+        return sz;
+    }
+};
 
 }  // namespace bse
 
