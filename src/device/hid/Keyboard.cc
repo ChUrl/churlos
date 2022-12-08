@@ -10,7 +10,9 @@
 
 #include "Keyboard.h"
 #include "kernel/system/Globals.h"
+#include "kernel/service/InterruptService.h"
 #include "Key.h"
+#include "kernel/system/System.h"
 
 namespace Device {
 
@@ -334,8 +336,9 @@ void Keyboard::set_led(char led, bool on) {
 // Registriert die Tastatur ISR im IntDispatcher
 // und erlaubt den keyboard interrupt im PIC
 void Keyboard::plugin() {
-    Kernel::intdis.assign(Kernel::IntDispatcher::keyboard, *this);
-    PIC::allow(PIC::keyboard);
+    auto &interruptService = Kernel::System::getService<Kernel::InterruptService>();
+    interruptService.assignInterrupt(Kernel::IntDispatcher::KEYBOARD, *this);
+    interruptService.allowInterrupt(PIC::KEYBOARD);
 }
 
 void Keyboard::trigger() {

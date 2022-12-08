@@ -10,6 +10,8 @@
 
 #include "PIT.h"
 #include "kernel/system/Globals.h"
+#include "kernel/system/System.h"
+#include "kernel/service/InterruptService.h"
 
 namespace Device {
 
@@ -44,13 +46,14 @@ void PIT::interval(uint32_t us) {
  *                  wird bei Ablauf des definierten Zeitintervalls die       *
  *                  Methode 'trigger' aufgerufen.                            *
  *****************************************************************************/
- // TODO: Use interruptservice
+// TODO: Use interruptservice
 void PIT::plugin() {
 
     /* hier muss Code eingefuegt werden */
 
-    Kernel::intdis.assign(Kernel::IntDispatcher::timer, *this);
-    PIC::allow(PIC::timer);
+    auto &interruptService = Kernel::System::getService<Kernel::InterruptService>();
+    interruptService.assignInterrupt(Kernel::IntDispatcher::TIMER, *this);
+    interruptService.allowInterrupt(PIC::TIMER);
 }
 
 /*****************************************************************************
@@ -61,7 +64,7 @@ void PIT::plugin() {
  *                  aktualisieren und Thread wechseln durch Setzen der       *
  *                  Variable 'forceSwitch', wird in 'int_disp' behandelt.    *
  *****************************************************************************/
- // TODO: Use timeservice + timeprovider
+// TODO: Use timeservice + timeprovider
 void PIT::trigger() {
 
     /* hier muss Code eingefuegt werden */
