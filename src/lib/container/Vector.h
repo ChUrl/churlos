@@ -100,7 +100,9 @@ public:
     }
 
     iterator begin() const {
-        initIfNecessary();
+        if (buf == nullptr) {
+            // TODO: Exception
+        }
         return iterator(&buf[0]);
     }
 
@@ -110,7 +112,9 @@ public:
     }
 
     iterator end() const {
-        initIfNecessary();
+        if (buf == nullptr) {
+            // TODO: Exception
+        }
         return iterator(&buf[size()]);
     }
 
@@ -228,6 +232,9 @@ public:
         return sz;
     }
 
+    /**
+     * Calls the constructor of every contained object and sets the size to zero.
+     */
     void clear() {
         while (sz > 0) {
             --sz;
