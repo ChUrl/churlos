@@ -7,10 +7,10 @@
 namespace Container {
 
 /**
- * This class implements a stack allocated array with bounds checking
+ * This class implements a stack allocated array with runtime bounds checking
  * and iterator support.
  *
- * @tparam T The type of the objects
+ * @tparam T The type of the held objects
  * @tparam N The number of elements the array can store
  */
 template<typename T, const std::size_t N>
@@ -24,14 +24,26 @@ private:
 public:
     Array() = default;  // If i write default something like Container::Array<int, 10> arr; is not initialized...
 
-    // TODO: This doesn't account for initializer lists of the wrong length, last value should be repeated
-    //       Only increment iterator when it < list.end() - 1?
-    // Construct like this: bse::array<int, 5> {1, 2, 3, 4, 5};
+    // Construct like this: bse::array<int, 5> arr = {1, 2, 3, 4, 5};
+    /**
+     * Initialize the Array with initial values provided by an initializer list.
+     * If the initializer list has a smaller size than the Array the last value
+     * will be repeated.
+     *
+     * @param list The initial values
+     */
     Array(std::initializer_list<T> list) {
+        // TODO: Exception on wrong size? Can't static_assert on list.size()
         typename std::initializer_list<T>::iterator it = list.begin();
+        typename std::initializer_list<T>::iterator end = list.end();
+
         for (unsigned int i = 0; i < N; ++i) {
             buf[i] = *it;
-            ++it;
+            if (it < end - 1) {
+                // Repeat the last initializer_list element
+                // if the array has more slots than initial values are provided
+                ++it;
+            }
         }
     }
 
@@ -49,6 +61,11 @@ public:
 
     constexpr const T &operator[](std::size_t i) const { return buf[i]; }
 
+    /**
+     * Get a pointer to the stack allocated memory.
+     *
+     * @return The pointer to the stack allocated memory
+     */
     T *data() { return &buf[0]; }
 
     const T *data() const { return &buf[0]; }
