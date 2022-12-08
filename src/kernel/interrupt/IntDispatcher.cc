@@ -5,11 +5,11 @@
 
 namespace Kernel {
 
-void IntDispatcher::assign(uint8_t vector, ISR &isr) {
+void IntDispatcher::assign(Vector vector, ISR &isr) {
     handlerMap[vector] = &isr;
 }
 
-void IntDispatcher::dispatch(uint8_t vector) {
+void IntDispatcher::dispatch(Vector vector) {
     ISR *isr = handlerMap[vector];
 
     if (isr == nullptr) {

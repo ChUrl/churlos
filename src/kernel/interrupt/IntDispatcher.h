@@ -20,12 +20,18 @@
 
 namespace Kernel {
 
+/**
+ * This class implements a simple interrupt dispatcher.
+ * It is part of the 2-step interrupt handling: Instead of registering ISRs
+ * in the IDT directly, the "dispatch" function is called with the vector number.
+ */
 class IntDispatcher {
     friend class InterruptService;
 
 public:
     /**
-     * Vector numbers (slots in the IDT)
+     * Vector numbers (slots in the IDT).
+     * Every IRQ corresponds to one vector number.
      */
     enum Vector {
         TIMER = 32,
@@ -41,9 +47,20 @@ public:
     MakeUncopyable(IntDispatcher)
 
 private:
-    void assign(uint8_t vector, ISR &isr);
+    /**
+     * Assign an interrupt handler to a vector number.
+     *
+     * @param vector The vector number
+     * @param isr The interrupt handler
+     */
+    void assign(Vector vector, ISR &isr);
 
-    void dispatch(uint8_t vector);
+    /**
+     * Call a registered interrupt handler.
+     *
+     * @param vector The vector number of the occured interrupt
+     */
+    void dispatch(Vector vector);
 
 private:
     Container::Array<ISR *, 256> handlerMap = {nullptr};

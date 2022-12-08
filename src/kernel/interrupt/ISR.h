@@ -1,28 +1,28 @@
-/*****************************************************************************
- *                                                                           *
- *                                   I S R                                   *
- *                                                                           *
- *---------------------------------------------------------------------------*
- * Beschreibung:    Interrupt Service Routine. Jeweils ein Objekt pro ISR.   *
- *                  Erlaubt es einen Kontext mit Variablen fuer die Unter-   *
- *                  brechungsroutine bereitzustellen.                        *
- *                                                                           *
- * Autor:           Michael Schoettner, 06.04.20                             *
-*****************************************************************************/
 #ifndef ISR_include__
 #define ISR_include__
 
+#include "lib/util/RestrictedConstructors.h"
+
 namespace Kernel {
 
+/**
+ * This class implements an interrupt service routine.
+ */
 class ISR {
+    friend class IntDispatcher;
+
 public:
-    ISR(const ISR &copy) = delete;  // Verhindere Kopieren
+    MakeDefault(ISR)
 
-//    virtual ~ISR() = default;
+    MakeUncopyable(ISR)
 
-    ISR() = default;
+    MakeUnmovable(ISR)
 
-    // Unterbrechungsbehandlungsroutine
+protected:
+    /**
+     * This function gets called when an interrupt occurs and
+     * an interrupt handler is registered for the vector number.
+     */
     virtual void trigger() = 0;
 };
 
