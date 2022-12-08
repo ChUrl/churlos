@@ -4,6 +4,7 @@
 #include "Service.h"
 #include "kernel/interrupt/IntDispatcher.h"
 #include "device/interrupt/PIC.h"
+#include "lib/stream/Logger.h"
 
 namespace Kernel {
 
@@ -25,6 +26,8 @@ public:
 
     void dispatchInterrupt(IntDispatcher::Vector vector);
 
+    bool isException(IntDispatcher::Vector vector);
+
     bool isSpurious(IntDispatcher::Vector vector);
 
     void allowInterrupt(Device::PIC::Irq irq);
@@ -37,6 +40,10 @@ public:
 
 private:
     IntDispatcher intDispatcher;
+
+    uint32_t spuriousCounter;
+
+    static NamedLogger log;
 };
 
 }

@@ -1,39 +1,47 @@
 #include "InterruptService.h"
-#include "kernel/exception/Bluescreen.h"
 #include "device/cpu/CPU.h"
-#include "kernel/system/System.h"
+#include "kernel/exception/Bluescreen.h"
 
-// TODO: Move to interrupt_interface or sth.
-extern "C" void int_disp(uint8_t vector);
+namespace Kernel {
 
-void int_disp(uint8_t vector) {
+NamedLogger InterruptService::log = NamedLogger("InterruptService");
 
-    /* hier muss Code eingefuegt werden */
+void InterruptService::assignInterrupt(IntDispatcher::Vector vector, ISR &isr) {
+    intDispatcher.assign(vector, isr);
+    log.info() << "Assigned ISR for vector " << dec << vector << endl;
+}
 
-    // Exception
-    if (vector < 32) {
+void InterruptService::dispatchInterrupt(IntDispatcher::Vector vector) {
+    if (isException(vector)) {
         bs_dump(vector);
         Device::CPU::halt();
 
         // TODO: Exception
     }
 
-    Kernel::System::getService<Kernel::InterruptService>()
-            .dispatchInterrupt(static_cast<Kernel::IntDispatcher::Vector>(vector));
-}
+    if (isSpurious(vector)) {
+        ++spuriousCounter;
+        log.info() << "Intercepted Spurious Interrupt" << endl;
+        return;
+    }
 
-namespace Kernel {
+    sendEndOfInterrupt(); // TODO: Check when to send EOI with the PIC
 
-void InterruptService::assignInterrupt(IntDispatcher::Vector vector, ISR &isr) {
-    intDispatcher.assign(vector, isr);
-}
-
-void InterruptService::dispatchInterrupt(IntDispatcher::Vector vector) {
     intDispatcher.dispatch(vector);
+}
+
+bool InterruptService::isException(IntDispatcher::Vector vector) {
+    return vector < IntDispatcher::TIMER;
+}
+
+bool InterruptService::isSpurious(IntDispatcher::Vector vector) {
+    // TODO
+    return false;
 }
 
 void InterruptService::allowInterrupt(Device::PIC::Irq irq) {
     Device::PIC::allow(irq);
+    log.info() << "Allowed IRQ" << dec << irq << endl;
 }
 
 void InterruptService::forbidInterrupt(Device::PIC::Irq irq) {
@@ -42,6 +50,10 @@ void InterruptService::forbidInterrupt(Device::PIC::Irq irq) {
 
 bool InterruptService::status(Device::PIC::Irq irq) {
     return Device::PIC::status(irq);
+}
+
+void InterruptService::sendEndOfInterrupt() {
+    // TODO
 }
 
 }

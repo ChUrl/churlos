@@ -13,9 +13,10 @@
 #ifndef IntDispatcher_include__
 #define IntDispatcher_include__
 
+#include <cstdint>
 #include "ISR.h"
-#include "lib/container//Array.h"
-#include "lib/stream/Logger.h"
+#include "lib/container/Array.h"
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Kernel {
 
@@ -23,7 +24,9 @@ class IntDispatcher {
     friend class InterruptService;
 
 public:
-    // Vektor-Nummern
+    /**
+     * Vector numbers (slots in the IDT)
+     */
     enum Vector {
         TIMER = 32,
         KEYBOARD = 33,
@@ -31,23 +34,19 @@ public:
     };
 
 public:
-    IntDispatcher() = default;
+    MakeDefault(IntDispatcher)
 
-    IntDispatcher(const IntDispatcher &copy) = delete;  // Verhindere Kopieren
+    MakeUnmovable(IntDispatcher)
 
-    // TODO: Rest of constructors
+    MakeUncopyable(IntDispatcher)
 
 private:
-    // Registrierung einer ISR. (Rueckgabewert: 0 = Erfolg, -1 = Fehler)
-    int assign(uint8_t vector, ISR &isr);
+    void assign(uint8_t vector, ISR &isr);
 
-    // ISR fuer 'vector' ausfuehren
-    int dispatch(uint8_t vector);
+    void dispatch(uint8_t vector);
 
 private:
     Container::Array<ISR *, 256> handlerMap = {nullptr};
-
-    static NamedLogger log;
 };
 
 }
