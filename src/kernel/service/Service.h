@@ -2,6 +2,7 @@
 #define CHURLOS_SERVICE_H
 
 #include <cstdint>
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Kernel {
 
@@ -12,19 +13,11 @@ namespace Kernel {
  */
 class Service {
 public:
-    Service() = default;
+    MakeDefault(Service)
 
-    // TODO: Macros for unmovable, uncopyable
+    MakeUncopyable(Service)
 
-    Service(const Service &copy) = delete;
-
-    Service(Service &&move) = delete;
-
-    Service operator=(const Service &copy) = delete;
-
-    Service &operator=(Service &&move) = delete;
-
-    virtual ~Service() = default;
+    MakeUnmovable(Service)
 
 protected:
     /**
