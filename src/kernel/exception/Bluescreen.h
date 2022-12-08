@@ -18,5 +18,4 @@
 // dump blue screen (will not return)
 void bs_dump(uint8_t exceptionNr);
 
-
 #endif

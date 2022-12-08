@@ -62,9 +62,9 @@ public:
 
     // ~CGA_Stream() override = default;
 
-    void lock() { sem.p(); }
+    void lock() { sem.acquire(); }
 
-    void unlock() { sem.v(); }
+    void unlock() { sem.release(); }
 
     // Methode zur Ausgabe des Pufferinhalts der Basisklasse StringBuffer.
     void flush() override;

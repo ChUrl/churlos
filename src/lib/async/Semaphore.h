@@ -1,41 +1,43 @@
-/*****************************************************************************
- *                                                                           *
- *                             S E M A P H O R E                             *
- *                                                                           *
- *---------------------------------------------------------------------------*
- * Beschreibung:    Implementierung von Sempahor-Objekten.                   *
- *                                                                           *
- * Autor:           Michael Schoettner, 2.9.2016                             *
- *****************************************************************************/
-
 #ifndef Semaphore_include__
 #define Semaphore_include__
 
-#include "kernel/process/Thread.h"
 #include "SpinLock.h"
-#include "lib/container//Vector.h"
+#include "kernel/process/Thread.h"
+#include "lib/container/Vector.h"
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Async {
 
 class Semaphore {
-private:
-    // Queue fuer wartende Threads.
-    Container::Vector<unsigned int> wait_queue;
-    SpinLock lock;
-
-    int counter;
-
 public:
-    Semaphore(const Semaphore &copy) = delete;  // Verhindere Kopieren
+    /**
+     * Initialize the semaphore and it's counter.
+     *
+     * @param c The semaphore counter
+     */
+    explicit Semaphore(uint32_t c);
 
-    // Konstruktor: Initialisieren des Semaphorzaehlers
-    explicit Semaphore(int c) : counter(c) {}
+    MakeUncopyable(Semaphore)
 
-    // 'Passieren': Warten auf das Freiwerden eines kritischen Abschnitts.
-    void p();
+    MakeUnmovable(Semaphore)
 
-    // 'Vreigeben': Freigeben des kritischen Abschnitts.
-    void v();
+    ~Semaphore() = default;
+
+    /**
+     * Wait in queue until the semaphore can be acquired.
+     */
+    void acquire();
+
+    /**
+     * Release the semaphore.
+     */
+    void release();
+
+private:
+    SpinLock lock;
+    Container::Vector<unsigned int> wait_queue; // TODO: Replace with a queue (linked list)
+
+    uint32_t counter;
 };
 
 }

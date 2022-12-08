@@ -13,22 +13,33 @@
 #define SpinLock_include__
 
 #include <cstdint>
+#include "lib/util/RestrictedConstructors.h"
 
 namespace Async {
 
 class SpinLock {
+public:
+    SpinLock();
+
+    MakeUncopyable(SpinLock)
+
+    MakeUnmovable(SpinLock)
+
+    ~SpinLock() = default;
+
+    /**
+     * Acquire the spin lock.
+     */
+    void acquire();
+
+    /**
+     * Release the spin lock.
+     */
+    void release();
+
 private:
     uint32_t lock;
     uint32_t *ptr;
-
-public:
-    SpinLock(const SpinLock &copy) = delete;  // Verhindere Kopieren
-
-    SpinLock() : lock(0), ptr(&lock) {}
-
-    void acquire();
-
-    void release();
 };
 
 }

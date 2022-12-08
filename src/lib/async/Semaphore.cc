@@ -5,7 +5,9 @@
 
 namespace Async {
 
-void Semaphore::p() {
+Semaphore::Semaphore(uint32_t c) : counter(c) {}
+
+void Semaphore::acquire() {
     // Lock to allow deterministic operations on counter/queue
     lock.acquire();
 
@@ -15,7 +17,7 @@ void Semaphore::p() {
         lock.release();
     } else {
         // Block and manage thread in semaphore queue until it's woken up by v() again
-        if (!wait_queue.initialized()) {  // TODO: I will replace this suboptimal datastructure in the future
+        if (!wait_queue.initialized()) {
             wait_queue.reserve();
         }
         auto &schedulerService = Kernel::System::getService<Kernel::SchedulerService>();
@@ -27,7 +29,7 @@ void Semaphore::p() {
     }
 }
 
-void Semaphore::v() {
+void Semaphore::release() {
     lock.acquire();
 
     if (!wait_queue.empty()) {
