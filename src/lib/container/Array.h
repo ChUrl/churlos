@@ -15,11 +15,10 @@ namespace Container {
  */
 template<typename T, const std::size_t N>
 class Array {
+    static_assert(N > 0, "Invalid size!");
+
 public:
     using iterator = ContinuousIterator<T>;
-
-private:
-    T buf[N];
 
 public:
     Array() = default;  // If i write default something like Container::Array<int, 10> arr; is not initialized...
@@ -57,9 +56,21 @@ public:
 
     iterator end() const { return iterator(&buf[N]); }
 
-    constexpr T &operator[](std::size_t i) { return buf[i]; }
+    constexpr T &operator[](std::size_t i) {
+        if (i >= N) {
+            // TODO: Exception
+        }
 
-    constexpr const T &operator[](std::size_t i) const { return buf[i]; }
+        return buf[i];
+    }
+
+    constexpr const T &operator[](std::size_t i) const {
+        if (i >= N) {
+            // TODO: Exception
+        }
+
+        return buf[i];
+    }
 
     /**
      * Get a pointer to the stack allocated memory.
@@ -70,6 +81,11 @@ public:
 
     const T *data() const { return &buf[0]; }
 
+    /**
+     * Swap the content of two arrays of the same size.
+     *
+     * @param other The array to swap with
+     */
     void swap(Array<T, N> &other) {
         for (std::size_t i = 0; i < N; ++i) {
             std::swap(buf[i], other[i]);
@@ -78,8 +94,16 @@ public:
 
     // Array& other has to have size n:
     // arr1.swap_n<5>(arr2) => arr2 has size 5, arr1 has size >= 5
+    /**
+     * Swap the contents of two arrays with different size.
+     *
+     * @tparam n The number of elements to swap
+     * @param other The array to swap with
+     */
     template<std::size_t n>
     void swap_n(Array<T, n> &other) {
+        static_assert(n <= N && n <= other.size(), "Invalid size!");
+
         for (std::size_t i = 0; i < n; ++i) {
             std::swap(buf[i], other[i]);
         }
@@ -88,6 +112,9 @@ public:
     [[nodiscard]] constexpr std::size_t size() const {
         return N;
     }
+
+private:
+    T buf[N];
 };
 
 }  // namespace Container
