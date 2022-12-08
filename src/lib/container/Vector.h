@@ -12,7 +12,9 @@
 namespace Container {
 
 /**
- * This class implements a dynamically allocated array list.
+ * This class implements a dynamically allocated array list with
+ * runtime bounds checking and iterator support.
+ * The buffer is allocated lazily and can grow in size (shrinking is not implemented).
  *
  * @tparam T The type of the held objects
  */
@@ -22,13 +24,7 @@ public:
     using iterator = ContinuousIterator<T>;
 
 public:
-    explicit Vector(bool lazy = false) {
-        if (!lazy) {
-            // I added this as a workaround, the scheduler can't initialize the queues right
-            // away because when the scheduler is started the allocator is not ready
-            init();
-        }
-    };
+    Vector() = default;
 
     // Initialize like this: bse::vector<int> vec {1, 2, 3, 4, 5};
     /**
@@ -98,23 +94,39 @@ public:
     }
 
     // Iterator
-    iterator begin() { return iterator(&buf[0]); }
+    iterator begin() {
+        initIfNecessary();
+        return iterator(&buf[0]);
+    }
 
-    iterator begin() const { return iterator(&buf[0]); }
+    iterator begin() const {
+        initIfNecessary();
+        return iterator(&buf[0]);
+    }
 
-    iterator end() { return iterator(&buf[size()]); }
+    iterator end() {
+        initIfNecessary();
+        return iterator(&buf[size()]);
+    }
 
-    iterator end() const { return iterator(&buf[size()]); }
+    iterator end() const {
+        initIfNecessary();
+        return iterator(&buf[size()]);
+    }
 
     // Add elements
     // https://en.cppreference.com/w/cpp/container/vector/push_back
     void push_back(const T &copy) {
+        initIfNecessary();
+
         buf[size()] = copy;
         ++sz;
         min_expand();
     }
 
     void push_back(T &&move) {
+        initIfNecessary();
+
         buf[size()] = std::move(move);
         ++sz;
         min_expand();
@@ -123,6 +135,11 @@ public:
     // https://en.cppreference.com/w/cpp/container/vector/insert
     // The element will be inserted before the pos iterator, pos can be the end() iterator
     iterator insert(iterator pos, const T &copy) {
+        if (pos > end()) {
+            // TODO: Exception
+        }
+        initIfNecessary();
+
         std::size_t idx = distance(begin(), pos);  // begin() does init if necessary
         copy_right(idx);                           // nothing will be done if pos == end()
         buf[idx] = copy;
@@ -132,6 +149,11 @@ public:
     }
 
     iterator insert(iterator pos, T &&move) {
+        if (pos > end()) {
+            // TODO: Exception
+        }
+        initIfNecessary();
+
         std::size_t idx = distance(begin(), pos);  // begin() does init if necessary
         copy_right(idx);
         buf[idx] = std::move(move);
@@ -144,6 +166,9 @@ public:
     // https://en.cppreference.com/w/cpp/container/vector/erase
     // Returns the iterator after the removed element, pos can't be end() iterator
     iterator erase(iterator pos) {
+        if (sz == 0 || pos >= end()) {
+            // TODO: Exception
+        }
         std::size_t idx = distance(begin(), pos);
         copy_left(idx);
         --sz;
@@ -153,26 +178,44 @@ public:
 
     // Access
     T &front() {
+        if (sz == 0) {
+            // TODO: Exception
+        }
         return buf[0];
     }
 
     const T &front() const {
+        if (sz == 0) {
+            // TODO: Exception
+        }
         return buf[0];
     }
 
     T &back() {
+        if (sz == 0) {
+            // TODO: Exception
+        }
         return buf[sz - 1];
     }
 
     const T &back() const {
+        if (sz == 0) {
+            // TODO: Exception
+        }
         return buf[sz - 1];
     }
 
     T &operator[](std::size_t pos) {
+        if (pos >= sz) {
+            // TODO: Exception
+        }
         return buf[pos];
     }
 
     const T &operator[](std::size_t pos) const {
+        if (pos >= sz) {
+            // TODO: Exception
+        }
         return buf[pos];
     }
 
@@ -196,7 +239,7 @@ public:
         // The first reserve could allocate double if cap != default_cap
         if (buf == nullptr) {
             // Directly init with correct size
-            init(cap);
+            initIfNecessary(cap);
             return;
         }
 
@@ -221,12 +264,13 @@ private:
     std::size_t buf_cap = 0; // The current capacity of the buffer
 
 private:
-    void init(std::size_t cap = Vector::default_cap) {
+    void initIfNecessary(std::size_t cap = Vector::default_cap) {
         if (buf != nullptr) {
             return;
         }
         buf = new T[cap];
         buf_cap = cap;
+        sz = 0;
     }
 
     [[nodiscard]] std::size_t get_rem_cap() const {
@@ -237,7 +281,7 @@ private:
     void min_expand() {
         // Init if necessary
         if (buf == nullptr) {
-            init();
+            initIfNecessary();
             return;  // Dont have to realloc after init
         }
 
