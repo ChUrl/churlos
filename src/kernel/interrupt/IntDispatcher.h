@@ -20,6 +20,8 @@
 namespace Kernel {
 
 class IntDispatcher {
+    friend class InterruptService;
+
 public:
     // Vektor-Nummern
     enum Vector {
@@ -33,6 +35,9 @@ public:
 
     IntDispatcher(const IntDispatcher &copy) = delete;  // Verhindere Kopieren
 
+    // TODO: Rest of constructors
+
+private:
     // Registrierung einer ISR. (Rueckgabewert: 0 = Erfolg, -1 = Fehler)
     int assign(uint8_t vector, ISR &isr);
 

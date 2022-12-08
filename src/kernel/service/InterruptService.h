@@ -31,7 +31,7 @@ public:
     void sendEndOfInterrupt();
 
 private:
-    Kernel::IntDispatcher intDispatcher;
+    IntDispatcher intDispatcher;
 };
 
 }
